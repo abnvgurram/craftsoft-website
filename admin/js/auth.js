@@ -71,11 +71,13 @@ function togglePassword() {
     }
 }
 
-// Logout Function
+// Logout Function with confirmation
 function logout() {
-    auth.signOut().then(() => {
-        window.location.href = 'index.html';
-    });
+    if (confirm('Are you sure you want to logout?')) {
+        auth.signOut().then(() => {
+            window.location.href = 'index.html';
+        });
+    }
 }
 
 // Error Messages
