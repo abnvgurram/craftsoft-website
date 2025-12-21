@@ -46,6 +46,59 @@
     padding: var(--spacing-3xl) 0;
 }
 
+/* Breadcrumbs Navigation */
+.breadcrumbs {
+    background: var(--white);
+    padding: var(--spacing-md) 0;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-list li {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--gray-500);
+}
+
+.breadcrumb-list li a {
+    color: var(--gray-600);
+    text-decoration: none;
+    transition: var(--transition-base);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.breadcrumb-list li a:hover {
+    color: var(--primary-600);
+}
+
+.breadcrumb-list li a i {
+    font-size: 0.85rem;
+}
+
+.breadcrumb-list li:not(:last-child)::after {
+    content: '/';
+    margin-left: var(--spacing-sm);
+    color: var(--gray-400);
+}
+
+.breadcrumb-list li.current {
+    color: var(--primary-600);
+    font-weight: 600;
+}
+
+/* Course Listing Section */
 /* Course Filter Tabs */
 .course-filter-tabs {
     display: flex;
