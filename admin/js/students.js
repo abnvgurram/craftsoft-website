@@ -91,9 +91,6 @@ function renderStudents(students) {
                         <button class="btn btn-outline btn-sm btn-icon" onclick="openPaymentHistory('${student.id}')" title="History">
                             <span class="material-icons">receipt_long</span>
                         </button>
-                        <button class="btn btn-whatsapp btn-sm btn-icon" onclick="shareViaWhatsApp('${student.id}')" title="WhatsApp">
-                            <span class="material-icons">share</span>
-                        </button>
                         <button class="btn btn-outline btn-sm btn-icon" onclick="deleteStudent('${student.id}')" title="Delete" style="color: #EF4444;">
                             <span class="material-icons">delete</span>
                         </button>
@@ -525,6 +522,10 @@ function openPaymentModal(studentId, studentName, pending) {
     document.getElementById('pendingDisplayAmount').value = formatCurrency(pending);
     document.getElementById('paymentAmount').max = pending;
     document.getElementById('paymentAmount').value = '';
+    document.getElementById('paymentNotes').value = '';
+    // Set default date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('paymentDate').value = today;
     document.getElementById('addPaymentModal').classList.add('active');
 }
 
@@ -602,6 +603,7 @@ document.getElementById('addPaymentForm').addEventListener('submit', async (e) =
     const amount = parseInt(document.getElementById('paymentAmount').value) || 0;
     const mode = document.getElementById('paymentModeRecord').value;
     const notes = document.getElementById('paymentNotes').value.trim();
+    const paymentDateInput = document.getElementById('paymentDate').value;
 
     if (amount <= 0) {
         showToast('Please enter a valid amount', 'error');
@@ -618,6 +620,11 @@ document.getElementById('addPaymentForm').addEventListener('submit', async (e) =
         const paymentCount = paymentsSnapshot.size + 1;
         const receiptNumber = (student.receiptPrefix || 'CS-' + Date.now().toString().slice(-8)) + '-' + paymentCount.toString().padStart(3, '0');
 
+        // Use selected date or current timestamp
+        const paymentDate = paymentDateInput
+            ? firebase.firestore.Timestamp.fromDate(new Date(paymentDateInput + 'T12:00:00'))
+            : firebase.firestore.FieldValue.serverTimestamp();
+
         await db.collection('payments').add({
             studentId,
             studentName,
@@ -625,7 +632,8 @@ document.getElementById('addPaymentForm').addEventListener('submit', async (e) =
             mode,
             notes,
             receiptNumber,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            paymentDate: paymentDateInput || null,
+            createdAt: paymentDate
         });
 
         await db.collection('students').doc(studentId).update({
