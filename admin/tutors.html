@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutors - Abhi's Craft Soft Admin</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="admin-body">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-logo">
+                    <div class="logo-icon"><span class="material-icons">school</span></div>
+                    <span>Abhi's Craft Soft</span>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span class="material-icons">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="inquiries.html" class="nav-item">
+                    <span class="material-icons">contact_phone</span>
+                    <span>Inquiries</span>
+                </a>
+                <a href="students.html" class="nav-item">
+                    <span class="material-icons">people</span>
+                    <span>Students</span>
+                </a>
+                <a href="payments.html" class="nav-item">
+                    <span class="material-icons">payments</span>
+                    <span>Payments</span>
+                </a>
+                <a href="tutors.html" class="nav-item active">
+                    <span class="material-icons">person</span>
+                    <span>Tutors</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <span class="material-icons">settings</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-details">
+                        <div class="name">Admin</div>
+                    </div>
+                    <button class="btn-logout" onclick="logout()" title="Logout">
+                        <span class="material-icons">logout</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header" style="display: none;">
+                <h1 style="font-size: 1.25rem; font-weight: 600;">Tutors</h1>
+                <button class="mobile-logout-btn" onclick="logout()" title="Logout">
+                    <span class="material-icons">logout</span>
+                </button>
+            </div>
+
+            <div class="page-header desktop-only">
+                <div>
+                    <h1>Tutors</h1>
+                    <p class="date">Manage tutors and instructors</p>
+                </div>
+                <button class="btn btn-primary" onclick="openAddTutorModal()">
+                    <span class="material-icons">add</span> Add Tutor
+                </button>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px;">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(40, 150, 205, 0.15);">
+                        <span class="material-icons" style="color: #2896CD;">person</span>
+                    </div>
+                    <div class="stat-value" id="totalTutors">0</div>
+                    <div class="stat-label">Total Tutors</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15);">
+                        <span class="material-icons" style="color: #10B981;">check_circle</span>
+                    </div>
+                    <div class="stat-value" id="activeTutors">0</div>
+                    <div class="stat-label">Active</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15);">
+                        <span class="material-icons" style="color: #F59E0B;">laptop</span>
+                    </div>
+                    <div class="stat-value" id="onlineTutors">0</div>
+                    <div class="stat-label">Online Available</div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-body" style="padding: 16px;">
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                        <div style="flex: 1; min-width: 180px;">
+                            <input type="text" id="searchInput" placeholder="Search by name..."
+                                style="width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem;">
+                        </div>
+                        <select id="subjectFilter"
+                            style="padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 8px; min-width: 150px; font-size: 0.9rem;">
+                            <option value="">All Subjects</option>
+                            <option value="Full Stack Development">Full Stack Development</option>
+                            <option value="UI/UX Design">UI/UX Design</option>
+                            <option value="Graphic Design">Graphic Design</option>
+                            <option value="DevOps Engineering">DevOps Engineering</option>
+                            <option value="AWS Cloud">AWS Cloud</option>
+                            <option value="Python Full Stack">Python Full Stack</option>
+                            <option value="Data Analytics">Data Analytics</option>
+                        </select>
+                        <select id="modeFilter"
+                            style="padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 8px; min-width: 120px; font-size: 0.9rem;">
+                            <option value="">All Modes</option>
+                            <option value="online">Online</option>
+                            <option value="offline">Offline</option>
+                            <option value="both">Both</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tutors List -->
+            <div class="card">
+                <div class="card-body" style="padding: 0;">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tutor</th>
+                                    <th>Subject</th>
+                                    <th>Mode</th>
+                                    <th>Availability</th>
+                                    <th>Status</th>
+                                    <th style="width: 120px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tutorsTable">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px;">
+                                        <div class="loading-spinner"></div>
+                                        <p style="margin-top: 10px; color: #64748b;">Loading tutors...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Mobile Cards -->
+                    <div class="mobile-cards" id="tutorsMobileCards" style="padding: 16px;">
+                        <div style="text-align: center; padding: 40px;">
+                            <div class="loading-spinner"></div>
+                            <p style="margin-top: 10px; color: #64748b;">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- FAB for Mobile -->
+    <button class="fab" onclick="openAddTutorModal()" title="Add Tutor">
+        <span class="material-icons">add</span>
+    </button>
+
+    <!-- Bottom Navigation - Mobile -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item">
+            <span class="material-icons">dashboard</span>
+            <span>Home</span>
+        </a>
+        <a href="inquiries.html" class="bottom-nav-item">
+            <span class="material-icons">contact_phone</span>
+            <span>Inquiries</span>
+        </a>
+        <a href="students.html" class="bottom-nav-item">
+            <span class="material-icons">people</span>
+            <span>Students</span>
+        </a>
+        <a href="payments.html" class="bottom-nav-item">
+            <span class="material-icons">payments</span>
+            <span>Payments</span>
+        </a>
+    </nav>
+
+    <!-- Logout Modal -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal" style="max-width: 360px;">
+            <div class="logout-modal">
+                <div class="logout-icon">
+                    <span class="material-icons">logout</span>
+                </div>
+                <h3>Logout</h3>
+                <p>Are you sure you want to logout?</p>
+                <div class="logout-actions">
+                    <button class="btn-cancel" onclick="cancelLogout()">Cancel</button>
+                    <button class="btn-logout-confirm" onclick="confirmLogout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Tutor Modal -->
+    <div class="modal-overlay" id="addTutorModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><span class="material-icons">person_add</span> Add Tutor</h3>
+                <button class="modal-close" onclick="closeModal('addTutorModal')">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <form id="addTutorForm">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="tutorName" required placeholder="Enter full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number *</label>
+                            <input type="tel" id="tutorPhone" required placeholder="10-digit number" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email (Optional)</label>
+                        <input type="email" id="tutorEmail" placeholder="email@example.com">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Subject/Course *</label>
+                            <select id="tutorSubject" required>
+                                <option value="">Select Subject</option>
+                                <option value="Full Stack Development">Full Stack Development</option>
+                                <option value="UI/UX Design">UI/UX Design</option>
+                                <option value="Graphic Design">Graphic Design</option>
+                                <option value="DevOps Engineering">DevOps Engineering</option>
+                                <option value="AWS Cloud">AWS Cloud</option>
+                                <option value="Python Full Stack">Python Full Stack</option>
+                                <option value="Java Full Stack">Java Full Stack</option>
+                                <option value="Data Analytics">Data Analytics</option>
+                                <option value="Salesforce">Salesforce</option>
+                                <option value="DSA Mastery">DSA Mastery</option>
+                                <option value="Soft Skills">Soft Skills</option>
+                                <option value="Spoken English">Spoken English</option>
+                                <option value="Multiple">Multiple Subjects</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mode *</label>
+                            <select id="tutorMode" required>
+                                <option value="offline">Offline Only</option>
+                                <option value="online">Online Only</option>
+                                <option value="both">Both</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Availability</label>
+                            <select id="tutorAvailability">
+                                <option value="weekdays">Weekdays</option>
+                                <option value="weekends">Weekends</option>
+                                <option value="flexible">Flexible</option>
+                                <option value="fulltime">Full Time</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="tutorStatus">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Hourly Rate (₹) - Optional</label>
+                        <input type="number" id="tutorRate" placeholder="e.g., 500" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes (Optional)</label>
+                        <textarea id="tutorNotes" rows="2" placeholder="Any additional notes..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('addTutorModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-icons">check</span> Add Tutor
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Tutor Modal -->
+    <div class="modal-overlay" id="editTutorModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><span class="material-icons">edit</span> Edit Tutor</h3>
+                <button class="modal-close" onclick="closeModal('editTutorModal')">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <form id="editTutorForm">
+                <input type="hidden" id="editTutorId">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="editTutorName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number *</label>
+                            <input type="tel" id="editTutorPhone" required maxlength="10">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="editTutorEmail">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Subject/Course *</label>
+                            <select id="editTutorSubject" required>
+                                <option value="">Select Subject</option>
+                                <option value="Full Stack Development">Full Stack Development</option>
+                                <option value="UI/UX Design">UI/UX Design</option>
+                                <option value="Graphic Design">Graphic Design</option>
+                                <option value="DevOps Engineering">DevOps Engineering</option>
+                                <option value="AWS Cloud">AWS Cloud</option>
+                                <option value="Python Full Stack">Python Full Stack</option>
+                                <option value="Java Full Stack">Java Full Stack</option>
+                                <option value="Data Analytics">Data Analytics</option>
+                                <option value="Salesforce">Salesforce</option>
+                                <option value="DSA Mastery">DSA Mastery</option>
+                                <option value="Soft Skills">Soft Skills</option>
+                                <option value="Spoken English">Spoken English</option>
+                                <option value="Multiple">Multiple Subjects</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mode *</label>
+                            <select id="editTutorMode" required>
+                                <option value="offline">Offline Only</option>
+                                <option value="online">Online Only</option>
+                                <option value="both">Both</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Availability</label>
+                            <select id="editTutorAvailability">
+                                <option value="weekdays">Weekdays</option>
+                                <option value="weekends">Weekends</option>
+                                <option value="flexible">Flexible</option>
+                                <option value="fulltime">Full Time</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="editTutorStatus">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Hourly Rate (₹)</label>
+                        <input type="number" id="editTutorRate" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="editTutorNotes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('editTutorModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-icons">save</span> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/tutors.js"></script>
+
+    <script>
+        // Mobile responsiveness
+        if (window.innerWidth <= 768) {
+            document.querySelector('.mobile-header').style.display = 'flex';
+        }
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.mobile-header').style.display = 'flex';
+            } else {
+                document.querySelector('.mobile-header').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>
