@@ -145,6 +145,7 @@
                                     <th>Amount</th>
                                     <th>Mode</th>
                                     <th>Date</th>
+                                    <th style="width: 50px;"></th>
                                 </tr>
                             </thead>
                             <tbody id="paymentsTable">
@@ -202,6 +203,21 @@
                     <button class="btn-cancel" onclick="cancelLogout()">Cancel</button>
                     <button class="btn-logout-confirm" onclick="confirmLogout()">Logout</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick View Payment Modal -->
+    <div class="modal-overlay" id="quickViewModal">
+        <div class="modal" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3><span class="material-icons">receipt</span> Payment Details</h3>
+                <button class="modal-close" onclick="closeQuickView()">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body" id="quickViewContent">
+                <!-- Content populated by JS -->
             </div>
         </div>
     </div>

@@ -62,7 +62,7 @@ function renderPayments(payments) {
                 <p style="color: #64748b;">Payment records will appear here</p>
             </div>
         `;
-        tbody.innerHTML = `<tr><td colspan="5">${emptyHTML}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6">${emptyHTML}</td></tr>`;
         if (mobileCards) mobileCards.innerHTML = emptyHTML;
         return;
     }
@@ -87,6 +87,11 @@ function renderPayments(payments) {
                 <td style="color: #10B981; font-weight: 700;">${formatCurrency(payment.amount)}</td>
                 <td>${modeIcons[payment.mode] || payment.mode}</td>
                 <td><small style="color: #64748b;">${paymentDate}</small></td>
+                <td>
+                    <button class="btn btn-icon btn-outline" onclick='showQuickView(${JSON.stringify(payment)})' title="View Details">
+                        <span class="material-icons" style="font-size: 18px;">visibility</span>
+                    </button>
+                </td>
             </tr>
         `;
     }).join('');
@@ -106,7 +111,7 @@ function renderPayments(payments) {
             };
 
             return `
-                <div class="mobile-card">
+                <div class="mobile-card" onclick='showQuickView(${JSON.stringify(payment)})' style="cursor: pointer;">
                     <div class="mobile-card-header">
                         <div>
                             <div class="mobile-card-name">${payment.studentName || '-'}</div>
@@ -129,6 +134,79 @@ function renderPayments(payments) {
         }).join('');
     }
 }
+
+// Quick View Payment
+function showQuickView(payment) {
+    const paymentDate = payment.createdAt?.toDate?.()
+        ? payment.createdAt.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+        : '-';
+
+    const paymentTime = payment.createdAt?.toDate?.()
+        ? payment.createdAt.toDate().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+        : '';
+
+    const modeLabels = {
+        'cash': '💵 Cash',
+        'razorpay': '💳 Razorpay',
+        'upi': '📱 UPI',
+        'bank': '🏦 Bank Transfer'
+    };
+
+    const content = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="width: 64px; height: 64px; background: rgba(16, 185, 129, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                <span class="material-icons" style="font-size: 28px; color: #10B981;">receipt</span>
+            </div>
+            <h3 style="margin: 0 0 4px; color: #10B981;">${formatCurrency(payment.amount)}</h3>
+            <p style="color: #64748b; margin: 0; font-size: 0.85rem;">${payment.receiptNumber || '-'}</p>
+        </div>
+        <div style="background: #f8fafc; border-radius: 12px; padding: 16px;">
+            <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+                <span style="color: #64748b;">Student</span>
+                <span style="font-weight: 600;">${payment.studentName || '-'}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+                <span style="color: #64748b;">Amount</span>
+                <span style="font-weight: 700; color: #10B981;">${formatCurrency(payment.amount)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+                <span style="color: #64748b;">Payment Mode</span>
+                <span style="font-weight: 500;">${modeLabels[payment.mode] || payment.mode}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+                <span style="color: #64748b;">Date</span>
+                <span style="font-weight: 500;">${paymentDate}</span>
+            </div>
+            ${paymentTime ? `
+            <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+                <span style="color: #64748b;">Time</span>
+                <span style="font-weight: 500;">${paymentTime}</span>
+            </div>
+            ` : ''}
+            ${payment.notes ? `
+            <div style="padding: 10px 0;">
+                <span style="color: #64748b; display: block; margin-bottom: 4px;">Notes</span>
+                <span style="font-weight: 500; font-size: 0.9rem;">${payment.notes}</span>
+            </div>
+            ` : ''}
+        </div>
+    `;
+
+    document.getElementById('quickViewContent').innerHTML = content;
+    document.getElementById('quickViewModal').classList.add('active');
+}
+
+function closeQuickView() {
+    document.getElementById('quickViewModal').classList.remove('active');
+}
+
+// Close modal on overlay click
+document.getElementById('quickViewModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'quickViewModal') {
+        closeQuickView();
+    }
+});
+
 
 // Filter Payments
 function filterPayments() {
