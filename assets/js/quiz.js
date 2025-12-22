@@ -33,13 +33,13 @@ const quizData = [
 ];
 
 const courseRecommendations = {
-    design: { title: "Graphic Design", icon: "fas fa-paint-brush", url: "pages/courses.html#design", desc: "Unleash your creativity and master branding with our Graphic Design excellence program." },
-    uiux: { title: "UI/UX Design", icon: "fas fa-object-group", url: "pages/courses.html#design", desc: "Design interfaces that people love using Figma and modern design principles." },
-    fullstack: { title: "Full Stack Development", icon: "fas fa-code", url: "pages/courses.html#development", desc: "Become a complete developer by mastering frontend, backend, and databases." },
-    devops: { title: "DevOps Engineering", icon: "fas fa-infinity", url: "pages/courses.html#cloud", desc: "Bridge the gap between development and operations with automation and CI/CD." },
-    aws: { title: "AWS Cloud Excellence", icon: "fab fa-aws", url: "pages/courses.html#cloud", desc: "Master the world's leading cloud platform and build scalable infrastructure." },
-    softskills: { title: "Soft Skills & Spoken English", icon: "fas fa-comments", url: "pages/courses.html#softskills", desc: "Transform your personality and communication to excel in your professional career." },
-    development: { title: "Python Full Stack", icon: "fab fa-python", url: "pages/courses.html#development", desc: "Learn the most versatile programming language and build powerful applications." }
+    design: { title: "Graphic Design", icon: "fas fa-paint-brush", url: "pages/courses/graphic-design.html", desc: "Unleash your creativity and master branding with our Graphic Design excellence program." },
+    uiux: { title: "UI/UX Design", icon: "fas fa-object-group", url: "pages/courses/ui-ux.html", desc: "Design interfaces that people love using Figma and modern design principles." },
+    fullstack: { title: "Full Stack Development", icon: "fas fa-code", url: "pages/courses/full-stack.html", desc: "Become a complete developer by mastering frontend, backend, and databases." },
+    devops: { title: "DevOps Engineering", icon: "fas fa-infinity", url: "pages/courses/devops.html", desc: "Bridge the gap between development and operations with automation and CI/CD." },
+    aws: { title: "AWS Cloud Excellence", icon: "fab fa-aws", url: "pages/courses/aws.html", desc: "Master the world's leading cloud platform and build scalable infrastructure." },
+    softskills: { title: "Spoken English Mastery", icon: "fas fa-comments", url: "pages/courses/spoken-english.html", desc: "Transform your personality and communication to excel in your professional career." },
+    development: { title: "Python Full Stack", icon: "fab fa-python", url: "pages/courses/python.html", desc: "Learn the most versatile programming language and build powerful applications." }
 };
 
 let currentQuizStep = 0;
@@ -171,8 +171,8 @@ function renderResult() {
             <p>${recommendation.desc}</p>
             <div class="result-actions">
                 <a href="${recommendation.url}" class="btn btn-primary">Course Details</a>
-                <a href="https://wa.me/917842239090?text=I just took your quiz and my result was ${recommendation.title}! I'd like to join." target="_blank" class="btn btn-secondary">
-                    <i class="fab fa-whatsapp"></i> Chat with Expert
+                <a href="https://wa.me/917842239090?text=I'd like to enroll in ${recommendation.title}!" target="_blank" class="btn btn-secondary">
+                    <i class="fab fa-whatsapp"></i> I'd like to enroll
                 </a>
             </div>
             <button class="quiz-restart" onclick="startQuiz()">Try Again</button>
