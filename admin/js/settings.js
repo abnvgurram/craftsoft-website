@@ -88,49 +88,111 @@ async function saveBusinessSettings() {
     }
 }
 
-// Render Navigation Settings
+// Render Navigation Settings with Drag to Reorder
 function renderNavigationSettings() {
     const selectedContainer = document.getElementById('selectedNavItems');
     const listContainer = document.getElementById('navItemsList');
 
-    // Show selected items as chips
-    selectedContainer.innerHTML = selectedNavItems.map(id => {
-        const item = availableNavItems.find(n => n.id === id);
-        if (!item) return '';
-        return `
-            <div class="chip">
-                <span class="material-icons">${item.icon}</span>
-                ${item.label}
+    // Show selected items as draggable cards
+    if (selectedNavItems.length === 0) {
+        selectedContainer.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #94a3b8;">
+                <span class="material-icons" style="font-size: 32px;">add_circle_outline</span>
+                <p style="margin: 8px 0 0; font-size: 0.85rem;">Add items from below</p>
             </div>
         `;
-    }).join('');
-
-    // Show all items with add/remove buttons
-    listContainer.innerHTML = availableNavItems.map(item => {
-        const isSelected = selectedNavItems.includes(item.id);
-        const canAdd = !isSelected && selectedNavItems.length < 4;
-
-        return `
-            <div class="nav-item-toggle">
-                <div class="nav-item-info">
-                    <span class="material-icons">${item.icon}</span>
-                    <span>${item.label}</span>
-                </div>
-                ${isSelected ? `
-                    <button class="toggle-btn remove" onclick="removeNavItem('${item.id}')" title="Remove">
-                        <span class="material-icons">remove</span>
+    } else {
+        selectedContainer.innerHTML = selectedNavItems.map((id, index) => {
+            const item = availableNavItems.find(n => n.id === id);
+            if (!item) return '';
+            return `
+                <div class="sortable-nav-item" draggable="true" data-id="${item.id}" data-index="${index}">
+                    <span class="material-icons drag-handle">drag_indicator</span>
+                    <span class="material-icons nav-icon">${item.icon}</span>
+                    <span class="nav-label">${item.label}</span>
+                    <button class="remove-btn" onclick="removeNavItem('${item.id}')" title="Remove">
+                        <span class="material-icons">close</span>
                     </button>
-                ` : `
+                </div>
+            `;
+        }).join('');
+
+        // Initialize drag and drop
+        initDragAndDrop();
+    }
+
+    // Show available items (not selected) with add buttons
+    const unselectedItems = availableNavItems.filter(item => !selectedNavItems.includes(item.id));
+
+    if (unselectedItems.length === 0) {
+        listContainer.innerHTML = `
+            <div style="text-align: center; padding: 16px; color: #94a3b8; font-size: 0.85rem;">
+                All items selected
+            </div>
+        `;
+    } else {
+        listContainer.innerHTML = unselectedItems.map(item => {
+            const canAdd = selectedNavItems.length < 4;
+
+            return `
+                <div class="nav-item-toggle">
+                    <div class="nav-item-info">
+                        <span class="material-icons">${item.icon}</span>
+                        <span>${item.label}</span>
+                    </div>
                     <button class="toggle-btn add ${canAdd ? '' : 'disabled'}" 
                             onclick="${canAdd ? `addNavItem('${item.id}')` : ''}" 
                             title="${canAdd ? 'Add' : 'Max 4 items'}"
                             ${canAdd ? '' : 'disabled style="opacity: 0.3; cursor: not-allowed;"'}>
                         <span class="material-icons">add</span>
                     </button>
-                `}
-            </div>
-        `;
-    }).join('');
+                </div>
+            `;
+        }).join('');
+    }
+}
+
+// Initialize Drag and Drop
+function initDragAndDrop() {
+    const container = document.getElementById('selectedNavItems');
+    const items = container.querySelectorAll('.sortable-nav-item');
+
+    let draggedItem = null;
+
+    items.forEach(item => {
+        item.addEventListener('dragstart', (e) => {
+            draggedItem = item;
+            item.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+
+        item.addEventListener('dragend', () => {
+            draggedItem.classList.remove('dragging');
+            draggedItem = null;
+            // Update selectedNavItems array based on new order
+            updateNavOrder();
+        });
+
+        item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (draggedItem && draggedItem !== item) {
+                const rect = item.getBoundingClientRect();
+                const midY = rect.top + rect.height / 2;
+                if (e.clientY < midY) {
+                    container.insertBefore(draggedItem, item);
+                } else {
+                    container.insertBefore(draggedItem, item.nextSibling);
+                }
+            }
+        });
+    });
+}
+
+// Update nav order after drag
+function updateNavOrder() {
+    const container = document.getElementById('selectedNavItems');
+    const items = container.querySelectorAll('.sortable-nav-item');
+    selectedNavItems = Array.from(items).map(item => item.dataset.id);
 }
 
 // Add nav item

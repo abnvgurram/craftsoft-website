@@ -600,6 +600,17 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
     });
 });
 
+// Calculate Final Fee
+function calculateFinalFee() {
+    const originalFee = parseInt(document.getElementById('originalFee')?.value) || 0;
+    const discount = parseInt(document.getElementById('discountAmount')?.value) || 0;
+    const finalFee = Math.max(0, originalFee - discount);
+    document.getElementById('totalFee').value = finalFee;
+}
+
+// Make calculateFinalFee global
+window.calculateFinalFee = calculateFinalFee;
+
 // Add Student Form Handler
 document.getElementById('addStudentForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -608,7 +619,13 @@ document.getElementById('addStudentForm').addEventListener('submit', async (e) =
     const phone = document.getElementById('studentPhone').value.trim();
     const email = document.getElementById('studentEmail').value.trim();
     const course = document.getElementById('studentCourse').value;
-    const totalFee = parseInt(document.getElementById('totalFee').value) || 0;
+
+    // Fee with discount
+    const originalFee = parseInt(document.getElementById('originalFee').value) || 0;
+    const discountAmount = parseInt(document.getElementById('discountAmount').value) || 0;
+    const discountReason = document.getElementById('discountReason').value;
+    const totalFee = Math.max(0, originalFee - discountAmount);
+
     const initialPayment = parseInt(document.getElementById('initialPayment').value) || 0;
     const paymentMode = document.getElementById('paymentMode').value;
     const demoDate = document.getElementById('studentDemoDate').value;
@@ -645,6 +662,10 @@ document.getElementById('addStudentForm').addEventListener('submit', async (e) =
             phone,
             email,
             course,
+            // Fee & Discount
+            originalFee,
+            discountAmount,
+            discountReason,
             totalFee,
             paidAmount: initialPayment,
             demoDate: demoDate || null,
