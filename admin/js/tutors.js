@@ -179,7 +179,7 @@ function openEditTutorModal(tutorId) {
     document.getElementById('editTutorName').value = tutor.name || '';
     document.getElementById('editTutorPhone').value = tutor.phone || '';
     document.getElementById('editTutorEmail').value = tutor.email || '';
-    document.getElementById('editTutorSubject').value = tutor.subject || '';
+    setSelectedSubjects('editTutorSubjectsDropdown', tutor.subject || '');
     document.getElementById('editTutorMode').value = tutor.mode || 'offline';
     document.getElementById('editTutorAvailability').value = tutor.availability || 'weekdays';
     document.getElementById('editTutorStatus').value = tutor.status || 'active';
@@ -213,6 +213,8 @@ async function deleteTutor(tutorId) {
 // Modal Functions
 function openAddTutorModal() {
     document.getElementById('addTutorForm').reset();
+    // Reset the multi-select dropdown
+    setSelectedSubjects('tutorSubjectsDropdown', []);
     document.getElementById('addTutorModal').classList.add('active');
 }
 
@@ -236,7 +238,13 @@ document.getElementById('addTutorForm').addEventListener('submit', async (e) => 
     const name = document.getElementById('tutorName').value.trim();
     const phone = formatPhoneNumber(document.getElementById('tutorPhone').value.trim());
     const email = document.getElementById('tutorEmail').value.trim();
-    const subject = document.getElementById('tutorSubject').value;
+    const selectedSubjects = getSelectedSubjects('tutorSubjectsDropdown');
+    const subject = selectedSubjects.join(', ');
+
+    if (selectedSubjects.length === 0) {
+        showToast('Please select at least one subject', 'error');
+        return;
+    }
     const mode = document.getElementById('tutorMode').value;
     const availability = document.getElementById('tutorAvailability').value;
     const status = document.getElementById('tutorStatus').value;
@@ -274,13 +282,19 @@ document.getElementById('editTutorForm').addEventListener('submit', async (e) =>
     e.preventDefault();
 
     const tutorId = document.getElementById('editTutorId').value;
+    const selectedSubjects = getSelectedSubjects('editTutorSubjectsDropdown');
+
+    if (selectedSubjects.length === 0) {
+        showToast('Please select at least one subject', 'error');
+        return;
+    }
 
     try {
         await db.collection('tutors').doc(tutorId).update({
             name: document.getElementById('editTutorName').value.trim(),
             phone: formatPhoneNumber(document.getElementById('editTutorPhone').value.trim()),
             email: document.getElementById('editTutorEmail').value.trim(),
-            subject: document.getElementById('editTutorSubject').value,
+            subject: selectedSubjects.join(', '),
             mode: document.getElementById('editTutorMode').value,
             availability: document.getElementById('editTutorAvailability').value,
             status: document.getElementById('editTutorStatus').value,
@@ -323,6 +337,79 @@ window.openAddTutorModal = openAddTutorModal;
 window.openEditTutorModal = openEditTutorModal;
 window.deleteTutor = deleteTutor;
 window.closeModal = closeModal;
+
+// Multi-Select Dropdown Functions
+function toggleMultiSelect(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    dropdown.classList.toggle('open');
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.multi-select-dropdown')) {
+        document.querySelectorAll('.multi-select-dropdown.open').forEach(d => d.classList.remove('open'));
+    }
+});
+
+// Get selected values from a multi-select dropdown
+function getSelectedSubjects(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+// Set selected values in a multi-select dropdown
+function setSelectedSubjects(dropdownId, subjects) {
+    const dropdown = document.getElementById(dropdownId);
+    const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
+
+    // First uncheck all
+    checkboxes.forEach(cb => cb.checked = false);
+
+    // Then check the matching ones
+    if (subjects && Array.isArray(subjects)) {
+        subjects.forEach(sub => {
+            const cb = dropdown.querySelector(`input[value="${sub}"]`);
+            if (cb) cb.checked = true;
+        });
+    } else if (typeof subjects === 'string') {
+        // Handle comma-separated string (backward compat)
+        subjects.split(',').map(s => s.trim()).forEach(sub => {
+            const cb = dropdown.querySelector(`input[value="${sub}"]`);
+            if (cb) cb.checked = true;
+        });
+    }
+
+    updateMultiSelectLabel(dropdownId);
+}
+
+// Update the label to show selected items
+function updateMultiSelectLabel(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    const selected = getSelectedSubjects(dropdownId);
+    const label = dropdown.querySelector('.selected-text');
+
+    if (selected.length === 0) {
+        label.textContent = 'Select subjects...';
+        label.classList.remove('has-value');
+    } else if (selected.length <= 2) {
+        label.textContent = selected.join(', ');
+        label.classList.add('has-value');
+    } else {
+        label.textContent = `${selected.length} subjects selected`;
+        label.classList.add('has-value');
+    }
+}
+
+// Listen for checkbox changes to update label
+document.querySelectorAll('.multi-select-dropdown input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+        const dropdown = cb.closest('.multi-select-dropdown');
+        updateMultiSelectLabel(dropdown.id);
+    });
+});
+
+window.toggleMultiSelect = toggleMultiSelect;
 
 // Load tutors on page load
 document.addEventListener('DOMContentLoaded', () => {

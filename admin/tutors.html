@@ -10,6 +10,89 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
         rel="stylesheet">
+    <style>
+        /* Multi-Select Dropdown */
+        .multi-select-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .multi-select-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            background: var(--white);
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .multi-select-toggle:hover,
+        .multi-select-dropdown.open .multi-select-toggle {
+            border-color: var(--primary);
+        }
+
+        .multi-select-toggle .selected-text {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+
+        .multi-select-toggle .selected-text.has-value {
+            color: var(--gray-800);
+        }
+
+        .multi-select-toggle .material-icons {
+            color: var(--gray-400);
+            transition: transform 0.2s ease;
+        }
+
+        .multi-select-dropdown.open .multi-select-toggle .material-icons {
+            transform: rotate(180deg);
+        }
+
+        .multi-select-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border: 2px solid var(--primary);
+            border-top: none;
+            border-radius: 0 0 var(--radius) var(--radius);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .multi-select-dropdown.open .multi-select-options {
+            display: block;
+        }
+
+        .multi-select-options label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .multi-select-options label:hover {
+            background: var(--gray-50);
+        }
+
+        .multi-select-options input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+        }
+    </style>
 </head>
 
 <body class="admin-body">
@@ -245,10 +328,28 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Subjects *</label>
-                            <input type="text" id="tutorSubject" required placeholder="e.g., Full Stack, Python, Java"
-                                style="width: 100%;">
-                            <small style="color: #94a3b8; font-size: 0.75rem;">Separate multiple subjects with
-                                comma</small>
+                            <div class="multi-select-dropdown" id="tutorSubjectsDropdown">
+                                <div class="multi-select-toggle" onclick="toggleMultiSelect('tutorSubjectsDropdown')">
+                                    <span class="selected-text">Select subjects...</span>
+                                    <span class="material-icons">expand_more</span>
+                                </div>
+                                <div class="multi-select-options">
+                                    <label><input type="checkbox" value="Full Stack Development"> Full Stack
+                                        Development</label>
+                                    <label><input type="checkbox" value="UI/UX Design"> UI/UX Design</label>
+                                    <label><input type="checkbox" value="Graphic Design"> Graphic Design</label>
+                                    <label><input type="checkbox" value="DevOps Engineering"> DevOps Engineering</label>
+                                    <label><input type="checkbox" value="AWS Cloud"> AWS Cloud</label>
+                                    <label><input type="checkbox" value="Python Full Stack"> Python Full Stack</label>
+                                    <label><input type="checkbox" value="Java Full Stack"> Java Full Stack</label>
+                                    <label><input type="checkbox" value="Data Analytics"> Data Analytics</label>
+                                    <label><input type="checkbox" value="Salesforce"> Salesforce</label>
+                                    <label><input type="checkbox" value="DSA Mastery"> DSA Mastery</label>
+                                    <label><input type="checkbox" value="Soft Skills"> Soft Skills</label>
+                                    <label><input type="checkbox" value="Spoken English"> Spoken English</label>
+                                    <label><input type="checkbox" value="Resume & Interview"> Resume & Interview</label>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Mode *</label>
@@ -325,9 +426,29 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Subjects *</label>
-                            <input type="text" id="editTutorSubject" required style="width: 100%;">
-                            <small style="color: #94a3b8; font-size: 0.75rem;">Separate multiple subjects with
-                                comma</small>
+                            <div class="multi-select-dropdown" id="editTutorSubjectsDropdown">
+                                <div class="multi-select-toggle"
+                                    onclick="toggleMultiSelect('editTutorSubjectsDropdown')">
+                                    <span class="selected-text">Select subjects...</span>
+                                    <span class="material-icons">expand_more</span>
+                                </div>
+                                <div class="multi-select-options">
+                                    <label><input type="checkbox" value="Full Stack Development"> Full Stack
+                                        Development</label>
+                                    <label><input type="checkbox" value="UI/UX Design"> UI/UX Design</label>
+                                    <label><input type="checkbox" value="Graphic Design"> Graphic Design</label>
+                                    <label><input type="checkbox" value="DevOps Engineering"> DevOps Engineering</label>
+                                    <label><input type="checkbox" value="AWS Cloud"> AWS Cloud</label>
+                                    <label><input type="checkbox" value="Python Full Stack"> Python Full Stack</label>
+                                    <label><input type="checkbox" value="Java Full Stack"> Java Full Stack</label>
+                                    <label><input type="checkbox" value="Data Analytics"> Data Analytics</label>
+                                    <label><input type="checkbox" value="Salesforce"> Salesforce</label>
+                                    <label><input type="checkbox" value="DSA Mastery"> DSA Mastery</label>
+                                    <label><input type="checkbox" value="Soft Skills"> Soft Skills</label>
+                                    <label><input type="checkbox" value="Spoken English"> Spoken English</label>
+                                    <label><input type="checkbox" value="Resume & Interview"> Resume & Interview</label>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Mode *</label>
