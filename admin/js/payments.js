@@ -88,7 +88,7 @@ function renderPayments(payments) {
                 <td>${modeIcons[payment.mode] || payment.mode}</td>
                 <td><small style="color: #64748b;">${paymentDate}</small></td>
                 <td>
-                    <button class="btn btn-icon btn-outline" onclick='showQuickView(${JSON.stringify(payment)})' title="View Details">
+                    <button class="btn btn-icon btn-outline" onclick="showQuickView('${payment.id}')" title="View Details">
                         <span class="material-icons" style="font-size: 18px;">visibility</span>
                     </button>
                 </td>
@@ -111,7 +111,7 @@ function renderPayments(payments) {
             };
 
             return `
-                <div class="mobile-card" onclick='showQuickView(${JSON.stringify(payment)})' style="cursor: pointer;">
+                <div class="mobile-card" onclick="showQuickView('${payment.id}')" style="cursor: pointer;">
                     <div class="mobile-card-header">
                         <div>
                             <div class="mobile-card-name">${payment.studentName || '-'}</div>
@@ -135,8 +135,14 @@ function renderPayments(payments) {
     }
 }
 
-// Quick View Payment
-function showQuickView(payment) {
+// Quick View Payment - using ID lookup
+function showQuickView(paymentId) {
+    const payment = allPayments.find(p => p.id === paymentId);
+    if (!payment) {
+        console.error('Payment not found:', paymentId);
+        return;
+    }
+
     const paymentDate = payment.createdAt?.toDate?.()
         ? payment.createdAt.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
         : '-';
