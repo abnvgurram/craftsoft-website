@@ -596,3 +596,28 @@ document.querySelectorAll('input[type="tel"]').forEach(input => {
         this.value = this.value.replace(/[^+0-9]/g, '').slice(0, 15);
     });
 });
+
+// FAB Menu Toggle
+const fabContainer = document.getElementById('fabContainer');
+const fabButton = document.getElementById('fabButton');
+
+if (fabButton && fabContainer) {
+    fabButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fabContainer.classList.toggle('open');
+    });
+
+    // Close FAB menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!fabContainer.contains(e.target)) {
+            fabContainer.classList.remove('open');
+        }
+    });
+
+    // Close FAB menu when pressing Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            fabContainer.classList.remove('open');
+        }
+    });
+}

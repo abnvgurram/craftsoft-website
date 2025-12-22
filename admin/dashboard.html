@@ -129,35 +129,8 @@
                 </div>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="card" style="margin-bottom: 24px;">
-                <div class="card-header">
-                    <h2><span class="material-icons">flash_on</span> Quick Actions</h2>
-                </div>
-                <div class="card-body">
-                    <div class="quick-actions-grid">
-                        <a href="students.html?action=add" class="quick-action-btn">
-                            <span class="material-icons">person_add</span>
-                            <span>Add Student</span>
-                        </a>
-                        <a href="inquiries.html?action=add" class="quick-action-btn">
-                            <span class="material-icons">contact_phone</span>
-                            <span>New Inquiry</span>
-                        </a>
-                        <a href="tutors.html?action=add" class="quick-action-btn">
-                            <span class="material-icons">school</span>
-                            <span>Add Tutor</span>
-                        </a>
-                        <a href="payments.html" class="quick-action-btn">
-                            <span class="material-icons">receipt_long</span>
-                            <span>View Payments</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
             <!-- Recent Activity -->
-            <div class="card">
+            <div class="card" style="margin-bottom: 24px;">
                 <div class="card-header">
                     <h2><span class="material-icons">history</span> Recent Admissions</h2>
                     <a href="students.html" class="btn btn-outline btn-sm">View All</a>
@@ -197,13 +170,61 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Quick Actions -->
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <h2><span class="material-icons">flash_on</span> Quick Actions</h2>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions-grid">
+                        <a href="students.html?action=add" class="quick-action-btn">
+                            <span class="material-icons">person_add</span>
+                            <span>Add Student</span>
+                        </a>
+                        <a href="inquiries.html?action=add" class="quick-action-btn">
+                            <span class="material-icons">contact_phone</span>
+                            <span>New Inquiry</span>
+                        </a>
+                        <a href="tutors.html?action=add" class="quick-action-btn">
+                            <span class="material-icons">school</span>
+                            <span>Add Tutor</span>
+                        </a>
+                        <a href="payments.html" class="quick-action-btn">
+                            <span class="material-icons">receipt_long</span>
+                            <span>View Payments</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
-    <!-- FAB for Mobile -->
-    <button class="fab" onclick="openAddStudentModal()" title="New Admission">
-        <span class="material-icons">add</span>
-    </button>
+    <!-- Floating Action Button with Menu -->
+    <div class="fab-container" id="fabContainer">
+        <div class="fab-menu" id="fabMenu">
+            <a href="students.html?action=add" class="fab-menu-item">
+                <span class="material-icons">person_add</span>
+                <span class="fab-menu-label">Add Student</span>
+            </a>
+            <a href="inquiries.html?action=add" class="fab-menu-item">
+                <span class="material-icons">contact_phone</span>
+                <span class="fab-menu-label">New Inquiry</span>
+            </a>
+            <a href="tutors.html?action=add" class="fab-menu-item">
+                <span class="material-icons">school</span>
+                <span class="fab-menu-label">Add Tutor</span>
+            </a>
+            <a href="experts.html?action=add" class="fab-menu-item">
+                <span class="material-icons">engineering</span>
+                <span class="fab-menu-label">Add Expert</span>
+            </a>
+        </div>
+        <button class="fab" id="fabButton" title="Quick Actions">
+            <span class="material-icons fab-icon-add">add</span>
+            <span class="material-icons fab-icon-close">close</span>
+        </button>
+    </div>
 
 
     <!-- Logout Confirmation Modal -->
