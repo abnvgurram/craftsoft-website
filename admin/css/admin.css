@@ -1912,3 +1912,96 @@ tr:hover {
 .form-unsaved-indicator .material-icons {
     font-size: 16px;
 }
+
+/* 10. Modern Styled Dropdowns */
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+    padding-right: 36px !important;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius);
+    background-color: var(--white);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+select:hover {
+    border-color: var(--gray-300);
+}
+
+select:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(40, 150, 205, 0.1);
+}
+
+/* 11. Banner - Smaller on Desktop */
+.settings-banner {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+    border-left: 4px solid var(--success);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+}
+
+@media (min-width: 769px) {
+    .settings-banner {
+        padding: 12px 16px;
+        font-size: 0.85rem;
+    }
+
+    .settings-banner h4 {
+        font-size: 0.9rem;
+    }
+}
+
+/* 12. Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 16px;
+}
+
+.pagination-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius);
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--gray-600);
+}
+
+.pagination-btn:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.pagination-info {
+    color: var(--gray-500);
+    font-size: 0.85rem;
+    margin: 0 12px;
+}

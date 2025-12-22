@@ -543,11 +543,10 @@
                         }
 
                         .subject-codes-grid {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-                            /* Smaller min-width for mobile */
-                            gap: 8px;
-                            font-size: 0.8rem;
+                            display: flex;
+                            flex-wrap: wrap;
+                            gap: 6px;
+                            font-size: 0.75rem;
                             color: #166534;
                             margin-top: 4px;
                         }
@@ -557,9 +556,28 @@
                             justify-content: space-between;
                             align-items: center;
                             background: rgba(255, 255, 255, 0.6);
-                            padding: 4px 8px;
+                            padding: 3px 8px;
                             border-radius: 4px;
                             white-space: nowrap;
+                            gap: 6px;
+                        }
+
+                        /* Desktop - Compact horizontal */
+                        @media (min-width: 769px) {
+                            .info-banner {
+                                padding: 8px 12px;
+                            }
+
+                            .subject-codes-grid {
+                                overflow-x: auto;
+                                flex-wrap: nowrap;
+                                scrollbar-width: thin;
+                            }
+
+                            .subject-code-item {
+                                font-size: 0.7rem;
+                                padding: 2px 6px;
+                            }
                         }
 
                         /* Mobile Adjustments */
@@ -570,8 +588,7 @@
                             }
 
                             .subject-codes-grid {
-                                grid-template-columns: repeat(2, 1fr);
-                                /* Force 2 columns on very small screens */
+                                flex-wrap: wrap;
                                 gap: 6px;
                             }
 
