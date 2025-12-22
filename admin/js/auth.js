@@ -109,20 +109,20 @@ function getErrorMessage(errorCode) {
 // Helper: Format phone number with country code (+91)
 // Subject codes for receipt numbers
 const subjectCodes = {
-    'Graphic Design': '01',
+    'Full Stack Development (MERN)': '01',
     'UI/UX Design': '02',
-    'Full Stack Development (MERN)': '03',
-    'Python Full Stack Development': '04',
-    'Java Full Stack Development': '05',
-    'DSA Mastery': '06',
-    'Data Analytics': '07',
-    'Salesforce Administration': '08',
-    'DevOps Engineering': '09',
-    'AWS Cloud Excellence': '10',
-    'DevSecOps': '11',
+    'Graphic Design': '03',
+    'DevOps Engineering': '04',
+    'AWS Cloud Excellence': '05',
+    'Python Full Stack Development': '06',
+    'Java Full Stack Development': '07',
+    'Data Analytics': '08',
+    'Salesforce Administration': '09',
+    'DSA Mastery': '10',
+    'Soft Skills Training': '11',
     'Spoken English Mastery': '12',
-    'Soft Skills Training': '13',
-    'Resume Writing & Interview Prep': '14',
+    'Resume Writing & Interview Prep': '13',
+    'DevSecOps': '14',
     'Handwriting Improvement': '15',
     'Other': '99'
 };
