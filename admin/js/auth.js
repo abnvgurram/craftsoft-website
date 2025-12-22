@@ -109,19 +109,21 @@ function getErrorMessage(errorCode) {
 // Helper: Format phone number with country code (+91)
 // Subject codes for receipt numbers
 const subjectCodes = {
-    'Full Stack Development': '01',
+    'Graphic Design': '01',
     'UI/UX Design': '02',
-    'Graphic Design': '03',
-    'DevOps Engineering': '04',
-    'AWS Cloud': '05',
-    'Python Full Stack': '06',
-    'Java Full Stack': '07',
-    'Data Analytics': '08',
-    'Salesforce': '09',
-    'DSA Mastery': '10',
-    'Soft Skills': '11',
-    'Spoken English': '12',
-    'Resume & Interview': '13',
+    'Full Stack Development (MERN)': '03',
+    'Python Full Stack Development': '04',
+    'Java Full Stack Development': '05',
+    'DSA Mastery': '06',
+    'Data Analytics': '07',
+    'Salesforce Administration': '08',
+    'DevOps Engineering': '09',
+    'AWS Cloud Excellence': '10',
+    'DevSecOps': '11',
+    'Spoken English Mastery': '12',
+    'Soft Skills Training': '13',
+    'Resume Writing & Interview Prep': '14',
+    'Handwriting Improvement': '15',
     'Other': '99'
 };
 
@@ -177,8 +179,8 @@ async function updateDynamicDropdowns() {
     const titles = await fetchCoursesFromWebsite();
     const currentCodes = { ...subjectCodes };
 
-    // Determine next sequence for new courses
-    let nextSeq = 14;
+    // Determine next sequence for new courses (starting after our 15 core courses)
+    let nextSeq = 16;
     Object.values(subjectCodes).forEach(v => {
         const n = parseInt(v);
         if (!isNaN(n) && n < 99 && n >= nextSeq) nextSeq = n + 1;
