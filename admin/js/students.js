@@ -1,8 +1,13 @@
 // Students Page Logic - Enhanced with Edit, Demo Date, and Mobile Cards
 
 let allStudents = [];
+let filteredStudents = [];
 let allTutors = [];
 let currentStudentData = null;
+
+// Pagination
+const ITEMS_PER_PAGE = 10;
+let currentPage = 1;
 
 // Subject codes for receipt numbers
 const subjectCodes = {
@@ -64,12 +69,69 @@ async function loadStudents() {
         });
 
         console.log('Students loaded:', allStudents.length);
-        renderStudents(allStudents);
+        filteredStudents = allStudents;
+        currentPage = 1;
+        renderStudentsPage();
 
     } catch (error) {
         console.error('Error loading students:', error);
         showToast(`Error: ${error.message || 'Unknown error loading students'}`, 'error');
     }
+}
+
+// Render current page of students
+function renderStudentsPage() {
+    const totalPages = Math.ceil(filteredStudents.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const pageStudents = filteredStudents.slice(startIndex, endIndex);
+
+    renderStudents(pageStudents);
+    renderPagination(totalPages);
+}
+
+// Render pagination controls
+function renderPagination(totalPages) {
+    const container = document.getElementById('paginationContainer');
+    if (!container) return;
+
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+
+    let html = `
+        <button class="pagination-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+            <span class="material-icons">chevron_left</span>
+        </button>
+    `;
+
+    // Show page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+            html += `<span class="pagination-info">...</span>`;
+        }
+    }
+
+    html += `
+        <button class="pagination-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+            <span class="material-icons">chevron_right</span>
+        </button>
+    `;
+
+    container.innerHTML = html;
+}
+
+// Navigate to specific page
+function goToPage(page) {
+    const totalPages = Math.ceil(filteredStudents.length / ITEMS_PER_PAGE);
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    renderStudentsPage();
+    // Scroll to top of table
+    document.getElementById('studentsTable')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // Render Students Table + Mobile Cards
@@ -229,7 +291,9 @@ function filterStudents() {
         return matchesSearch && matchesCourse && matchesStatus;
     });
 
-    renderStudents(filtered);
+    filteredStudents = filtered;
+    currentPage = 1; // Reset to first page on filter
+    renderStudentsPage();
 }
 
 document.getElementById('searchInput').addEventListener('input', filterStudents);
@@ -1137,6 +1201,7 @@ window.downloadReceiptPDF = downloadReceiptPDF;
 window.migrateExistingData = migrateExistingData;
 window.copyReceipt = copyReceipt;
 window.formatPhoneNumber = formatPhoneNumber;
+window.goToPage = goToPage;
 
 // Load data on page load
 document.addEventListener('DOMContentLoaded', () => {
