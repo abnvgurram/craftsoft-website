@@ -68,7 +68,7 @@ async function loadStudents() {
 
     } catch (error) {
         console.error('Error loading students:', error);
-        showToast('Error loading students', 'error');
+        showToast(`Error: ${error.message || 'Unknown error loading students'}`, 'error');
     }
 }
 
