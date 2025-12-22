@@ -191,8 +191,6 @@ function openEditTutorModal(tutorId) {
     document.getElementById('editTutorMode').value = tutor.mode || 'offline';
     document.getElementById('editTutorAvailability').value = tutor.availability || 'weekdays';
     document.getElementById('editTutorStatus').value = tutor.status || 'active';
-    const rateField = document.getElementById('editTutorRate');
-    if (rateField) rateField.value = tutor.rate || '';
     document.getElementById('editTutorNotes').value = tutor.notes || '';
 
     document.getElementById('editTutorModal').classList.add('active');
@@ -257,8 +255,6 @@ document.getElementById('addTutorForm').addEventListener('submit', async (e) => 
     const mode = document.getElementById('tutorMode').value;
     const availability = document.getElementById('tutorAvailability').value;
     const status = document.getElementById('tutorStatus').value;
-    const rateElement = document.getElementById('tutorRate');
-    const rate = rateElement ? (parseInt(rateElement.value) || 0) : 0;
     const notes = document.getElementById('tutorNotes').value.trim();
 
     try {
@@ -270,7 +266,6 @@ document.getElementById('addTutorForm').addEventListener('submit', async (e) => 
             mode,
             availability,
             status,
-            rate,
             notes,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -308,7 +303,6 @@ document.getElementById('editTutorForm').addEventListener('submit', async (e) =>
             mode: document.getElementById('editTutorMode').value,
             availability: document.getElementById('editTutorAvailability').value,
             status: document.getElementById('editTutorStatus').value,
-            rate: parseInt(document.getElementById('editTutorRate')?.value || 0) || 0,
             notes: document.getElementById('editTutorNotes').value.trim(),
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
