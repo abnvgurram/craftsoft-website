@@ -179,16 +179,10 @@ function showQuickView(paymentId) {
                 <span style="color: #64748b;">Payment Mode</span>
                 <span style="font-weight: 500;">${modeLabels[payment.mode] || payment.mode}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
+            <div style="display: flex; justify-content: space-between; padding: 10px 0; ${payment.notes ? 'border-bottom: 1px solid #e2e8f0;' : ''}">
                 <span style="color: #64748b;">Date</span>
                 <span style="font-weight: 500;">${paymentDate}</span>
             </div>
-            ${paymentTime ? `
-            <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e2e8f0;">
-                <span style="color: #64748b;">Time</span>
-                <span style="font-weight: 500;">${paymentTime}</span>
-            </div>
-            ` : ''}
             ${payment.notes ? `
             <div style="padding: 10px 0;">
                 <span style="color: #64748b; display: block; margin-bottom: 4px;">Notes</span>

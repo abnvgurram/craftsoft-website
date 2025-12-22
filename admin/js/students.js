@@ -1,7 +1,48 @@
 // Students Page Logic - Enhanced with Edit, Demo Date, and Mobile Cards
 
 let allStudents = [];
+let allTutors = [];
 let currentStudentData = null;
+
+// Subject codes for receipt numbers
+const subjectCodes = {
+    'Full Stack Development': '01',
+    'UI/UX Design': '02',
+    'Graphic Design': '03',
+    'DevOps Engineering': '04',
+    'AWS Cloud': '05',
+    'Python Full Stack': '06',
+    'Java Full Stack': '07',
+    'Data Analytics': '08',
+    'Salesforce': '09',
+    'DSA Mastery': '10',
+    'Soft Skills': '11',
+    'Spoken English': '12',
+    'Resume & Interview': '13',
+    'Other': '99'
+};
+
+// Load Tutors for dropdown
+async function loadTutors() {
+    try {
+        const snapshot = await db.collection('tutors').where('status', '==', 'active').get();
+        allTutors = [];
+        snapshot.forEach(doc => {
+            allTutors.push({ id: doc.id, ...doc.data() });
+        });
+
+        // Populate tutor dropdown
+        const tutorSelect = document.getElementById('tutorName');
+        if (tutorSelect) {
+            tutorSelect.innerHTML = '<option value="">Select Tutor (Optional)</option>';
+            allTutors.forEach(tutor => {
+                tutorSelect.innerHTML += `<option value="${tutor.name}">${tutor.name} - ${tutor.subject}</option>`;
+            });
+        }
+    } catch (error) {
+        console.error('Error loading tutors:', error);
+    }
+}
 
 // Load Students
 async function loadStudents() {
@@ -696,6 +737,20 @@ document.getElementById('addStudentForm').addEventListener('submit', async (e) =
             });
         }
 
+        // If converted from inquiry, delete the inquiry
+        const urlParams = new URLSearchParams(window.location.search);
+        const fromInquiryId = urlParams.get('fromInquiry');
+        if (fromInquiryId) {
+            try {
+                await db.collection('inquiries').doc(fromInquiryId).delete();
+                console.log('Deleted inquiry:', fromInquiryId);
+            } catch (err) {
+                console.warn('Could not delete inquiry:', err);
+            }
+            // Clear URL params after handling
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+
         showToast('Student added successfully!', 'success');
         closeModal('addStudentModal');
         document.getElementById('addStudentForm').reset();
@@ -797,6 +852,7 @@ window.downloadReceiptPDF = downloadReceiptPDF;
 // Load data on page load
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadStudents, 500);
+    loadTutors(); // Load tutors for dropdown
 });
 
 // Phone input validation
