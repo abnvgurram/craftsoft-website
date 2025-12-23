@@ -1,4 +1,5 @@
 // Authentication Logic for Craft Soft Admin
+// BULLETPROOF SECURITY: Prevent access after logout via back button
 
 // List of protected pages (all admin pages except login)
 const protectedPages = [
@@ -28,17 +29,47 @@ function isLoginPage() {
 
 // Force redirect to login if not authenticated
 function forceRedirectToLogin() {
+    // Set logout flag
+    sessionStorage.setItem('loggedOut', 'true');
     // Replace current history entry so back button won't work
     window.location.replace('index.html');
+}
+
+// IMMEDIATE CHECK: If we logged out and pressed back, redirect immediately
+// This runs BEFORE Firebase even initializes
+(function immediateAuthCheck() {
+    if (isProtectedPage()) {
+        // Check if user just logged out
+        if (sessionStorage.getItem('loggedOut') === 'true') {
+            // Immediately redirect - don't even show the page
+            window.location.replace('index.html');
+            return;
+        }
+
+        // Hide page content until auth is verified
+        document.documentElement.style.visibility = 'hidden';
+        document.documentElement.style.opacity = '0';
+    }
+})();
+
+// Clear logout flag on login page
+if (isLoginPage()) {
+    sessionStorage.removeItem('loggedOut');
 }
 
 // Check if user is already logged in
 auth.onAuthStateChanged((user) => {
     if (user) {
-        // User is signed in
+        // User is signed in - clear logout flag and show content
+        sessionStorage.removeItem('loggedOut');
+
         if (isLoginPage()) {
             // Redirect to dashboard if on login page
             window.location.href = 'dashboard.html';
+        } else if (isProtectedPage()) {
+            // Show the page content
+            document.documentElement.style.visibility = 'visible';
+            document.documentElement.style.opacity = '1';
         }
     } else {
         // User is not signed in
@@ -50,17 +81,12 @@ auth.onAuthStateChanged((user) => {
 });
 
 // Handle browser back/forward button (bfcache issue)
-// This fires when user navigates back to a cached page
 window.addEventListener('pageshow', (event) => {
-    // event.persisted is true when page is loaded from bfcache (back button)
-    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-        // Re-check authentication
-        if (isProtectedPage()) {
-            auth.onAuthStateChanged((user) => {
-                if (!user) {
-                    forceRedirectToLogin();
-                }
-            });
+    if (isProtectedPage()) {
+        // Always re-verify on pageshow for protected pages
+        const user = auth.currentUser;
+        if (!user) {
+            forceRedirectToLogin();
         }
     }
 });
