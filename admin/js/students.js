@@ -490,9 +490,6 @@ async function openPaymentHistory(studentId) {
                                 <button class="copy-btn" onclick="copyReceipt('${payment.receiptNumber || ''}')" title="Copy">
                                     <span class="material-icons">content_copy</span>
                                 </button>
-                                <button class="copy-btn" onclick="downloadSpecificReceipt(${index})" title="Download Receipt" style="margin-left: 4px; background: #10B981;">
-                                    <span class="material-icons" style="color: white;">download</span>
-                                </button>
                             </div>
                         </div>
                     </li>

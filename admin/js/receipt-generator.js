@@ -9,7 +9,7 @@ class ReceiptGenerator {
     constructor() {
         this.pageWidth = 210; // A4 width in mm
         this.pageHeight = 297; // A4 height in mm
-        this.margin = 20;
+        this.margin = 25;
         this.contentWidth = this.pageWidth - (this.margin * 2);
 
         // Colors (RGB)
@@ -26,16 +26,6 @@ class ReceiptGenerator {
 
     /**
      * Generate a payment receipt PDF
-     * @param {Object} data - Receipt data
-     * @param {string} data.receiptId - Receipt ID (e.g., "RCPT-2024-0047")
-     * @param {string} data.studentName - Student's full name
-     * @param {string} data.phone - Student's phone number
-     * @param {string} data.courseName - Name of the course
-     * @param {number} data.totalFee - Total course fee
-     * @param {number} data.currentPayment - Current payment amount
-     * @param {string} data.paymentMode - Payment mode (UPI/Cash/Bank Transfer)
-     * @param {string} data.paymentDate - Payment date
-     * @param {Array} data.paymentHistory - Array of past payments [{amount, mode, date}]
      */
     generate(data) {
         // Create new PDF document
@@ -71,33 +61,32 @@ class ReceiptGenerator {
 
     drawHeader(doc, y, data) {
         // Company Logo/Name
-        doc.setFontSize(18);
+        doc.setFontSize(20);
         doc.setTextColor(...this.colors.primary);
         doc.setFont('helvetica', 'bold');
         doc.text("Abhi's Craft Soft", this.margin, y);
 
-        y += 15;
+        y += 12;
 
         // Divider line
         doc.setDrawColor(...this.colors.border);
         doc.setLineWidth(0.5);
         doc.line(this.margin, y, this.pageWidth - this.margin, y);
 
-        y += 12;
+        y += 15;
 
-        // Payment Receipt Title + Receipt ID
-        doc.setFontSize(20);
+        // Payment Receipt Title
+        doc.setFontSize(22);
         doc.setTextColor(...this.colors.dark);
         doc.setFont('helvetica', 'bold');
         doc.text('Payment Receipt', this.margin, y);
 
-        // Receipt ID (right aligned, smaller, gray)
-        doc.setFontSize(11);
+        // Receipt ID (right aligned)
+        doc.setFontSize(10);
         doc.setTextColor(...this.colors.gray);
         doc.setFont('helvetica', 'normal');
-        const receiptIdText = `Receipt ID: ${data.receiptId}`;
-        const receiptIdWidth = doc.getTextWidth(receiptIdText);
-        doc.text(receiptIdText, this.pageWidth - this.margin - receiptIdWidth, y);
+        const receiptIdText = 'Receipt ID: ' + data.receiptId;
+        doc.text(receiptIdText, this.pageWidth - this.margin, y, { align: 'right' });
 
         y += 8;
 
@@ -105,68 +94,63 @@ class ReceiptGenerator {
         doc.setFontSize(11);
         doc.setTextColor(...this.colors.gray);
         doc.setFont('helvetica', 'normal');
-        doc.text(`This is a payment receipt for your enrollment in ${data.courseName}.`, this.margin, y);
-
-        y += 15;
-
-        return y;
-    }
-
-    drawAmountBox(doc, y, data) {
-        // "AMOUNT PAID" label with green underline
-        doc.setFontSize(10);
-        doc.setTextColor(...this.colors.primary);
-        doc.setFont('helvetica', 'bold');
-        doc.text('AMOUNT PAID', this.margin, y);
-
-        // Green underline
-        const labelWidth = doc.getTextWidth('AMOUNT PAID');
-        doc.setDrawColor(...this.colors.primary);
-        doc.setLineWidth(1.5);
-        doc.line(this.margin, y + 2, this.margin + labelWidth, y + 2);
-
-        // Amount value with payment mode
-        doc.setFontSize(22);
-        doc.setTextColor(...this.colors.dark);
-        doc.setFont('helvetica', 'bold');
-        const amountText = `₹ ${this.formatCurrency(data.currentPayment)}`;
-        doc.text(amountText, this.margin + labelWidth + 15, y);
-
-        // Payment mode in parentheses
-        const amountWidth = doc.getTextWidth(amountText);
-        doc.setFontSize(12);
-        doc.setTextColor(...this.colors.gray);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`(${data.paymentMode})`, this.margin + labelWidth + 15 + amountWidth + 3, y);
+        doc.text('This is a payment receipt for your enrollment in ' + data.courseName + '.', this.margin, y);
 
         y += 18;
 
         return y;
     }
 
+    drawAmountBox(doc, y, data) {
+        // "AMOUNT PAID" label
+        doc.setFontSize(10);
+        doc.setTextColor(...this.colors.primary);
+        doc.setFont('helvetica', 'bold');
+        doc.text('AMOUNT PAID', this.margin, y);
+
+        // Green underline
+        doc.setDrawColor(...this.colors.primary);
+        doc.setLineWidth(1.5);
+        doc.line(this.margin, y + 2, this.margin + 28, y + 2);
+
+        y += 12;
+
+        // Amount value - Large and bold
+        doc.setFontSize(28);
+        doc.setTextColor(...this.colors.dark);
+        doc.setFont('helvetica', 'bold');
+        const amountStr = 'Rs. ' + this.formatCurrency(data.currentPayment);
+        doc.text(amountStr, this.margin, y);
+
+        // Payment mode in parentheses (same line, smaller)
+        const amountWidth = doc.getTextWidth(amountStr);
+        doc.setFontSize(12);
+        doc.setTextColor(...this.colors.gray);
+        doc.setFont('helvetica', 'normal');
+        doc.text('  (' + data.paymentMode + ')', this.margin + amountWidth + 2, y);
+
+        y += 15;
+
+        return y;
+    }
+
     drawIssuedTo(doc, y, data) {
-        // Two column layout
-        const col1X = this.margin;
-        const col2X = this.margin + 100;
+        const col2X = 120;
 
         // ISSUED TO label
-        doc.setFontSize(10);
+        doc.setFontSize(9);
         doc.setTextColor(...this.colors.lightGray);
-        doc.setFont('helvetica', 'normal');
-        doc.text('ISSUED TO', col1X, y);
-
-        // PAID ON label
+        doc.setFont('helvetica', 'bold');
+        doc.text('ISSUED TO', this.margin, y);
         doc.text('PAID ON', col2X, y);
 
-        y += 7;
+        y += 6;
 
-        // Student Name
+        // Values
         doc.setFontSize(12);
         doc.setTextColor(...this.colors.dark);
         doc.setFont('helvetica', 'normal');
-        doc.text(data.studentName, col1X, y);
-
-        // Payment Date
+        doc.text(data.studentName, this.margin, y);
         doc.text(data.paymentDate, col2X, y);
 
         y += 6;
@@ -174,43 +158,42 @@ class ReceiptGenerator {
         // Phone Number
         doc.setFontSize(11);
         doc.setTextColor(...this.colors.gray);
-        doc.text(data.phone, col1X, y);
+        doc.text(data.phone || '', this.margin, y);
 
-        y += 18;
+        y += 15;
 
         // Divider line
         doc.setDrawColor(...this.colors.border);
         doc.setLineWidth(0.3);
         doc.line(this.margin, y, this.pageWidth - this.margin, y);
 
-        y += 10;
+        y += 12;
 
         return y;
     }
 
     drawPaymentTable(doc, y, data) {
-        const tableStartY = y;
         const col1X = this.margin;
-        const col2X = this.margin + 85;
-        const col3X = this.pageWidth - this.margin - 35;
+        const col2X = 95;
+        const col3X = this.pageWidth - this.margin;
 
         // Table Header Background
         doc.setFillColor(...this.colors.tableHeader);
-        doc.rect(this.margin, y - 5, this.contentWidth, 12, 'F');
+        doc.rect(this.margin - 3, y - 5, this.contentWidth + 6, 10, 'F');
 
         // Table Headers
-        doc.setFontSize(9);
+        doc.setFontSize(8);
         doc.setTextColor(...this.colors.gray);
         doc.setFont('helvetica', 'bold');
-        doc.text('NAME OF THE COURSE', col1X, y + 3);
-        doc.text('MODE OF PAYMENT', col2X, y + 3);
-        doc.text('AMOUNT PAID', col3X, y + 3);
+        doc.text('NAME OF THE COURSE', col1X, y);
+        doc.text('MODE OF PAYMENT', col2X, y);
+        doc.text('AMOUNT PAID', col3X, y, { align: 'right' });
 
-        y += 15;
+        y += 12;
 
         // Payment History Rows
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(11);
+        doc.setFontSize(10);
 
         // Combine historical payments with current payment
         const allPayments = [...(data.paymentHistory || [])];
@@ -223,37 +206,29 @@ class ReceiptGenerator {
             isCurrent: true
         });
 
-        allPayments.forEach((payment, index) => {
+        allPayments.forEach((payment) => {
             // Course Name
             doc.setTextColor(...this.colors.dark);
+            doc.setFont('helvetica', 'normal');
             doc.text(data.courseName, col1X, y);
 
             // Payment Mode
             doc.setTextColor(...this.colors.gray);
-            doc.text(payment.mode, col2X, y);
+            doc.text(payment.mode || 'Cash', col2X, y);
 
-            // Amount
+            // Amount - highlight current payment
+            const amtText = 'Rs. ' + this.formatCurrency(payment.amount);
             if (payment.isCurrent) {
-                // Highlight current payment
                 doc.setTextColor(...this.colors.primary);
                 doc.setFont('helvetica', 'bold');
             } else {
                 doc.setTextColor(...this.colors.dark);
                 doc.setFont('helvetica', 'normal');
             }
-            const amountText = `₹ ${this.formatCurrency(payment.amount)}`;
-            const amountWidth = doc.getTextWidth(amountText);
-            doc.text(amountText, this.pageWidth - this.margin - amountWidth, y);
-
-            // Add star for current payment
-            if (payment.isCurrent) {
-                doc.setFontSize(8);
-                doc.text(' ★', this.pageWidth - this.margin - amountWidth - 8, y);
-                doc.setFontSize(11);
-            }
+            doc.text(amtText, col3X, y, { align: 'right' });
 
             doc.setFont('helvetica', 'normal');
-            y += 10;
+            y += 8;
         });
 
         y += 5;
@@ -263,17 +238,17 @@ class ReceiptGenerator {
         doc.setLineWidth(0.3);
         doc.line(this.margin, y, this.pageWidth - this.margin, y);
 
-        y += 12;
+        y += 15;
 
         return y;
     }
 
     drawTotals(doc, y, data) {
-        const labelX = this.pageWidth - this.margin - 80;
+        const labelX = 120;
         const valueX = this.pageWidth - this.margin;
 
         // Calculate totals
-        const historicalTotal = (data.paymentHistory || []).reduce((sum, p) => sum + p.amount, 0);
+        const historicalTotal = (data.paymentHistory || []).reduce((sum, p) => sum + (p.amount || 0), 0);
         const totalPaid = historicalTotal + data.currentPayment;
         const balanceDue = data.totalFee - totalPaid;
 
@@ -282,8 +257,7 @@ class ReceiptGenerator {
         doc.setTextColor(...this.colors.dark);
         doc.setFont('helvetica', 'bold');
         doc.text('Total Fee', labelX, y);
-        const totalFeeText = `₹ ${this.formatCurrency(data.totalFee)}`;
-        doc.text(totalFeeText, valueX - doc.getTextWidth(totalFeeText), y);
+        doc.text('Rs. ' + this.formatCurrency(data.totalFee), valueX, y, { align: 'right' });
 
         y += 10;
 
@@ -291,8 +265,7 @@ class ReceiptGenerator {
         doc.setTextColor(...this.colors.primary);
         doc.setFont('helvetica', 'normal');
         doc.text('Amount Paid', labelX, y);
-        const paidText = `₹ ${this.formatCurrency(totalPaid)}`;
-        doc.text(paidText, valueX - doc.getTextWidth(paidText), y);
+        doc.text('Rs. ' + this.formatCurrency(totalPaid), valueX, y, { align: 'right' });
 
         y += 10;
 
@@ -301,13 +274,12 @@ class ReceiptGenerator {
             doc.setTextColor(...this.colors.dark);
             doc.setFont('helvetica', 'bold');
             doc.text('Balance Due', labelX, y);
-            const balanceText = `₹ ${this.formatCurrency(balanceDue)}`;
-            doc.text(balanceText, valueX - doc.getTextWidth(balanceText), y);
+            doc.text('Rs. ' + this.formatCurrency(balanceDue), valueX, y, { align: 'right' });
         } else {
             doc.setTextColor(...this.colors.primary);
             doc.setFont('helvetica', 'bold');
             doc.text('Fully Paid', labelX, y);
-            doc.text('✓', valueX - doc.getTextWidth('✓'), y);
+            doc.text('Yes', valueX, y, { align: 'right' });
         }
 
         y += 20;
@@ -316,51 +288,48 @@ class ReceiptGenerator {
     }
 
     drawFooter(doc) {
-        const footerY = this.pageHeight - 30;
+        const footerY = this.pageHeight - 35;
 
         // Top border
         doc.setDrawColor(...this.colors.border);
         doc.setLineWidth(0.5);
-        doc.line(this.margin, footerY - 10, this.pageWidth - this.margin, footerY - 10);
+        doc.line(this.margin, footerY - 5, this.pageWidth - this.margin, footerY - 5);
 
         // Company Name
-        doc.setFontSize(10);
+        doc.setFontSize(11);
         doc.setTextColor(...this.colors.dark);
         doc.setFont('helvetica', 'bold');
-        doc.text("Abhi's Craft Soft", this.margin, footerY);
+        doc.text("Abhi's Craft Soft", this.margin, footerY + 3);
 
         // Address
         doc.setFontSize(9);
         doc.setTextColor(...this.colors.gray);
         doc.setFont('helvetica', 'normal');
-        doc.text('Plot No. 163, Vijayasree Colony, Vanasthalipuram, Hyderabad 500070', this.margin, footerY + 6);
+        doc.text('Plot No. 163, Vijayasree Colony, Vanasthalipuram, Hyderabad 500070', this.margin, footerY + 10);
 
         // Contact
-        doc.text('Phone: +91 7842239090 | Email: team.craftsoft@gmail.com', this.margin, footerY + 12);
+        doc.text('Phone: +91 7842239090 | Email: team.craftsoft@gmail.com', this.margin, footerY + 16);
     }
 
     formatCurrency(amount) {
-        return new Intl.NumberFormat('en-IN', {
+        if (amount === undefined || amount === null || isNaN(amount)) {
+            return '0.00';
+        }
+        return Number(amount).toLocaleString('en-IN', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
-        }).format(amount);
+        });
     }
 
-    /**
-     * Generate Receipt ID
-     * Format: RCPT-YYYY-XXXX
-     */
     static generateReceiptId() {
         const year = new Date().getFullYear();
         const random = Math.floor(1000 + Math.random() * 9000);
-        return `RCPT-${year}-${random}`;
+        return 'RCPT-' + year + '-' + random;
     }
 
-    /**
-     * Format date for display
-     */
     static formatDate(date) {
-        const d = date instanceof Date ? date : new Date(date);
+        if (!date) return new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        const d = date instanceof Date ? date : (date.toDate ? date.toDate() : new Date(date));
         return d.toLocaleDateString('en-IN', {
             day: 'numeric',
             month: 'short',
@@ -372,25 +341,21 @@ class ReceiptGenerator {
 // Create global instance
 window.receiptGenerator = new ReceiptGenerator();
 
-/**
- * Quick function to generate receipt from student data
- * @param {Object} student - Student object from Firestore
- * @param {Object} payment - Current payment details {amount, mode}
- */
+// Quick function to generate receipt from student data
 window.generateReceipt = function (student, payment) {
     const receiptData = {
         receiptId: ReceiptGenerator.generateReceiptId(),
-        studentName: student.name || student.studentName,
-        phone: student.phone || student.phoneNumber,
-        courseName: student.course || student.courseName,
+        studentName: student.name || student.studentName || '',
+        phone: student.phone || student.phoneNumber || '',
+        courseName: student.course || student.courseName || '',
         totalFee: student.totalFee || 0,
-        currentPayment: payment.amount,
+        currentPayment: payment.amount || 0,
         paymentMode: payment.mode || 'Cash',
         paymentDate: ReceiptGenerator.formatDate(new Date()),
         paymentHistory: (student.paymentHistory || []).map(p => ({
-            amount: p.amount,
+            amount: p.amount || 0,
             mode: p.mode || 'Cash',
-            date: ReceiptGenerator.formatDate(p.date?.toDate?.() || p.date || new Date())
+            date: ReceiptGenerator.formatDate(p.date)
         }))
     };
 
