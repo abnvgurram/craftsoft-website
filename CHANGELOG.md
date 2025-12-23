@@ -16,12 +16,14 @@
 - Added `inputmode="numeric"` to phone inputs
 
 #### UX Enhancements Added
-- **Live Chat Widget** - Multi-channel contact (WhatsApp, Phone, Email)
+- **Live Chat Widget** - Multi-channel contact (WhatsApp, Phone, Email) - Now standard across all pages
+- **Removed Scroll-to-Top** - Streamlined UI and fixed mobile overlap with chat widget
+- **Standardized UI** - Chat Widget consistently positioned at bottom-right (30px)
 - **Related Courses** - "You May Also Like" section on course pages
 - **Breadcrumbs** - Added to courses.html page
 - **Better Loading States** - CSS spinner animations for forms
 - **SEO Structured Data** - JSON-LD for Organization, Courses, FAQs
-- **Cleaner Code** - Moved inline styles to CSS classes
+- **Cleaner Code** - Consolidated CSS and removed unused files (components.css, responsive.css, etc.)
 
 ---
 

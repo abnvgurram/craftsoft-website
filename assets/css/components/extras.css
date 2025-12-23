@@ -169,6 +169,7 @@
     0% {
         background-position: 200% 0;
     }
+
     100% {
         background-position: -200% 0;
     }
@@ -357,7 +358,7 @@
 
 .chat-widget {
     position: fixed;
-    bottom: 100px;
+    bottom: 30px;
     right: 30px;
     z-index: 1000;
 }
@@ -510,7 +511,7 @@
 /* Mobile responsive for chat widget */
 @media (max-width: 576px) {
     .chat-widget {
-        bottom: 90px;
+        bottom: 20px;
         right: 20px;
     }
 

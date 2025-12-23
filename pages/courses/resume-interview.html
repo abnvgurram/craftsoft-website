@@ -12,7 +12,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">`r`n    <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">`r`n
+    <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
     <link rel="stylesheet" href="../../assets/css/main.css">
 </head>
 
@@ -201,7 +202,8 @@
                         </ul>
                     </div>
                 </div>
-            </div></div>
+            </div>
+        </div>
     </section>
 
     <footer class="footer">
@@ -251,10 +253,48 @@
         </div>
     </footer>
 
-    <a href="https://wa.me/917842239090?text=Hi! I'm interested in Resume & Interview Prep." class="whatsapp-float"
-        target="_blank" aria-label="Chat on WhatsApp"><i class="fab fa-whatsapp"></i><span class="whatsapp-tooltip">Chat
-            with us!</span></a>
-    <button class="scroll-to-top" id="scrollToTop" aria-label="Scroll to top"><i class="fas fa-arrow-up"></i></button>
+    <!-- Live Chat Widget -->
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-window">
+            <div class="chat-header">
+                <h4>👋 How can we help?</h4>
+                <p>Choose how you'd like to connect with us</p>
+            </div>
+            <div class="chat-body">
+                <div class="chat-options">
+                    <a href="https://wa.me/917842239090?text=Hi! I'd like to know more about your courses."
+                        target="_blank" class="chat-option whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                        <div class="chat-option-text">
+                            <h5>WhatsApp</h5>
+                            <span>Fastest response</span>
+                        </div>
+                    </a>
+                    <a href="tel:+917842239090" class="chat-option phone">
+                        <i class="fas fa-phone"></i>
+                        <div class="chat-option-text">
+                            <h5>Call Us</h5>
+                            <span>+91 7842239090</span>
+                        </div>
+                    </a>
+                    <a href="mailto:team.craftsoft@gmail.com" class="chat-option email">
+                        <i class="fas fa-envelope"></i>
+                        <div class="chat-option-text">
+                            <h5>Email</h5>
+                            <span>team.craftsoft@gmail.com</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="chat-footer">
+                We typically respond within 30 minutes
+            </div>
+        </div>
+        <button class="chat-toggle-btn" id="chatToggle" aria-label="Open chat">
+            <i class="fas fa-comments icon-chat"></i>
+            <i class="fas fa-times icon-close"></i>
+        </button>
+    </div>
     <script src="../../assets/js/main.js"></script>
 </body>
 
