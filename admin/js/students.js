@@ -471,7 +471,7 @@ async function openPaymentHistory(studentId) {
             currentStudentData.payments = payments;
 
             let timelineHTML = '';
-            payments.forEach(payment => {
+            payments.forEach((payment, index) => {
                 const date = formatDate(payment.createdAt);
 
                 const iconClass = payment.mode === 'cash' ? 'cash' : 'online';
@@ -490,6 +490,9 @@ async function openPaymentHistory(studentId) {
                                 <button class="copy-btn" onclick="copyReceipt('${payment.receiptNumber || ''}')" title="Copy">
                                     <span class="material-icons">content_copy</span>
                                 </button>
+                                <button class="copy-btn" onclick="downloadSpecificReceipt(${index})" title="Download Receipt" style="margin-left: 4px; background: #10B981;">
+                                    <span class="material-icons" style="color: white;">download</span>
+                                </button>
                             </div>
                         </div>
                     </li>
@@ -507,9 +510,9 @@ async function openPaymentHistory(studentId) {
 }
 
 // ============================================
-// PDF RECEIPT GENERATION
+// PDF RECEIPT GENERATION (Razorpay Style)
 // ============================================
-function downloadReceiptPDF() {
+function downloadReceiptPDF(paymentIndex = null) {
     if (!currentStudentData) {
         showToast('No student data available', 'error');
         return;
@@ -517,134 +520,64 @@ function downloadReceiptPDF() {
 
     const student = currentStudentData;
     const payments = student.payments || [];
-    const pending = student.totalFee - student.paidAmount;
 
-    // Initialize jsPDF
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    // If no payment index specified, generate for the latest payment
+    const currentPaymentIdx = paymentIndex !== null ? paymentIndex : payments.length - 1;
+    const currentPayment = payments[currentPaymentIdx];
 
-    // Theming Colors
-    const primaryColor = [40, 150, 205]; // #2896cd
-    const textColor = [15, 23, 42];
-    const grayColor = [100, 116, 139];
-
-    // Header Area
-    doc.setFillColor(...primaryColor);
-    doc.rect(0, 0, 210, 45, 'F');
-
-    // Logo Placeholder/Text
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text("ABHI'S CRAFT SOFT", 20, 22);
-
-    // Dynamic Receipt Info
-    const latestReceipt = payments.length > 0 ? payments[payments.length - 1].receiptNumber : `ACS-${student.name?.substring(0, 2).toUpperCase()}-PENDING`;
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`RECEIPT NO: ${latestReceipt}`, 190, 20, { align: 'right' });
-    doc.text(`DATE: ${formatDate(new Date())}`, 190, 28, { align: 'right' });
-
-    // Company Address (Updated)
-    doc.setFontSize(9);
-    doc.text('Plot No. 163, Vijayasree Colony', 20, 30);
-    doc.text('Vanasthalipuram, Hyderabad 500070', 20, 35);
-    doc.text('+91 7842239090 | team.craftsoft@gmail.com', 20, 40);
-
-    // Bill To Section
-    let yPos = 65;
-    doc.setTextColor(...textColor);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('BILL TO:', 20, yPos);
-
-    yPos += 8;
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Name: ${student.name || '-'}`, 20, yPos);
-    yPos += 6;
-    doc.text(`Phone: ${student.phone || '-'}`, 20, yPos);
-
-    // Items Table Header
-    yPos += 15;
-    doc.setFillColor(248, 250, 252); // Light bg for header
-    doc.rect(20, yPos, 170, 10, 'F');
-    doc.setDrawColor(226, 232, 240);
-    doc.rect(20, yPos, 170, 10);
-
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'bold');
-    doc.text('#', 25, yPos + 7);
-    doc.text('RECEIPT #', 35, yPos + 7);
-    doc.text('DESCRIPTION', 75, yPos + 7);
-    doc.text('PAYMENT MODE', 135, yPos + 7);
-    doc.text('AMOUNT (₹)', 185, yPos + 7, { align: 'right' });
-
-    // Items Logic (All Payments)
-    yPos += 10;
-    doc.setFont('helvetica', 'normal');
-
-    if (payments.length === 0) {
-        doc.rect(20, yPos, 170, 10);
-        doc.text('No payments recorded', 105, yPos + 7, { align: 'center' });
-        yPos += 10;
-    } else {
-        payments.forEach((payment, index) => {
-            const rowHeight = 10;
-            doc.rect(20, yPos, 170, rowHeight);
-
-            doc.text((index + 1).toString(), 25, yPos + 7);
-            doc.text(payment.receiptNumber || '-', 35, yPos + 7);
-            doc.text(`${student.course} (${formatDate(payment.createdAt)})`, 75, yPos + 7);
-            doc.text((payment.mode || 'N/A').toUpperCase(), 135, yPos + 7);
-            doc.text(payment.amount.toLocaleString('en-IN'), 185, yPos + 7, { align: 'right' });
-
-            yPos += rowHeight;
-        });
+    if (!currentPayment) {
+        showToast('No payment found to generate receipt', 'error');
+        return;
     }
 
-    // Totals Area
-    yPos += 10;
-    const totalsX = 130;
+    // Get historical payments (all payments before this one)
+    const historicalPayments = payments.slice(0, currentPaymentIdx).map(p => ({
+        amount: p.amount,
+        mode: formatPaymentMode(p.mode),
+        date: formatDate(p.createdAt)
+    }));
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.text('TOTAL PAID:', totalsX, yPos);
-    doc.text(`₹ ${student.paidAmount.toLocaleString('en-IN')}`, 190, yPos, { align: 'right' });
+    // Prepare receipt data
+    const receiptData = {
+        receiptId: currentPayment.receiptNumber || `RCPT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+        studentName: student.name,
+        phone: student.phone || '',
+        courseName: student.course,
+        totalFee: student.totalFee || 0,
+        currentPayment: currentPayment.amount,
+        paymentMode: formatPaymentMode(currentPayment.mode),
+        paymentDate: formatDate(currentPayment.createdAt),
+        paymentHistory: historicalPayments
+    };
 
-    yPos += 8;
-    doc.setFont('helvetica', 'normal');
-    doc.text('COURSE FEE:', totalsX, yPos);
-    doc.text(`₹ ${student.totalFee.toLocaleString('en-IN')}`, 190, yPos, { align: 'right' });
+    // Generate the PDF using the receipt generator
+    try {
+        window.receiptGenerator.generate(receiptData);
+        showToast('Receipt PDF downloaded!', 'success');
+    } catch (error) {
+        console.error('Error generating receipt:', error);
+        showToast('Error generating receipt', 'error');
+    }
+}
 
-    yPos += 4;
-    doc.setDrawColor(148, 163, 184);
-    doc.line(totalsX, yPos, 190, yPos);
+// Helper function to format payment mode for display
+function formatPaymentMode(mode) {
+    if (!mode) return 'Cash';
 
-    yPos += 8;
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(pending > 0 ? 239 : 16, pending > 0 ? 68 : 185, pending > 0 ? 68 : 129);
-    doc.text('BALANCE DUE:', totalsX, yPos);
-    doc.text(`₹ ${pending.toLocaleString('en-IN')}`, 190, yPos, { align: 'right' });
+    const modeMap = {
+        'cash': 'Cash',
+        'upi': 'UPI',
+        'razorpay': 'Razorpay',
+        'bank': 'Bank Transfer',
+        'online': 'Online'
+    };
 
-    // Personalized Footer
-    yPos = 270;
-    doc.setTextColor(...grayColor);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Thank You for enrolling in Craftsoft', 105, yPos, { align: 'center' });
+    return modeMap[mode.toLowerCase()] || mode;
+}
 
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.text('This is a computer-generated receipt. No signature required.', 105, yPos + 7, { align: 'center' });
-    doc.text('Generated on: ' + formatDate(new Date()), 105, yPos + 12, { align: 'center' });
-
-    // Save File
-    const fileName = `Receipt_${student.name?.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.pdf`;
-    doc.save(fileName);
-
-    showToast('PDF downloaded!', 'success');
+// Generate receipt for a specific payment in the timeline
+function downloadSpecificReceipt(paymentIndex) {
+    downloadReceiptPDF(paymentIndex);
 }
 
 // Format Currency
@@ -1145,6 +1078,7 @@ window.openPaymentHistory = openPaymentHistory;
 window.deleteStudent = deleteStudent;
 window.openEditStudentModal = openEditStudentModal;
 window.downloadReceiptPDF = downloadReceiptPDF;
+window.downloadSpecificReceipt = downloadSpecificReceipt;
 window.migrateExistingData = migrateExistingData;
 window.copyReceipt = copyReceipt;
 window.formatPhoneNumber = formatPhoneNumber;
