@@ -31,6 +31,10 @@ function isLoginPage() {
 function forceRedirectToLogin() {
     // Set logout flag
     sessionStorage.setItem('loggedOut', 'true');
+    // Clear history state to prevent back navigation
+    if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', 'index.html');
+    }
     // Replace current history entry so back button won't work
     window.location.replace('index.html');
 }
@@ -55,6 +59,10 @@ function forceRedirectToLogin() {
 // Clear logout flag on login page
 if (isLoginPage()) {
     sessionStorage.removeItem('loggedOut');
+    // Clear forward history on login page to prevent forward navigation to protected pages
+    if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', window.location.href);
+    }
 }
 
 // Check if user is already logged in
@@ -80,10 +88,15 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-// Handle browser back/forward button (bfcache issue)
+// Handle browser back/forward button (bfcache issue) - Works on Desktop & Mobile
 window.addEventListener('pageshow', (event) => {
     if (isProtectedPage()) {
-        // Always re-verify on pageshow for protected pages
+        // Check logout flag first (fastest)
+        if (sessionStorage.getItem('loggedOut') === 'true') {
+            window.location.replace('index.html');
+            return;
+        }
+        // Then check Firebase auth
         const user = auth.currentUser;
         if (!user) {
             forceRedirectToLogin();
@@ -91,15 +104,51 @@ window.addEventListener('pageshow', (event) => {
     }
 });
 
-// Also check on visibility change (tab becomes active)
+// Handle page hide - set flag when leaving page after logout
+window.addEventListener('pagehide', (event) => {
+    // This helps with mobile bfcache
+    if (isLoginPage() && sessionStorage.getItem('loggedOut') === 'true') {
+        // Keep the logout flag when leaving login page
+    }
+});
+
+// Check on visibility change (tab becomes active) - Important for Mobile
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && isProtectedPage()) {
+        // Check logout flag first
+        if (sessionStorage.getItem('loggedOut') === 'true') {
+            window.location.replace('index.html');
+            return;
+        }
         const user = auth.currentUser;
         if (!user) {
             forceRedirectToLogin();
         }
     }
 });
+
+// Focus event - Works well on mobile when app comes to foreground
+window.addEventListener('focus', () => {
+    if (isProtectedPage()) {
+        if (sessionStorage.getItem('loggedOut') === 'true') {
+            window.location.replace('index.html');
+            return;
+        }
+        const user = auth.currentUser;
+        if (!user) {
+            forceRedirectToLogin();
+        }
+    }
+});
+
+// Touch start - Extra check for mobile interactions (catches edge cases)
+document.addEventListener('touchstart', function checkAuthOnTouch() {
+    if (isProtectedPage() && sessionStorage.getItem('loggedOut') === 'true') {
+        window.location.replace('index.html');
+    }
+    // Remove after first touch to avoid performance issues
+    document.removeEventListener('touchstart', checkAuthOnTouch);
+}, { once: true });
 
 // Login Form Handler
 const loginForm = document.getElementById('loginForm');
