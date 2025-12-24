@@ -1117,3 +1117,38 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Service Card Actions */
+.service-card-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-shrink: 0;
+    align-items: center;
+}
+
+.service-card-actions .btn-secondary {
+    background: var(--white);
+    color: var(--primary-600);
+    border: 1px solid var(--primary-200);
+}
+
+.service-card-actions .btn-secondary:hover {
+    background: var(--primary-50);
+    border-color: var(--primary-400);
+}
+
+.service-card-actions .btn i {
+    margin-left: var(--spacing-xs);
+}
+
+@media (max-width: 768px) {
+    .service-card-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .service-card-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

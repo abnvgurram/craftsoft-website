@@ -47,11 +47,148 @@ let userScores = {};
 
 function initQuiz() {
     const quizTrigger = document.getElementById('startQuizBtn');
-    if (quizTrigger) {
+    const inlineContainer = document.getElementById('inlineQuizContainer');
+    const ctaContent = document.getElementById('quizCtaContent');
+
+    if (quizTrigger && inlineContainer) {
+        // Use inline mode
+        quizTrigger.addEventListener('click', function () {
+            startInlineQuiz();
+        });
+    } else if (quizTrigger) {
+        // Fallback to modal mode
         quizTrigger.addEventListener('click', openQuizModal);
+        createModalIfNeeded();
+    }
+}
+
+function startInlineQuiz() {
+    const inlineContainer = document.getElementById('inlineQuizContainer');
+    const ctaContent = document.getElementById('quizCtaContent');
+    const quizCard = document.getElementById('quizCtaCard');
+
+    if (!inlineContainer || !ctaContent) return;
+
+    // Hide the CTA content and show quiz
+    ctaContent.style.display = 'none';
+    inlineContainer.classList.add('active');
+    quizCard.classList.add('quiz-active');
+
+    // Start the quiz
+    currentQuizStep = 0;
+    userScores = {};
+    renderInlineQuestion();
+}
+
+function renderInlineQuestion() {
+    const quizBody = document.getElementById('inlineQuizBody');
+    if (!quizBody) return;
+
+    const question = quizData[currentQuizStep];
+
+    quizBody.innerHTML = `
+        <div class="inline-quiz-question">
+            <div class="quiz-progress-bar">
+                <div class="quiz-progress-fill" style="width: ${((currentQuizStep + 1) / quizData.length) * 100}%"></div>
+            </div>
+            <span class="quiz-step-indicator">Question ${currentQuizStep + 1} of ${quizData.length}</span>
+            <h3>${question.question}</h3>
+            <div class="quiz-options">
+                ${question.options.map((opt, idx) => `
+                    <button class="quiz-option" data-option-index="${idx}">
+                        ${opt.text}
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+    // Add event listeners to options
+    const options = quizBody.querySelectorAll('.quiz-option');
+    options.forEach(option => {
+        option.addEventListener('click', function () {
+            const optionIdx = parseInt(this.getAttribute('data-option-index'));
+            handleInlineOptionSelect(optionIdx);
+        });
+    });
+}
+
+function handleInlineOptionSelect(optionIdx) {
+    const option = quizData[currentQuizStep].options[optionIdx];
+
+    // Aggregate scores
+    for (const [key, val] of Object.entries(option.score)) {
+        userScores[key] = (userScores[key] || 0) + val;
     }
 
-    // Modal creation and injection
+    currentQuizStep++;
+
+    if (currentQuizStep < quizData.length) {
+        renderInlineQuestion();
+    } else {
+        renderInlineResult();
+    }
+}
+
+function renderInlineResult() {
+    const quizBody = document.getElementById('inlineQuizBody');
+    if (!quizBody) return;
+
+    // Find highest score
+    let bestMatchKey = 'fullstack';
+    let maxScore = -1;
+
+    for (const [key, score] of Object.entries(userScores)) {
+        if (score > maxScore) {
+            maxScore = score;
+            bestMatchKey = key;
+        }
+    }
+
+    const recommendation = courseRecommendations[bestMatchKey] || courseRecommendations['fullstack'];
+
+    quizBody.innerHTML = `
+        <div class="inline-quiz-result">
+            <div class="result-badge">🎉 Perfect Match Found!</div>
+            <div class="result-icon"><i class="${recommendation.icon}"></i></div>
+            <h2>We Recommend: ${recommendation.title}</h2>
+            <p>${recommendation.desc}</p>
+            <div class="result-actions">
+                <a href="${recommendation.url}" class="btn btn-primary">View Course Details</a>
+                <a href="https://wa.me/917842239090?text=I'd like to enroll in ${recommendation.title}!" target="_blank" class="btn btn-secondary">
+                    <i class="fab fa-whatsapp"></i> Enroll via WhatsApp
+                </a>
+            </div>
+            <button class="quiz-restart" id="inlineRestartBtn">← Take Quiz Again</button>
+        </div>
+    `;
+
+    // Add event listener for restart button
+    const restartBtn = quizBody.querySelector('#inlineRestartBtn');
+    if (restartBtn) {
+        restartBtn.addEventListener('click', resetInlineQuiz);
+    }
+}
+
+function resetInlineQuiz() {
+    const inlineContainer = document.getElementById('inlineQuizContainer');
+    const ctaContent = document.getElementById('quizCtaContent');
+    const quizCard = document.getElementById('quizCtaCard');
+
+    if (!inlineContainer || !ctaContent) return;
+
+    // Show the CTA content and hide quiz
+    inlineContainer.classList.remove('active');
+    quizCard.classList.remove('quiz-active');
+    ctaContent.style.display = '';
+
+    // Reset state
+    currentQuizStep = 0;
+    userScores = {};
+}
+
+function createModalIfNeeded() {
+    // Modal creation and injection (fallback for pages without inline container)
     if (!document.getElementById('quizModal')) {
         const modalHtml = `
             <div id="quizModal" class="quiz-modal">
@@ -70,31 +207,20 @@ function initQuiz() {
         `;
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         injectQuizStyles();
-        
-        // Add event listeners instead of inline handlers
+
         const closeBtn = document.getElementById('quizCloseBtn');
         const startBtn = document.getElementById('quizStartBtn');
         const modal = document.getElementById('quizModal');
-        
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeQuizModal);
-        }
-        
-        if (startBtn) {
-            startBtn.addEventListener('click', startQuiz);
-        }
-        
-        // Close on background click
+
+        if (closeBtn) closeBtn.addEventListener('click', closeQuizModal);
+        if (startBtn) startBtn.addEventListener('click', startQuiz);
         if (modal) {
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    closeQuizModal();
-                }
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) closeQuizModal();
             });
         }
-        
-        // Close on ESC key
-        document.addEventListener('keydown', function(e) {
+
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
                 closeQuizModal();
             }
@@ -103,31 +229,39 @@ function initQuiz() {
 }
 
 function openQuizModal() {
-    document.getElementById('quizModal').classList.add('active');
-    document.body.style.overflow = 'hidden';
+    const modal = document.getElementById('quizModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
 }
 
 function closeQuizModal() {
-    document.getElementById('quizModal').classList.remove('active');
-    document.body.style.overflow = '';
-    // Reset quiz for next time
-    setTimeout(() => {
-        currentQuizStep = 0;
-        userScores = {};
-        renderQuizIntro();
-    }, 300);
+    const modal = document.getElementById('quizModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        setTimeout(() => {
+            currentQuizStep = 0;
+            userScores = {};
+            renderQuizIntro();
+        }, 300);
+    }
 }
 
 function renderQuizIntro() {
     const quizBody = document.getElementById('quizBody');
+    if (!quizBody) return;
     quizBody.innerHTML = `
         <div class="quiz-intro">
             <i class="fas fa-graduation-cap quiz-main-icon"></i>
             <h2>Find Your Perfect Career Path</h2>
             <p>Answer 3 quick questions and we'll recommend the best course for you!</p>
-            <button class="btn btn-primary" onclick="startQuiz()">Get Started</button>
+            <button class="btn btn-primary" id="modalStartBtn">Get Started</button>
         </div>
     `;
+    const startBtn = quizBody.querySelector('#modalStartBtn');
+    if (startBtn) startBtn.addEventListener('click', startQuiz);
 }
 
 function startQuiz() {
@@ -138,6 +272,8 @@ function startQuiz() {
 
 function renderQuestion() {
     const quizBody = document.getElementById('quizBody');
+    if (!quizBody) return;
+
     const question = quizData[currentQuizStep];
 
     quizBody.innerHTML = `
@@ -156,11 +292,10 @@ function renderQuestion() {
             </div>
         </div>
     `;
-    
-    // Add event listeners to options
+
     const options = quizBody.querySelectorAll('.quiz-option');
     options.forEach(option => {
-        option.addEventListener('click', function() {
+        option.addEventListener('click', function () {
             const optionIdx = parseInt(this.getAttribute('data-option-index'));
             handleOptionSelect(optionIdx);
         });
@@ -170,7 +305,6 @@ function renderQuestion() {
 function handleOptionSelect(optionIdx) {
     const option = quizData[currentQuizStep].options[optionIdx];
 
-    // Aggregate scores
     for (const [key, val] of Object.entries(option.score)) {
         userScores[key] = (userScores[key] || 0) + val;
     }
@@ -186,9 +320,9 @@ function handleOptionSelect(optionIdx) {
 
 function renderResult() {
     const quizBody = document.getElementById('quizBody');
+    if (!quizBody) return;
 
-    // Find highest score
-    let bestMatchKey = 'fullstack'; // Default
+    let bestMatchKey = 'fullstack';
     let maxScore = -1;
 
     for (const [key, score] of Object.entries(userScores)) {
@@ -198,30 +332,26 @@ function renderResult() {
         }
     }
 
-    // Map specific scores to our course list if needed
     const recommendation = courseRecommendations[bestMatchKey] || courseRecommendations['fullstack'];
 
     quizBody.innerHTML = `
         <div class="quiz-result" style="animation: slideUp 0.5s ease-out;">
-            <div class="result-badge">Perfect Match FOUND!</div>
+            <div class="result-badge">Perfect Match Found!</div>
             <div class="result-icon"><i class="${recommendation.icon}"></i></div>
             <h2>We Recommend: ${recommendation.title}</h2>
             <p>${recommendation.desc}</p>
             <div class="result-actions">
                 <a href="${recommendation.url}" class="btn btn-primary">Course Details</a>
                 <a href="https://wa.me/917842239090?text=I'd like to enroll in ${recommendation.title}!" target="_blank" class="btn btn-secondary">
-                    <i class="fab fa-whatsapp"></i> I'd like to enroll
+                    <i class="fab fa-whatsapp"></i> Enroll via WhatsApp
                 </a>
             </div>
             <button class="quiz-restart" id="quizRestartBtn">Try Again</button>
         </div>
     `;
-    
-    // Add event listener for restart button
+
     const restartBtn = quizBody.querySelector('#quizRestartBtn');
-    if (restartBtn) {
-        restartBtn.addEventListener('click', startQuiz);
-    }
+    if (restartBtn) restartBtn.addEventListener('click', startQuiz);
 }
 
 function injectQuizStyles() {
@@ -280,6 +410,27 @@ function injectQuizStyles() {
         .result-actions { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
         .quiz-restart { background: none; border: none; color: #6c5ce7; text-decoration: underline; cursor: pointer; font-size: 0.9rem; }
         
+        /* Inline Quiz Styles */
+        .inline-quiz-container {
+            display: none;
+            width: 100%;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            margin-top: 20px;
+        }
+        .inline-quiz-container.active { display: block; animation: slideUp 0.4s ease-out; }
+        .quiz-cta-card.quiz-active { flex-direction: column; }
+        .quiz-cta-card.quiz-active .quiz-cta-image { display: none; }
+        
+        .inline-quiz-question h3 { color: #1e293b; margin-bottom: 20px; font-size: 1.25rem; line-height: 1.5; }
+        .inline-quiz-result { text-align: center; padding: 20px 0; }
+        .inline-quiz-result h2 { color: #1e293b; font-size: 1.5rem; margin-bottom: 15px; }
+        .inline-quiz-result p { color: #64748b; margin-bottom: 20px; }
+        .inline-quiz-result .result-actions { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+        
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     `;
     document.head.appendChild(sty);
@@ -290,3 +441,4 @@ window.startQuiz = startQuiz;
 window.handleOptionSelect = handleOptionSelect;
 window.closeQuizModal = closeQuizModal;
 window.openQuizModal = openQuizModal;
+window.resetInlineQuiz = resetInlineQuiz;

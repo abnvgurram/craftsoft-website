@@ -222,8 +222,8 @@
     <!-- Quiz CTA Section -->
     <section class="quiz-cta-section">
         <div class="container">
-            <div class="quiz-cta-card">
-                <div class="quiz-cta-content">
+            <div class="quiz-cta-card" id="quizCtaCard">
+                <div class="quiz-cta-content" id="quizCtaContent">
                     <span class="quiz-cta-badge">Confused about where to start?</span>
                     <h2 class="quiz-cta-title">
                         Find Your <span>Perfect Career</span> in 30 Seconds
@@ -231,8 +231,14 @@
                     <p class="quiz-cta-description">Don't guess your path. Take our interactive quiz and get a
                         personalized course recommendation based on your skills and interests.</p>
                     <button id="startQuizBtn" class="quiz-cta-btn">
-                        <i class="fas fa-magic"></i> Start The Quiz
+                        <i class="fas fa-magic"></i> Take a Quiz
                     </button>
+                </div>
+                <!-- Inline Quiz Container (hidden by default) -->
+                <div class="inline-quiz-container" id="inlineQuizContainer">
+                    <div class="inline-quiz-body" id="inlineQuizBody">
+                        <!-- Quiz content will be injected here -->
+                    </div>
                 </div>
                 <div class="quiz-cta-image">
                     <i class="fas fa-user-astronaut"></i>
@@ -364,46 +370,45 @@
                 <p class="section-description">Beyond technical training, we prepare you for the professional world with
                     essential soft skills.</p>
             </div>
-            <div class="features-grid"
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-xl);">
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-file-invoice"></i>
-                    </div>
-                    <h3 style="font-size: 1.25rem;">Interview Preparation</h3>
-                    <p style="margin-bottom: var(--spacing-md);">Master the art of technical and HR interviews with our
-                        comprehensive mock sessions and feedback loops.</p>
-                    <ul>
-                        <li>Mock Interviews</li>
-                        <li>Resume Building</li>
-                        <li>Portfolio Showcase</li>
+            <div class="courses-grid">
+                <div class="course-card">
+                    <div class="course-icon"><i class="fas fa-file-invoice"></i></div>
+                    <h3>Interview Preparation</h3>
+                    <p>Master the art of technical and HR interviews with our comprehensive mock sessions and feedback
+                        loops.</p>
+                    <ul class="course-features">
+                        <li><i class="fas fa-long-arrow-alt-right"></i> Mock Interviews</li>
+                        <li><i class="fas fa-long-arrow-alt-right"></i> Resume Building</li>
+                        <li><i class="fas fa-long-arrow-alt-right"></i> Portfolio Showcase</li>
                     </ul>
+                    <a href="pages/courses/resume-interview.html" class="course-link">View Details <i
+                            class="fas fa-arrow-right"></i></a>
                 </div>
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-microphone"></i>
-                    </div>
-                    <h3 style="font-size: 1.25rem;">Spoken English</h3>
-                    <p style="margin-bottom: var(--spacing-md);">Enhance your communication skills and confidence to
-                        effectively present your ideas in a professional environment.</p>
-                    <ul>
-                        <li>Business Communication</li>
-                        <li>Presentation Skills</li>
-                        <li>Confidence Building</li>
+                <div class="course-card">
+                    <div class="course-icon"><i class="fas fa-microphone"></i></div>
+                    <h3>Spoken English</h3>
+                    <p>Enhance your communication skills and confidence to effectively present your ideas in a
+                        professional environment.</p>
+                    <ul class="course-features">
+                        <li><i class="fas fa-long-arrow-alt-right"></i> Business Communication</li>
+                        <li><i class="fas fa-long-arrow-alt-right"></i> Presentation Skills</li>
+                        <li><i class="fas fa-long-arrow-alt-right"></i> Confidence Building</li>
                     </ul>
+                    <a href="pages/courses/spoken-english.html" class="course-link">View Details <i
+                            class="fas fa-arrow-right"></i></a>
                 </div>
-                <div class="service-card">
-                    <div class="service-icon">
-                        <i class="fas fa-pen-fancy"></i>
-                    </div>
-                    <h3 style="font-size: 1.25rem;">Handwriting Improvement</h3>
-                    <p style="margin-bottom: var(--spacing-md);">Specialized training to improve legibility and
-                        presentation, essential for academic and creative professional success.</p>
-                    <ul>
-                        <li>Print & Cursive Mastery</li>
-                        <li>Speed & Clarity Focus</li>
-                        <li>Creative Penmanship</li>
+                <div class="course-card">
+                    <div class="course-icon"><i class="fas fa-pen-fancy"></i></div>
+                    <h3>Handwriting Improvement</h3>
+                    <p>Specialized training to improve legibility and presentation, essential for academic and
+                        professional success.</p>
+                    <ul class="course-features">
+                        <li><i class="fas fa-long-arrow-alt-right"></i> Print & Cursive Mastery</li>
+                        <li><i class="fas fa-long-arrow-alt-right"></i> Speed & Clarity Focus</li>
+                        <li><i class="fas fa-long-arrow-alt-right"></i> Creative Penmanship</li>
                     </ul>
+                    <a href="pages/courses/handwriting.html" class="course-link">View Details <i
+                            class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
             <!-- Added Career Growth CTA -->
