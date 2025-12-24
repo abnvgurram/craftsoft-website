@@ -2,12 +2,12 @@
    SECTION Common Styles
    ============================================ */
 section {
-    padding: var(--spacing-4xl) 0;
+    padding: var(--spacing-3xl) 0;
 }
 
 .section-header {
     text-align: center;
-    margin-bottom: var(--spacing-4xl);
+    margin-bottom: var(--spacing-2xl);
 }
 
 .section-tag {

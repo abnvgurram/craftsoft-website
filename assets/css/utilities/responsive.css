@@ -87,11 +87,11 @@
     }
 
     section {
-        padding: var(--spacing-2xl) 0;
+        padding: var(--spacing-xl) 0;
     }
 
     .section-header {
-        margin-bottom: var(--spacing-2xl);
+        margin-bottom: var(--spacing-xl);
     }
 
     /* Mobile Navigation - Enhanced Dropdown Panel */
