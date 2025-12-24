@@ -1,0 +1,17 @@
+{
+  "name": "craftsoft-website",
+  "version": "1.0.0",
+  "description": "Abhi's Craft Soft - IT Training Institute & Design Services",
+  "scripts": {
+    "build:js": "npx terser assets/js/main.js -o assets/js/main.min.js -c -m && npx terser assets/js/quiz.js -o assets/js/quiz.min.js -c -m",
+    "build": "npm run build:js",
+    "deploy": "npm run build && netlify deploy --prod --dir=."
+  },
+  "devDependencies": {
+    "terser": "^5.37.0"
+  },
+  "keywords": ["craftsoft", "training", "hyderabad"],
+  "author": "Abhi's Craft Soft",
+  "license": "UNLICENSED",
+  "private": true
+}
