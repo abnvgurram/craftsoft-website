@@ -636,9 +636,62 @@
                                 font-size: 0.75rem;
                             }
                         }
+
+                        /* Info Tooltip Styling */
+                        .info-tooltip-trigger {
+                            cursor: help;
+                            position: relative;
+                        }
+
+                        .info-tooltip-mobile {
+                            display: none;
+                            position: absolute;
+                            top: 100%;
+                            left: 0;
+                            right: 0;
+                            background: #1e293b;
+                            color: white;
+                            padding: 12px 16px;
+                            border-radius: 8px;
+                            font-size: 0.8rem;
+                            line-height: 1.5;
+                            z-index: 100;
+                            margin-top: 8px;
+                            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+                        }
+
+                        .info-tooltip-mobile::before {
+                            content: '';
+                            position: absolute;
+                            top: -6px;
+                            left: 20px;
+                            width: 12px;
+                            height: 12px;
+                            background: #1e293b;
+                            transform: rotate(45deg);
+                        }
+
+                        /* Show tooltip when icon is tapped (mobile) */
+                        .info-tooltip-trigger.tooltip-active+.info-tooltip-mobile {
+                            display: block;
+                        }
+
+                        /* Desktop - hide mobile tooltip, use native title */
+                        @media (min-width: 769px) {
+                            .info-tooltip-mobile {
+                                display: none !important;
+                            }
+                        }
                     </style>
                     <div class="info-banner">
-                        <span class="material-icons icon">info</span>
+                        <span class="material-icons icon info-tooltip-trigger"
+                            title="These codes are used in receipt numbers for course identification. Format: CS-YY-XX-NNNN where XX is the subject code."
+                            onclick="this.classList.toggle('tooltip-active')">info</span>
+                        <div class="info-tooltip-mobile">
+                            These codes are used in receipt numbers for course identification.<br>
+                            <strong>Format:</strong> CS-YY-XX-NNNN<br>
+                            <em>XX = Subject Code</em>
+                        </div>
                         <div class="info-banner-content">
                             <div class="subject-codes-grid" id="subjectCodesBanner">
                                 <!-- Populated dynamically from subjectCodes in auth.js -->
@@ -658,6 +711,22 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Account Section - Mobile Only Logout -->
+            <div class="card settings-section mobile-logout-section">
+                <div class="card-header">
+                    <h3 style="display: flex; align-items: center; gap: 8px;">
+                        <span class="material-icons" style="color: var(--danger);">account_circle</span>
+                        Account
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-danger-outline" onclick="logout()" style="width: 100%;">
+                        <span class="material-icons">logout</span>
+                        Logout from Admin Panel
+                    </button>
                 </div>
             </div>
 

@@ -221,6 +221,32 @@
         text-align: center !important;
     }
 
+    .contact-text-side .section-description {
+        text-align: center !important;
+    }
+
+    /* Contact methods - left aligned content within centered container */
+    .contact-methods-list {
+        align-items: flex-start;
+        max-width: 320px;
+        margin: 0 auto;
+    }
+
+    .method-item {
+        text-align: left;
+        width: 100%;
+    }
+
+    .method-info {
+        text-align: left;
+    }
+
+    .method-info h3,
+    .method-info p,
+    .method-info a {
+        text-align: left;
+    }
+
     .contact-form-side {
         position: static;
     }
@@ -230,4 +256,22 @@
     .contact-form-card {
         padding: var(--spacing-xl);
     }
+}
+
+/* Form Consent Text */
+.form-consent {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    margin-top: var(--spacing-md);
+    line-height: 1.5;
+}
+
+.form-consent a {
+    color: var(--primary-500);
+    text-decoration: underline;
+}
+
+.form-consent a:hover {
+    color: var(--primary-600);
 }

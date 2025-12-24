@@ -2437,3 +2437,39 @@ select:focus {
     color: var(--gray-400);
     font-style: italic;
 }
+
+/* Mobile Logout Section - Only visible on mobile */
+.mobile-logout-section {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-logout-section {
+        display: block;
+        margin-top: 24px;
+    }
+}
+
+/* Danger Outline Button */
+.btn-danger-outline {
+    background: transparent;
+    color: var(--danger);
+    border: 2px solid var(--danger);
+}
+
+.btn-danger-outline:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Hide Quick Actions on Mobile Dashboard */
+@media (max-width: 768px) {
+    .quick-actions-grid {
+        display: none !important;
+    }
+
+    /* Hide the card containing quick actions */
+    .main-content>.card:has(.quick-actions-grid) {
+        display: none;
+    }
+}

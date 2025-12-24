@@ -487,6 +487,9 @@ const allNavOptions = {
 };
 
 async function initializeBottomNav() {
+    // Guard: Skip if Firestore not loaded (e.g., on login page)
+    if (typeof db === 'undefined') return;
+
     const bottomNav = document.querySelector('.bottom-nav');
     if (!bottomNav) return;
 
@@ -519,7 +522,10 @@ async function initializeBottomNav() {
 // Call on load
 document.addEventListener('DOMContentLoaded', () => {
     initializeBottomNav();
-    updateDynamicDropdowns(); // Sync courses on load
+    // Only sync courses if Firestore is available
+    if (typeof db !== 'undefined') {
+        updateDynamicDropdowns();
+    }
 });
 
 // Make functions global
