@@ -248,7 +248,12 @@
         <!-- Main Content -->
         <main class="main-content">
             <!-- Mobile Header -->
-            <div class="mobile-header" style="display: none;"><button class="mobile-menu-toggle" onclick="toggleSidebar()" style="background:none;border:none;color:var(--gray-800);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:8px;margin-right:12px;"><span class="material-icons" style="font-size:24px;">menu</span></button><h1 style="font-size: 1.15rem; font-weight: 600; flex: 1; margin: 0;">Settings</h1></div>
+            <div class="mobile-header" style="display: none;"><button class="mobile-menu-toggle"
+                    onclick="toggleSidebar()"
+                    style="background:none;border:none;color:var(--gray-800);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:8px;margin-right:12px;"><span
+                        class="material-icons" style="font-size:24px;">menu</span></button>
+                <h1 style="font-size: 1.15rem; font-weight: 600; flex: 1; margin: 0;">Settings</h1>
+            </div>
 
             <div class="page-header desktop-only">
                 <div>
@@ -618,8 +623,8 @@
 
     <!-- Firebase SDKs -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    
+
+
     <script src="js/supabase-config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/settings.js"></script>
@@ -636,6 +641,7 @@
                 document.querySelector('.mobile-header').style.display = 'flex';
             } else {
                 document.querySelector('.mobile-header').style.display = 'none';
+                if (typeof closeSidebar === 'function') closeSidebar();
             }
         });
     </script>

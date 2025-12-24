@@ -87,7 +87,12 @@
         <!-- Main Content -->
         <main class="main-content">
             <!-- Mobile Header -->
-            <div class="mobile-header" style="display: none;"><button class="mobile-menu-toggle" onclick="toggleSidebar()" style="background:none;border:none;color:var(--gray-800);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:8px;margin-right:12px;"><span class="material-icons" style="font-size:24px;">menu</span></button><h1 style="font-size: 1.15rem; font-weight: 600; flex: 1; margin: 0;">Students</h1></div>
+            <div class="mobile-header" style="display: none;"><button class="mobile-menu-toggle"
+                    onclick="toggleSidebar()"
+                    style="background:none;border:none;color:var(--gray-800);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:8px;margin-right:12px;"><span
+                        class="material-icons" style="font-size:24px;">menu</span></button>
+                <h1 style="font-size: 1.15rem; font-weight: 600; flex: 1; margin: 0;">Students</h1>
+            </div>
 
             <div class="page-header desktop-only">
                 <div>
@@ -258,7 +263,7 @@
     </button>
 
     <!-- Bottom Navigation - Mobile -->
-    
+
 
     <!-- Add Student Modal - Wizard -->
     <div class="modal-overlay" id="addStudentModal">
@@ -705,8 +710,8 @@
 
     <!-- Firebase SDKs -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    
+
+
     <!-- jsPDF for PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- QR Code Generator -->
@@ -719,17 +724,6 @@
 
     <script>
         // Mobile responsiveness
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebarOverlay').classList.toggle('active');
-        }
-
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('active');
-        }
-
-        // Show mobile header on small screens
         if (window.innerWidth <= 768) {
             document.querySelector('.mobile-header').style.display = 'flex';
         }
@@ -739,7 +733,7 @@
                 document.querySelector('.mobile-header').style.display = 'flex';
             } else {
                 document.querySelector('.mobile-header').style.display = 'none';
-                closeSidebar();
+                if (typeof closeSidebar === 'function') closeSidebar();
             }
         });
     </script>
