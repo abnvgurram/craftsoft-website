@@ -210,19 +210,13 @@ document.getElementById('editInquiryForm')?.addEventListener('submit', async (e)
     } catch (e) { showToast('Update failed', 'error'); }
 });
 
-// === TOOLS ===
-function formatDate(iso) {
-    if (!iso) return '-';
-    return new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
-}
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function openAddInquiryModal() { document.getElementById('addInquiryModal').classList.add('active'); }
 
 function formatDateTime(iso) {
     if (!iso) return '-';
     return new Date(iso).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
-
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-function openAddInquiryModal() { document.getElementById('addInquiryModal').classList.add('active'); }
 
 // Init
 window.updateInquiryStatus = updateInquiryStatus;

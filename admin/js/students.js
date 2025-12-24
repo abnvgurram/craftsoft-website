@@ -57,22 +57,6 @@ function formatPhoneNumber(val) {
     return cleaned.length === 10 ? `+91 ${cleaned.slice(0, 5)} ${cleaned.slice(5)}` : (cleaned.length === 12 ? cleaned : val);
 }
 
-function showToast(message, type = 'success') {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <span class="material-icons">${type === 'success' ? 'check_circle' : (type === 'error' ? 'error' : 'info')}</span>
-        <span>${message}</span>
-    `;
-    container.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
 
 // === LOAD DATA ===
 async function loadData() {

@@ -256,6 +256,23 @@ window.exportFirebaseData = async function () {
     console.log("Export Complete!");
 };
 
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <span class="material-icons">${type === 'success' ? 'check_circle' : (type === 'error' ? 'error' : 'info')}</span>
+        <span>${message}</span>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
 // Global UI Helpers
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
@@ -283,3 +300,4 @@ window.formatDate = formatDate;
 window.subjectCodes = subjectCodes;
 window.showTableSkeleton = showTableSkeleton;
 window.showCardSkeleton = showCardSkeleton;
+window.showToast = showToast;
