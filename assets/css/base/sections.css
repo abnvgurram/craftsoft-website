@@ -34,3 +34,8 @@ section {
     max-width: 600px;
     margin: 0 auto;
 }
+
+/* Professional Skills Section */
+.professional-skills {
+    background: rgba(40, 150, 205, 0.05);
+}

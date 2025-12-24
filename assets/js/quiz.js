@@ -154,12 +154,12 @@ function renderInlineResult() {
             <h2>We Recommend: ${recommendation.title}</h2>
             <p>${recommendation.desc}</p>
             <div class="result-actions">
-                <a href="${recommendation.url}" class="btn btn-primary">View Course Details</a>
-                <a href="https://wa.me/917842239090?text=I'd like to enroll in ${recommendation.title}!" target="_blank" class="btn btn-secondary">
+                <a href="https://wa.me/917842239090?text=I'd like to enroll in ${recommendation.title}!" target="_blank" class="btn btn-primary">
                     <i class="fab fa-whatsapp"></i> Enroll via WhatsApp
                 </a>
+                <a href="${recommendation.url}" class="btn btn-secondary">View Course Details</a>
             </div>
-            <button class="quiz-restart" id="inlineRestartBtn">← Take Quiz Again</button>
+            <button class="quiz-restart" id="inlineRestartBtn">← Take Another Quiz</button>
         </div>
     `;
 
@@ -341,12 +341,12 @@ function renderResult() {
             <h2>We Recommend: ${recommendation.title}</h2>
             <p>${recommendation.desc}</p>
             <div class="result-actions">
-                <a href="${recommendation.url}" class="btn btn-primary">Course Details</a>
-                <a href="https://wa.me/917842239090?text=I'd like to enroll in ${recommendation.title}!" target="_blank" class="btn btn-secondary">
+                <a href="https://wa.me/917842239090?text=I'd like to enroll in ${recommendation.title}!" target="_blank" class="btn btn-primary">
                     <i class="fab fa-whatsapp"></i> Enroll via WhatsApp
                 </a>
+                <a href="${recommendation.url}" class="btn btn-secondary">View Course Details</a>
             </div>
-            <button class="quiz-restart" id="quizRestartBtn">Try Again</button>
+            <button class="quiz-restart" id="quizRestartBtn">← Take Another Quiz</button>
         </div>
     `;
 
