@@ -37,12 +37,31 @@ async function getAdminProfile(userId) {
 
 // Generate Employee ID
 async function generateEmployeeId() {
-    const { count, error } = await window.supabase
-        .from('admin_profiles')
-        .select('*', { count: 'exact', head: true });
+    try {
+        // Get all existing employee IDs to find the highest number
+        const { data, error } = await window.supabase
+            .from('admin_profiles')
+            .select('employee_id')
+            .order('employee_id', { ascending: false })
+            .limit(1);
 
-    const nextNumber = (count || 0) + 1;
-    return `ACS-${String(nextNumber).padStart(4, '0')}`;
+        let nextNumber = 1;
+
+        if (data && data.length > 0) {
+            // Extract number from last ID (e.g., "ACS-0001" -> 1)
+            const lastId = data[0].employee_id;
+            const match = lastId.match(/ACS-(\d+)/);
+            if (match) {
+                nextNumber = parseInt(match[1], 10) + 1;
+            }
+        }
+
+        return `ACS-${String(nextNumber).padStart(4, '0')}`;
+    } catch (err) {
+        console.error('Error generating employee ID:', err);
+        // Fallback: use timestamp-based ID
+        return `ACS-${Date.now().toString().slice(-4)}`;
+    }
 }
 
 // Sign Up
