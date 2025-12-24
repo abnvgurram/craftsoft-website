@@ -870,6 +870,10 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+.share-icon.whatsapp {
+    background: #25D366;
+}
+
 .share-icon.linkedin {
     background: #0A66C2;
 }
@@ -883,7 +887,7 @@
 }
 
 .share-icon.twitter {
-    background: #000000;
+    background: var(--primary-600);
 }
 
 .share-icon.copy {
