@@ -366,29 +366,12 @@
         </div>
     </footer>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
     <!-- jsPDF for Receipt Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- QR Code Generator -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
-        // Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyAvLHRgIgFq6SWkWl4Zj7IhJxZiCX5vqPc",
-            authDomain: "craftsoft-admin.firebaseapp.com",
-            projectId: "craftsoft-admin",
-            storageBucket: "craftsoft-admin.firebasestorage.app",
-            messagingSenderId: "967033749556",
-            appId: "1:967033749556:web:aad0b21e16439f3af14a61"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
         let currentReceiptData = null;
 
         // Add Enter key support for receipt verification
@@ -405,138 +388,15 @@
         });
 
         async function verifyReceipt() {
-            const receiptId = document.getElementById('receiptId').value.trim().toUpperCase();
             const resultCard = document.getElementById('resultCard');
-            const verifyBtn = document.getElementById('verifyBtn');
 
-            if (!receiptId) {
-                resultCard.className = 'result-card not-found';
-                resultCard.innerHTML = `
-                    <div class="result-header">
-                        <span class="result-badge error">Error</span>
-                    </div>
-                    <p class="error-message">Please enter a Receipt ID.</p>
-                `;
-                return;
-            }
-
-            verifyBtn.disabled = true;
-            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-            try {
-                let found = false;
-                let receiptData = null;
-
-                // First check the receipts collection (for new receipts)
-                const receiptDoc = await db.collection('receipts').doc(receiptId).get();
-
-                if (receiptDoc.exists) {
-                    found = true;
-                    receiptData = { ...receiptDoc.data(), receiptId };
-                } else {
-                    // Search in students -> payments subcollections (for old receipts)
-                    const studentsSnapshot = await db.collection('students').get();
-
-                    for (const studentDoc of studentsSnapshot.docs) {
-                        const student = studentDoc.data();
-                        const paymentsSnapshot = await db.collection('students')
-                            .doc(studentDoc.id)
-                            .collection('payments')
-                            .where('receiptNumber', '==', receiptId)
-                            .get();
-
-                        if (!paymentsSnapshot.empty) {
-                            const payment = paymentsSnapshot.docs[0].data();
-                            found = true;
-
-                            // Format date
-                            let dateStr = '-';
-                            if (payment.createdAt) {
-                                const d = payment.createdAt.toDate ? payment.createdAt.toDate() : new Date(payment.createdAt);
-                                dateStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-                            }
-
-                            receiptData = {
-                                receiptId: receiptId,
-                                studentName: student.name,
-                                phone: student.phone,
-                                course: student.course,
-                                amount: payment.amount,
-                                mode: payment.mode || 'Cash',
-                                date: dateStr,
-                                totalFee: student.totalFee,
-                                paidAmount: student.paidAmount,
-                                status: (student.totalFee - student.paidAmount) <= 0 ? 'Fully Paid' : 'Partial Payment'
-                            };
-                            break;
-                        }
-                    }
-                }
-
-                if (found && receiptData) {
-                    currentReceiptData = receiptData;
-                    resultCard.className = 'result-card verified';
-                    resultCard.innerHTML = `
-                        <div class="result-header">
-                            <span class="result-badge success"><i class="fas fa-check"></i> Verified</span>
-                        </div>
-                        <div class="result-details">
-                            <div class="result-row">
-                                <span class="result-label">Receipt ID</span>
-                                <span class="result-value">${receiptId}</span>
-                            </div>
-                            <div class="result-row">
-                                <span class="result-label">Amount</span>
-                                <span class="result-value amount">Rs. ${Number(receiptData.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
-                            </div>
-                            <div class="result-row">
-                                <span class="result-label">Date</span>
-                                <span class="result-value">${receiptData.date || '-'}</span>
-                            </div>
-                            <div class="result-row">
-                                <span class="result-label">Course</span>
-                                <span class="result-value">${receiptData.course || '-'}</span>
-                            </div>
-                            <div class="result-row">
-                                <span class="result-label">Status</span>
-                                <span class="result-value">${receiptData.status || 'Paid'}</span>
-                            </div>
-                        </div>
-                        <div class="result-footer">
-                            <i class="fas fa-check-circle"></i>
-                            This receipt was issued by Abhi's Craft Soft and is verified as authentic.
-                        </div>
-                        <button class="download-pdf-btn" onclick="downloadPDF()">
-                            <i class="fas fa-download"></i> Download Receipt
-                        </button>
-                    `;
-                } else {
-                    currentReceiptData = null;
-                    resultCard.className = 'result-card not-found';
-                    resultCard.innerHTML = `
-                        <div class="result-header">
-                            <span class="result-badge error"><i class="fas fa-times"></i> Not Found</span>
-                        </div>
-                        <p>This Receipt ID does not exist in our system. Please check the ID and try again.</p>
-                        <p style="margin-top: 12px; font-size: 0.9rem;">
-                            If you believe this is an error, please contact us:<br>
-                            <a href="tel:+917842239090" style="color: var(--primary);"><i class="fas fa-phone"></i> +91 7842239090</a>
-                        </p>
-                    `;
-                }
-            } catch (error) {
-                console.error('Error verifying receipt:', error);
-                resultCard.className = 'result-card not-found';
-                resultCard.innerHTML = `
-                    <div class="result-header">
-                        <span class="result-badge error">Error</span>
-                    </div>
-                    <p class="error-message">Something went wrong. Please try again later.</p>
-                `;
-            }
-
-            verifyBtn.disabled = false;
-            verifyBtn.innerHTML = '<i class="fas fa-search"></i> Verify';
+            resultCard.className = 'result-card not-found';
+            resultCard.innerHTML = `
+                <div class="result-header">
+                    <span class="result-badge error">Maintenance</span>
+                </div>
+                <p class="error-message">The verification system is currently undergoing maintenance. Please contact support at +91 7842239090 for manual verification.</p>
+            `;
         }
 
         async function downloadPDF() {

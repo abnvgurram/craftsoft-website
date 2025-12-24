@@ -480,23 +480,10 @@ function initContactForm() {
                 status: 'new', // Default status for admin panel
                 type: inquiryType, // New type field for routing
                 source: 'website',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                createdAt: new Date().toISOString()
             };
 
-            // Try to save to Firestore, but don't fail the whole submission if it fails
-            let firestoreSuccess = false;
-            if (window.db) {
-                try {
-                    await window.db.collection('inquiries').add(inquiryData);
-                    firestoreSuccess = true;
-                    console.log('Inquiry synced to Firestore');
-                } catch (dbError) {
-                    console.error('Firestore sync failed:', dbError);
-                    // Continue with form submission even if Firestore fails
-                }
-            } else {
-                console.warn('Firebase not initialized, skipping Firestore save');
-            }
+            // Submission via Formspree handled below
 
             // Also submit to Formspree for email notification
             let formspreeSuccess = false;
@@ -514,7 +501,7 @@ function initContactForm() {
             // Show success UI (even if one method failed, as long as we tried)
             const formCard = form.closest('.contact-form-card') || document.querySelector('.contact-form-wrapper');
             if (formCard) {
-                const successMessage = formspreeSuccess || firestoreSuccess
+                const successMessage = formspreeSuccess
                     ? `Thank you for reaching out, <strong>${inquiryData.name}</strong>. Your inquiry has been received and we'll get back to you shortly.`
                     : `Thank you for reaching out, <strong>${inquiryData.name}</strong>. If you don't hear from us soon, please contact us directly via WhatsApp or phone.`;
 
