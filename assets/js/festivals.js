@@ -1,6 +1,6 @@
 /* ============================================
-   CRAFTSOFT - Festival Effects System (JavaScript)
-   Auto-activates based on Indian festival dates
+   CRAFTSOFT - Festival Effects System v2
+   11 Indian festivals with animations
    API: Calendarific for lunar calendar dates
    ============================================ */
 
@@ -13,30 +13,30 @@
     const CONFIG = {
         API_KEY: 'ez3pfQ9AxWlU4qbAHmC8Z34qaEKBbV9N',
         CACHE_KEY: 'craftsoft_festival_dates',
-        CACHE_EXPIRY: 7 * 24 * 60 * 60 * 1000, // 7 days
+        CACHE_EXPIRY: 7 * 24 * 60 * 60 * 1000,
         PARTICLE_COUNT: 25
     };
 
-    // Festival definitions with particles
+    // Festival definitions - 11 festivals (removed Vinayaka)
     const FESTIVALS = {
         newyear: {
             name: 'New Year',
-            particles: ['🎉', '🎊', '✨', '🎆', '🥳'],
+            particles: ['●', '●', '●', '●', '●'],
             fixedDate: { month: 1, day: 1 }
         },
         sankranti: {
             name: 'Makar Sankranti',
-            particles: ['🪁', '🪁', '🪁', '🎏'],
+            particles: ['🪁', '🪁', '🪁', '🪁'],
             fixedDate: { month: 1, day: 14 }
         },
         republic: {
             name: 'Republic Day',
-            particles: ['🇮🇳', '●', '●', '●'], // CSS handles tricolor
+            particles: ['●', '●', '●'],
             fixedDate: { month: 1, day: 26 }
         },
         holi: {
             name: 'Holi',
-            particles: ['●', '●', '●', '●', '●', '●'], // CSS handles colors
+            particles: ['●', '●', '●', '●', '●', '●'],
             apiName: 'Holi'
         },
         ugadi: {
@@ -46,13 +46,8 @@
         },
         independence: {
             name: 'Independence Day',
-            particles: ['🇮🇳', '●', '●', '●'],
+            particles: ['●', '●', '●'],
             fixedDate: { month: 8, day: 15 }
-        },
-        ganesh: {
-            name: 'Vinayaka Chaviti',
-            particles: ['🌺', '🌸', '🪷', '🌼', '🍬'],
-            apiName: 'Ganesh Chaturthi'
         },
         bathukamma: {
             name: 'Bathukamma',
@@ -66,20 +61,22 @@
         },
         diwali: {
             name: 'Diwali',
-            particles: ['🪔', '🎆', '🎇', '✨', '💫', '🌟'],
+            particles: [], // Custom cracker effect
             apiName: 'Diwali',
-            darkMode: true
+            darkMode: true,
+            customEffect: 'crackers'
         },
         eid: {
             name: 'Eid ul-Fitr',
-            particles: ['☪️', '⭐', '✨', '🌙', '💫'],
-            apiName: 'Eid ul-Fitr'
+            particles: [], // Custom crescent moon
+            apiName: 'Eid ul-Fitr',
+            darkMode: true,
+            customEffect: 'crescent'
         },
         christmas: {
             name: 'Christmas',
             particles: ['❄', '❅', '❆', '✧', '✦'],
-            fixedDate: { month: 12, day: 25 },
-            endDate: { month: 12, day: 31 }
+            fixedDate: { month: 12, day: 25 } // Only Dec 25, no endDate
         }
     };
 
@@ -93,17 +90,6 @@
             date1.getDate() === date2.getDate();
     }
 
-    function isDateInRange(date, startMonth, startDay, endMonth, endDay) {
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-
-        if (startMonth === endMonth) {
-            return month === startMonth && day >= startDay && day <= endDay;
-        }
-        return (month === startMonth && day >= startDay) ||
-            (month === endMonth && day <= endDay);
-    }
-
     // ============================================
     // FESTIVAL DETECTION
     // ============================================
@@ -112,18 +98,11 @@
         const now = new Date();
         const year = now.getFullYear();
 
-        // Check fixed date festivals first
+        // Check fixed date festivals
         for (const [key, festival] of Object.entries(FESTIVALS)) {
             if (festival.fixedDate) {
                 const festDate = new Date(year, festival.fixedDate.month - 1, festival.fixedDate.day);
-
-                if (festival.endDate) {
-                    // Range check (e.g., Christmas Dec 25-31)
-                    if (isDateInRange(now, festival.fixedDate.month, festival.fixedDate.day,
-                        festival.endDate.month, festival.endDate.day)) {
-                        return key;
-                    }
-                } else if (isSameDay(now, festDate)) {
+                if (isSameDay(now, festDate)) {
                     return key;
                 }
             }
@@ -150,7 +129,6 @@
     // ============================================
 
     async function getAPIFestivalDates(year) {
-        // Check cache first
         const cached = localStorage.getItem(CONFIG.CACHE_KEY);
         if (cached) {
             const data = JSON.parse(cached);
@@ -159,7 +137,6 @@
             }
         }
 
-        // Fetch from API
         try {
             const response = await fetch(
                 `https://calendarific.com/api/v2/holidays?api_key=${CONFIG.API_KEY}&country=IN&year=${year}`
@@ -172,17 +149,14 @@
                 data.response.holidays.forEach(holiday => {
                     const name = holiday.name.toLowerCase();
 
-                    // Map API names to our keys
                     if (name.includes('holi') && !name.includes('holika')) dates.holi = holiday.date.iso;
                     if (name.includes('ugadi')) dates.ugadi = holiday.date.iso;
-                    if (name.includes('ganesh chaturthi')) dates.ganesh = holiday.date.iso;
                     if (name.includes('dussehra') || name.includes('vijayadashami')) dates.dasara = holiday.date.iso;
                     if (name.includes('diwali') || name.includes('deepavali')) dates.diwali = holiday.date.iso;
                     if (name.includes('eid ul-fitr') || name.includes('eid-ul-fitr')) dates.eid = holiday.date.iso;
                     if (name.includes('bathukamma')) dates.bathukamma = holiday.date.iso;
                 });
 
-                // Cache the results
                 localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify({
                     year: year,
                     timestamp: Date.now(),
@@ -211,15 +185,25 @@
         // Load CSS
         const link = document.createElement('link');
         link.rel = 'stylesheet';
-        link.href = '/assets/css/festivals.css?v=1.0';
+        link.href = '/assets/css/festivals.css?v=2.0';
         document.head.appendChild(link);
 
-        // Create container
+        // Handle custom effects
+        if (festival.customEffect === 'crackers') {
+            createDiwaliEffect();
+            return;
+        }
+
+        if (festival.customEffect === 'crescent') {
+            createEidEffect();
+            return;
+        }
+
+        // Standard particle effect
         const container = document.createElement('div');
         container.className = `festival-effects festival-${festivalKey}`;
         container.setAttribute('aria-hidden', 'true');
 
-        // Create particles
         const particleCount = window.innerWidth < 768 ? 14 : CONFIG.PARTICLE_COUNT;
 
         for (let i = 0; i < particleCount; i++) {
@@ -229,25 +213,110 @@
             container.appendChild(particle);
         }
 
-        // Add to page
-        if (document.body) {
-            document.body.appendChild(container);
-        }
+        document.body.appendChild(container);
 
-        // Apply dark mode for Diwali
+        // Apply dark mode if needed
         if (festival.darkMode) {
             document.body.classList.add('diwali-mode');
         }
     }
 
-    function clearFestivalEffects() {
-        const existing = document.querySelector('.festival-effects');
-        if (existing) existing.remove();
-        document.body.classList.remove('diwali-mode');
+    // ============================================
+    // DIWALI - Cracker Bursts
+    // ============================================
+
+    function createDiwaliEffect() {
+        document.body.classList.add('diwali-mode');
+
+        // Add diyas
+        const diyaLeft = document.createElement('div');
+        diyaLeft.className = 'diya diya-left';
+        diyaLeft.textContent = '🪔';
+        document.body.appendChild(diyaLeft);
+
+        const diyaRight = document.createElement('div');
+        diyaRight.className = 'diya diya-right';
+        diyaRight.textContent = '🪔';
+        document.body.appendChild(diyaRight);
+
+        // Cracker burst effect
+        function createCrackerBurst() {
+            const colors = ['#FF6347', '#FFD700', '#00CED1', '#FF69B4', '#7CFC00', '#FF4500', '#9400D3'];
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * (window.innerHeight * 0.6);
+
+            const burst = document.createElement('div');
+            burst.className = 'festival-diwali-burst';
+            burst.style.left = x + 'px';
+            burst.style.top = y + 'px';
+
+            // Create particles for burst
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'cracker-particle';
+
+                const angle = (Math.PI * 2 * i) / 20;
+                const distance = 50 + Math.random() * 100;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.boxShadow = `0 0 6px ${particle.style.background}`;
+
+                burst.appendChild(particle);
+            }
+
+            document.body.appendChild(burst);
+
+            // Remove after animation
+            setTimeout(() => burst.remove(), 1500);
+        }
+
+        // Burst crackers at random intervals
+        function scheduleBursts() {
+            createCrackerBurst();
+            const nextBurst = 500 + Math.random() * 2000;
+            setTimeout(scheduleBursts, nextBurst);
+        }
+
+        scheduleBursts();
     }
 
     // ============================================
-    // TEST MODE (for development)
+    // EID - Crescent Moon
+    // ============================================
+
+    function createEidEffect() {
+        document.body.classList.add('eid-mode');
+
+        const container = document.createElement('div');
+        container.className = 'festival-effects festival-eid';
+        container.setAttribute('aria-hidden', 'true');
+
+        const moon = document.createElement('div');
+        moon.className = 'crescent-moon';
+        moon.textContent = '☪';
+        container.appendChild(moon);
+
+        document.body.appendChild(container);
+    }
+
+    // ============================================
+    // CLEAR EFFECTS
+    // ============================================
+
+    function clearFestivalEffects() {
+        // Remove containers
+        document.querySelectorAll('.festival-effects, .festival-diwali-burst, .diya').forEach(el => el.remove());
+
+        // Remove dark modes
+        document.body.classList.remove('diwali-mode', 'eid-mode');
+    }
+
+    // ============================================
+    // TEST MODE
     // ============================================
 
     window.testFestival = function (festivalKey) {
@@ -266,12 +335,11 @@
     // ============================================
 
     async function init() {
-        // Don't run on admin pages
         if (window.location.pathname.includes('/admin')) {
             return;
         }
 
-        // Check for test mode
+        // Check for test mode via URL param
         const urlParams = new URLSearchParams(window.location.search);
         const testFest = urlParams.get('festival');
         if (testFest && FESTIVALS[testFest]) {
@@ -288,7 +356,6 @@
         }
     }
 
-    // Run on load
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {

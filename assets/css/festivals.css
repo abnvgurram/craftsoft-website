@@ -1,13 +1,12 @@
 /* ============================================
-   CRAFTSOFT - Festival Effects System
-   Supports: 12 Indian festivals with animations
+   CRAFTSOFT - Festival Effects System v2
+   11 Indian festivals with animations
    ============================================ */
 
 /* ============================================
    SHARED STYLES
    ============================================ */
 
-/* Festival Effects Container */
 .festival-effects {
     position: fixed;
     top: 0;
@@ -19,17 +18,406 @@
     overflow: hidden;
 }
 
-/* Individual Particle */
 .festival-particle {
     position: absolute;
-    top: -30px;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     opacity: 0;
 }
 
 /* ============================================
-   1. CHRISTMAS - Snowflakes (Dec 25-31)
+   1. NEW YEAR - Confetti BURSTS from bottom
+   ============================================ */
+.festival-newyear .festival-particle {
+    bottom: -20px;
+    top: auto;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    animation-name: confettiBurst;
+}
+
+.festival-newyear .festival-particle:nth-child(5n+1) {
+    background: #ff6b6b;
+}
+
+.festival-newyear .festival-particle:nth-child(5n+2) {
+    background: #ffd93d;
+}
+
+.festival-newyear .festival-particle:nth-child(5n+3) {
+    background: #6bcb77;
+}
+
+.festival-newyear .festival-particle:nth-child(5n+4) {
+    background: #4d96ff;
+}
+
+.festival-newyear .festival-particle:nth-child(5n) {
+    background: #9b59b6;
+}
+
+@keyframes confettiBurst {
+    0% {
+        transform: translateY(0) rotate(0deg) translateX(0);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-60vh) rotate(360deg) translateX(30px);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(-100vh) rotate(720deg) translateX(-20px);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   2. SANKRANTI - Kites RISING in sky
+   ============================================ */
+.festival-sankranti .festival-particle {
+    bottom: -50px;
+    top: auto;
+    font-size: 2rem;
+    animation-name: kiteRise;
+}
+
+@keyframes kiteRise {
+    0% {
+        transform: translateY(0) translateX(0) rotate(-5deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    25% {
+        transform: translateY(-30vh) translateX(30px) rotate(5deg);
+    }
+
+    50% {
+        transform: translateY(-50vh) translateX(-20px) rotate(-3deg);
+    }
+
+    75% {
+        transform: translateY(-70vh) translateX(40px) rotate(8deg);
+    }
+
+    100% {
+        transform: translateY(-100vh) translateX(-10px) rotate(-5deg);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   3 & 6. REPUBLIC/INDEPENDENCE - Tricolor
+   ============================================ */
+.festival-republic .festival-particle,
+.festival-independence .festival-particle {
+    width: 12px;
+    height: 8px;
+    border-radius: 1px;
+    animation-name: tricolorFall;
+}
+
+.festival-republic .festival-particle:nth-child(3n+1),
+.festival-independence .festival-particle:nth-child(3n+1) {
+    background: #FF9933;
+}
+
+.festival-republic .festival-particle:nth-child(3n+2),
+.festival-independence .festival-particle:nth-child(3n+2) {
+    background: #FFFFFF;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.festival-republic .festival-particle:nth-child(3n),
+.festival-independence .festival-particle:nth-child(3n) {
+    background: #138808;
+}
+
+@keyframes tricolorFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0.3;
+    }
+}
+
+/* ============================================
+   4. HOLI - Subtle color splashes (~5% opacity)
+   ============================================ */
+.festival-holi .festival-particle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    filter: blur(8px);
+    animation-name: colorSplash;
+}
+
+.festival-holi .festival-particle:nth-child(6n+1) {
+    background: rgba(255, 20, 147, 0.05);
+}
+
+.festival-holi .festival-particle:nth-child(6n+2) {
+    background: rgba(255, 99, 71, 0.05);
+}
+
+.festival-holi .festival-particle:nth-child(6n+3) {
+    background: rgba(255, 215, 0, 0.05);
+}
+
+.festival-holi .festival-particle:nth-child(6n+4) {
+    background: rgba(50, 205, 50, 0.05);
+}
+
+.festival-holi .festival-particle:nth-child(6n+5) {
+    background: rgba(30, 144, 255, 0.05);
+}
+
+.festival-holi .festival-particle:nth-child(6n) {
+    background: rgba(148, 0, 211, 0.05);
+}
+
+@keyframes colorSplash {
+    0% {
+        transform: translateY(0) scale(0.3);
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 1;
+        transform: translateY(30vh) scale(1.5);
+    }
+
+    100% {
+        transform: translateY(100vh) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   5. UGADI - Flowers drifting with wind
+   ============================================ */
+.festival-ugadi .festival-particle {
+    font-size: 1.5rem;
+    animation-name: windDrift;
+}
+
+@keyframes windDrift {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    20% {
+        transform: translateY(20vh) translateX(40px) rotate(45deg);
+    }
+
+    40% {
+        transform: translateY(40vh) translateX(-30px) rotate(90deg);
+    }
+
+    60% {
+        transform: translateY(60vh) translateX(50px) rotate(180deg);
+    }
+
+    80% {
+        transform: translateY(80vh) translateX(-20px) rotate(270deg);
+    }
+
+    100% {
+        transform: translateY(100vh) translateX(30px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   8. BATHUKAMMA - Flowers drifting with wind
+   ============================================ */
+.festival-bathukamma .festival-particle {
+    font-size: 1.4rem;
+    animation-name: windDrift;
+}
+
+/* ============================================
+   9. DASARA - Golden sparkles (MORE GLOWING)
+   ============================================ */
+.festival-dasara .festival-particle {
+    font-size: 1.2rem;
+    color: #FFD700;
+    text-shadow:
+        0 0 10px #FFD700,
+        0 0 20px #FFD700,
+        0 0 30px #FFA500,
+        0 0 40px #FFA500;
+    animation-name: sparkleGlow;
+}
+
+@keyframes sparkleGlow {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.3);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateY(20vh) scale(1.2);
+        text-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700, 0 0 60px #FFA500;
+    }
+
+    50% {
+        transform: translateY(50vh) scale(1);
+        text-shadow: 0 0 15px #FFD700, 0 0 30px #FFD700;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0.5);
+    }
+}
+
+/* ============================================
+   10. DIWALI - Actual cracker bursts + Dark Mode
+   ============================================ */
+.festival-diwali-burst {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.cracker-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: crackerExplode 1.5s ease-out forwards;
+}
+
+@keyframes crackerExplode {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Diya glow effect */
+.diya {
+    position: fixed;
+    bottom: 20px;
+    font-size: 2rem;
+    animation: diyaGlow 2s ease-in-out infinite alternate;
+}
+
+.diya-left {
+    left: 20px;
+}
+
+.diya-right {
+    right: 20px;
+}
+
+@keyframes diyaGlow {
+    0% {
+        filter: drop-shadow(0 0 5px #FFA500);
+    }
+
+    100% {
+        filter: drop-shadow(0 0 20px #FFD700) drop-shadow(0 0 30px #FF6347);
+    }
+}
+
+/* Diwali Dark Mode */
+body.diwali-mode {
+    background: #0a0a0a !important;
+}
+
+body.diwali-mode .navbar,
+body.diwali-mode header {
+    background: rgba(10, 10, 10, 0.95) !important;
+}
+
+body.diwali-mode .section-title,
+body.diwali-mode h1,
+body.diwali-mode h2,
+body.diwali-mode h3,
+body.diwali-mode p {
+    color: #f5f5f5 !important;
+}
+
+/* ============================================
+   11. EID - Crescent moon in corner + Dark Mode
+   ============================================ */
+.festival-eid .crescent-moon {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 4rem;
+    color: #FFD700;
+    text-shadow:
+        0 0 20px rgba(255, 215, 0, 0.8),
+        0 0 40px rgba(255, 215, 0, 0.6),
+        0 0 60px rgba(255, 215, 0, 0.4);
+    animation: moonGlow 3s ease-in-out infinite alternate;
+    z-index: 9999;
+}
+
+@keyframes moonGlow {
+    0% {
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.4);
+        transform: scale(1);
+    }
+
+    100% {
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.9), 0 0 60px rgba(255, 215, 0, 0.7);
+        transform: scale(1.05);
+    }
+}
+
+/* Eid Dark Mode */
+body.eid-mode {
+    background: #0a0a1a !important;
+}
+
+body.eid-mode .navbar,
+body.eid-mode header {
+    background: rgba(10, 10, 26, 0.95) !important;
+}
+
+body.eid-mode .section-title,
+body.eid-mode h1,
+body.eid-mode h2,
+body.eid-mode h3,
+body.eid-mode p {
+    color: #f5f5f5 !important;
+}
+
+/* ============================================
+   12. CHRISTMAS - Snowflakes (Dec 25 only)
    ============================================ */
 .festival-christmas .festival-particle {
     color: #e8f4ff;
@@ -61,363 +449,6 @@
 
     100% {
         transform: translateY(100vh) rotate(360deg) translateX(-10px);
-        opacity: 0;
-    }
-}
-
-/* ============================================
-   2. NEW YEAR - Confetti (Jan 1)
-   ============================================ */
-.festival-newyear .festival-particle {
-    width: 10px;
-    height: 10px;
-    background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #9b59b6);
-    border-radius: 2px;
-    animation-name: confettiFall;
-}
-
-@keyframes confettiFall {
-    0% {
-        transform: translateY(0) rotate(0deg) translateX(0);
-        opacity: 0;
-    }
-
-    10% {
-        opacity: 1;
-    }
-
-    100% {
-        transform: translateY(100vh) rotate(720deg) translateX(50px);
-        opacity: 0.5;
-    }
-}
-
-/* ============================================
-   3. SANKRANTI - Kites (Jan 14)
-   ============================================ */
-.festival-sankranti .festival-particle {
-    font-size: 2rem;
-    animation-name: kiteFloat;
-}
-
-@keyframes kiteFloat {
-    0% {
-        transform: translateY(100vh) translateX(0) rotate(-10deg);
-        opacity: 0;
-    }
-
-    10% {
-        opacity: 1;
-    }
-
-    50% {
-        transform: translateY(30vh) translateX(50px) rotate(10deg);
-    }
-
-    100% {
-        transform: translateY(-20vh) translateX(-30px) rotate(-5deg);
-        opacity: 0;
-    }
-}
-
-/* ============================================
-   4. REPUBLIC/INDEPENDENCE - Tricolor (Jan 26, Aug 15)
-   ============================================ */
-.festival-republic .festival-particle,
-.festival-independence .festival-particle {
-    width: 12px;
-    height: 8px;
-    border-radius: 1px;
-    animation-name: tricolorFall;
-}
-
-.festival-republic .festival-particle:nth-child(3n+1),
-.festival-independence .festival-particle:nth-child(3n+1) {
-    background: #FF9933;
-    /* Saffron */
-}
-
-.festival-republic .festival-particle:nth-child(3n+2),
-.festival-independence .festival-particle:nth-child(3n+2) {
-    background: #FFFFFF;
-    /* White */
-    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
-}
-
-.festival-republic .festival-particle:nth-child(3n),
-.festival-independence .festival-particle:nth-child(3n) {
-    background: #138808;
-    /* Green */
-}
-
-@keyframes tricolorFall {
-    0% {
-        transform: translateY(0) rotate(0deg) translateX(0);
-        opacity: 0;
-    }
-
-    10% {
-        opacity: 1;
-    }
-
-    100% {
-        transform: translateY(100vh) rotate(360deg) translateX(30px);
-        opacity: 0.3;
-    }
-}
-
-/* ============================================
-   5. HOLI - Color Splashes (Mar)
-   ============================================ */
-.festival-holi .festival-particle {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    filter: blur(2px);
-    animation-name: colorSplash;
-}
-
-.festival-holi .festival-particle:nth-child(6n+1) {
-    background: #FF1493;
-}
-
-/* Pink */
-.festival-holi .festival-particle:nth-child(6n+2) {
-    background: #FF6347;
-}
-
-/* Red */
-.festival-holi .festival-particle:nth-child(6n+3) {
-    background: #FFD700;
-}
-
-/* Yellow */
-.festival-holi .festival-particle:nth-child(6n+4) {
-    background: #32CD32;
-}
-
-/* Green */
-.festival-holi .festival-particle:nth-child(6n+5) {
-    background: #1E90FF;
-}
-
-/* Blue */
-.festival-holi .festival-particle:nth-child(6n) {
-    background: #9400D3;
-}
-
-/* Purple */
-
-@keyframes colorSplash {
-    0% {
-        transform: translateY(0) scale(0.5);
-        opacity: 0;
-    }
-
-    20% {
-        opacity: 0.8;
-        transform: translateY(20vh) scale(1.2);
-    }
-
-    100% {
-        transform: translateY(100vh) scale(0.3);
-        opacity: 0;
-    }
-}
-
-/* ============================================
-   6. UGADI - Flower Petals (Mar/Apr)
-   ============================================ */
-.festival-ugadi .festival-particle {
-    font-size: 1.5rem;
-    animation-name: petalFall;
-}
-
-@keyframes petalFall {
-    0% {
-        transform: translateY(0) rotate(0deg) translateX(0);
-        opacity: 0;
-    }
-
-    10% {
-        opacity: 1;
-    }
-
-    50% {
-        transform: translateY(50vh) rotate(180deg) translateX(40px);
-    }
-
-    100% {
-        transform: translateY(100vh) rotate(360deg) translateX(-20px);
-        opacity: 0;
-    }
-}
-
-/* ============================================
-   7. VINAYAKA CHAVITI - Flowers (Aug/Sep)
-   ============================================ */
-.festival-ganesh .festival-particle {
-    font-size: 1.3rem;
-    animation-name: flowerFloat;
-}
-
-@keyframes flowerFloat {
-    0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 0;
-    }
-
-    10% {
-        opacity: 1;
-    }
-
-    100% {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0;
-    }
-}
-
-/* ============================================
-   8. BATHUKAMMA - Colorful Flowers (Oct)
-   ============================================ */
-.festival-bathukamma .festival-particle {
-    font-size: 1.4rem;
-    animation-name: bathukammaFloat;
-}
-
-@keyframes bathukammaFloat {
-    0% {
-        transform: translateY(0) rotate(0deg) scale(0.8);
-        opacity: 0;
-    }
-
-    15% {
-        opacity: 1;
-    }
-
-    50% {
-        transform: translateY(50vh) rotate(180deg) scale(1.1);
-    }
-
-    100% {
-        transform: translateY(100vh) rotate(360deg) scale(0.6);
-        opacity: 0;
-    }
-}
-
-/* ============================================
-   9. DASARA - Golden Sparkles (Oct)
-   ============================================ */
-.festival-dasara .festival-particle {
-    font-size: 1.2rem;
-    color: #FFD700;
-    text-shadow: 0 0 10px #FFD700, 0 0 20px #FFA500;
-    animation-name: sparkleFloat;
-}
-
-@keyframes sparkleFloat {
-
-    0%,
-    100% {
-        opacity: 0;
-        transform: translateY(0) scale(0.5);
-    }
-
-    10% {
-        opacity: 1;
-    }
-
-    50% {
-        transform: translateY(50vh) scale(1.2);
-        opacity: 0.8;
-    }
-
-    90% {
-        opacity: 0.5;
-    }
-}
-
-/* ============================================
-   10. DIWALI - Crackers + Dark Mode (Oct/Nov)
-   ============================================ */
-.festival-diwali .festival-particle {
-    font-size: 1.5rem;
-    animation-name: crackerBurst;
-}
-
-.festival-diwali .festival-particle:nth-child(odd) {
-    text-shadow: 0 0 10px #FFD700, 0 0 20px #FF6347;
-}
-
-.festival-diwali .festival-particle:nth-child(even) {
-    text-shadow: 0 0 10px #00CED1, 0 0 20px #9400D3;
-}
-
-@keyframes crackerBurst {
-    0% {
-        transform: translateY(100vh) scale(0);
-        opacity: 0;
-    }
-
-    30% {
-        transform: translateY(50vh) scale(1.5);
-        opacity: 1;
-    }
-
-    60% {
-        transform: translateY(30vh) scale(1);
-        opacity: 0.8;
-    }
-
-    100% {
-        transform: translateY(0) scale(0.5);
-        opacity: 0;
-    }
-}
-
-/* Diwali Dark Mode */
-body.diwali-mode {
-    background: #0a0a0a !important;
-    color: #f5f5f5 !important;
-}
-
-body.diwali-mode .navbar {
-    background: rgba(10, 10, 10, 0.95) !important;
-}
-
-body.diwali-mode .section-title,
-body.diwali-mode h1,
-body.diwali-mode h2,
-body.diwali-mode h3 {
-    color: #f5f5f5 !important;
-}
-
-/* ============================================
-   11. EID - Crescent Moon & Stars (Varies)
-   ============================================ */
-.festival-eid .festival-particle {
-    font-size: 1.3rem;
-    color: #FFD700;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-    animation-name: starFloat;
-}
-
-@keyframes starFloat {
-    0% {
-        transform: translateY(0) scale(0.5) rotate(0deg);
-        opacity: 0;
-    }
-
-    20% {
-        opacity: 1;
-    }
-
-    50% {
-        transform: translateY(50vh) scale(1.2) rotate(180deg);
-    }
-
-    100% {
-        transform: translateY(100vh) scale(0.8) rotate(360deg);
         opacity: 0;
     }
 }
@@ -586,11 +617,41 @@ body.diwali-mode h3 {
     .festival-particle {
         font-size: 1rem !important;
     }
+
+    .festival-eid .crescent-moon {
+        font-size: 2.5rem;
+        top: 10px;
+        right: 10px;
+    }
+
+    .diya {
+        font-size: 1.5rem;
+        bottom: 10px;
+    }
+
+    .diya-left {
+        left: 10px;
+    }
+
+    .diya-right {
+        right: 10px;
+    }
+}
+
+/* Hide on very small screens */
+@media (max-width: 400px) {
+    .diya {
+        display: none;
+    }
 }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-    .festival-effects {
+
+    .festival-effects,
+    .festival-diwali-burst,
+    .crescent-moon,
+    .diya {
         display: none;
     }
 }
