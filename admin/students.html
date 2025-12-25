@@ -188,6 +188,98 @@
         </button>
     </div>
 
+    <!-- Record Payment Modal -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-content payment-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-indian-rupee-sign"></i> Record Payment</h2>
+                <button class="modal-close" onclick="hidePaymentModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Student Info -->
+                <div class="student-payment-info">
+                    <div class="avatar-lg" id="paymentStudentAvatar">KS</div>
+                    <div class="student-details">
+                        <h3 id="paymentStudentName">Student Name</h3>
+                        <p id="paymentStudentPhone">+91 0000000000</p>
+                    </div>
+                </div>
+
+                <!-- Enrollment Summary -->
+                <div class="enrollments-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Total</th>
+                                <th>Paid</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentEnrollmentsBody">
+                            <!-- Loaded via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Payment Form -->
+                <form id="paymentForm" class="payment-form">
+                    <div class="form-group">
+                        <label>Select Course <span class="required">*</span></label>
+                        <select id="paymentCourse" required>
+                            <option value="">Choose course...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Amount <span class="required">*</span></label>
+                            <div class="input-with-prefix">
+                                <span class="prefix">₹</span>
+                                <input type="number" id="paymentAmount" placeholder="0" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Mode <span class="required">*</span></label>
+                            <select id="paymentMode" required>
+                                <option value="cash">Cash</option>
+                                <option value="upi">UPI</option>
+                                <option value="bank">Bank Transfer</option>
+                                <option value="card">Card</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Reference ID (Optional)</label>
+                            <input type="text" id="paymentReference" placeholder="UPI Ref / Transaction ID">
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Date</label>
+                            <input type="date" id="paymentDate">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes (Optional)</label>
+                        <textarea id="paymentNotes" rows="2" placeholder="Any additional notes..."></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" onclick="hidePaymentModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" onclick="submitPayment()">
+                    <i class="fas fa-check"></i> Record Payment
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>

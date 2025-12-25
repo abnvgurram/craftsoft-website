@@ -293,7 +293,8 @@ function setupActionMenu() {
     });
 
     document.getElementById('actionPayment').addEventListener('click', () => {
-        window.location.href = `student-profile.html?id=${currentStudentId}&action=payment`;
+        hideActionMenu();
+        showPaymentModal(currentStudentId);
     });
 
     document.getElementById('actionReceipt').addEventListener('click', () => {
@@ -322,6 +323,10 @@ function showActionMenu(event, studentId) {
     menu.classList.add('show');
 }
 
+function hideActionMenu() {
+    document.getElementById('actionMenu').classList.remove('show');
+}
+
 async function updateStudentStatus(studentId, status) {
     try {
         const { error } = await supabase
@@ -336,6 +341,153 @@ async function updateStudentStatus(studentId, status) {
     } catch (error) {
         console.error('Error updating status:', error);
         showToast('Failed to update status', 'error');
+    }
+}
+
+// ============================================
+// PAYMENT MODAL
+// ============================================
+let currentPaymentStudent = null;
+
+async function showPaymentModal(studentId) {
+    const student = allStudents.find(s => s.id === studentId);
+    if (!student) return;
+
+    currentPaymentStudent = student;
+
+    // Populate student info
+    document.getElementById('paymentStudentAvatar').textContent = getInitials(student.name);
+    document.getElementById('paymentStudentName').textContent = student.name;
+    document.getElementById('paymentStudentPhone').textContent = `+91 ${student.phone}`;
+
+    // Load enrollments with payment info
+    await loadPaymentEnrollments(studentId);
+
+    // Set default date to today
+    document.getElementById('paymentDate').valueAsDate = new Date();
+
+    // Show modal
+    document.getElementById('paymentModal').classList.add('show');
+}
+
+async function loadPaymentEnrollments(studentId) {
+    try {
+        // Get enrollments with payment totals
+        const { data: enrollments, error } = await supabase
+            .from('student_enrollments')
+            .select(`
+                id,
+                course_id,
+                final_fee,
+                courses (name, code)
+            `)
+            .eq('student_id', studentId);
+
+        if (error) throw error;
+
+        // Get payments grouped by enrollment
+        const { data: payments, error: payError } = await supabase
+            .from('fee_payments')
+            .select('enrollment_id, amount')
+            .eq('student_id', studentId);
+
+        if (payError) throw payError;
+
+        // Calculate paid amounts per enrollment
+        const paymentsByEnrollment = {};
+        (payments || []).forEach(p => {
+            if (!paymentsByEnrollment[p.enrollment_id]) {
+                paymentsByEnrollment[p.enrollment_id] = 0;
+            }
+            paymentsByEnrollment[p.enrollment_id] += parseFloat(p.amount);
+        });
+
+        // Render enrollments table
+        const tbody = document.getElementById('paymentEnrollmentsBody');
+        const courseSelect = document.getElementById('paymentCourse');
+
+        tbody.innerHTML = '';
+        courseSelect.innerHTML = '<option value="">Choose course...</option>';
+
+        (enrollments || []).forEach(e => {
+            const total = parseFloat(e.final_fee);
+            const paid = paymentsByEnrollment[e.id] || 0;
+            const balance = total - paid;
+
+            // Table row
+            tbody.innerHTML += `
+                <tr>
+                    <td>${e.courses?.name || 'Unknown'}</td>
+                    <td>₹${formatNumber(total)}</td>
+                    <td class="text-success">₹${formatNumber(paid)}</td>
+                    <td class="${balance > 0 ? 'text-danger' : 'text-success'}">
+                        ${balance > 0 ? '₹' + formatNumber(balance) : '✓ Paid'}
+                    </td>
+                </tr>
+            `;
+
+            // Course dropdown option (only if balance > 0)
+            if (balance > 0) {
+                const option = document.createElement('option');
+                option.value = e.id;
+                option.textContent = `${e.courses?.name} (Balance: ₹${formatNumber(balance)})`;
+                option.dataset.balance = balance;
+                courseSelect.appendChild(option);
+            }
+        });
+
+    } catch (error) {
+        console.error('Error loading enrollments:', error);
+    }
+}
+
+function hidePaymentModal() {
+    document.getElementById('paymentModal').classList.remove('show');
+    document.getElementById('paymentForm').reset();
+    currentPaymentStudent = null;
+}
+
+async function submitPayment() {
+    const enrollmentId = document.getElementById('paymentCourse').value;
+    const amount = parseFloat(document.getElementById('paymentAmount').value);
+    const mode = document.getElementById('paymentMode').value;
+    const reference = document.getElementById('paymentReference').value.trim();
+    const paymentDate = document.getElementById('paymentDate').value;
+    const notes = document.getElementById('paymentNotes').value.trim();
+
+    // Validate
+    if (!enrollmentId) {
+        showToast('Please select a course', 'error');
+        return;
+    }
+    if (!amount || amount <= 0) {
+        showToast('Please enter a valid amount', 'error');
+        return;
+    }
+
+    try {
+        // Insert payment
+        const { error } = await supabase
+            .from('fee_payments')
+            .insert({
+                student_id: currentPaymentStudent.id,
+                enrollment_id: enrollmentId,
+                amount: amount,
+                payment_mode: mode,
+                reference_id: reference || null,
+                payment_date: paymentDate || new Date().toISOString().split('T')[0],
+                notes: notes || null
+            });
+
+        if (error) throw error;
+
+        showToast('Payment recorded successfully!', 'success');
+        hidePaymentModal();
+        loadStudents(); // Refresh list
+
+    } catch (error) {
+        console.error('Error recording payment:', error);
+        showToast('Failed to record payment: ' + error.message, 'error');
     }
 }
 
@@ -370,6 +522,25 @@ function capitalizeFirst(str) {
 }
 
 function showToast(message, type = 'info') {
-    // Simple toast - can enhance later
-    alert(message);
+    // Remove existing toast
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+
+    // Create toast
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    document.body.appendChild(toast);
+
+    // Show toast
+    setTimeout(() => toast.classList.add('show'), 10);
+
+    // Hide after 3 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
