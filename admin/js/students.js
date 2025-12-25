@@ -163,10 +163,10 @@ function renderStudents(students) {
             <td>${student.courseNames.length > 0 ?
             (student.courseNames.length === 1 ? student.courseNames[0] : `${student.courseNames.length} courses`)
             : '-'}</td>
-            <td>₹${formatNumber(student.totalFee)}</td>
-            <td class="text-success">₹${formatNumber(student.totalPaid)}</td>
+            <td>₹${formatCurrency(student.totalFee)}</td>
+            <td class="text-success">₹${formatCurrency(student.totalPaid)}</td>
             <td class="${student.balance > 0 ? 'text-danger' : 'text-success'}">
-                ${student.balance > 0 ? '₹' + formatNumber(student.balance) : '✓ Paid'}
+                ${student.balance > 0 ? '₹' + formatCurrency(student.balance) : '✓ Paid'}
             </td>
             <td><span class="status-badge status-${student.status}">${capitalizeFirst(student.status)}</span></td>
             <td>
@@ -197,21 +197,21 @@ function renderStudents(students) {
                 </div>
                 <div class="card-row">
                     <span class="label">Total Fee</span>
-                    <span class="value">₹${formatNumber(student.totalFee)}</span>
+                    <span class="value">₹${formatCurrency(student.totalFee)}</span>
                 </div>
                 <div class="card-row">
                     <span class="label">Paid</span>
-                    <span class="value text-success">₹${formatNumber(student.totalPaid)}</span>
+                    <span class="value text-success">₹${formatCurrency(student.totalPaid)}</span>
                 </div>
                 <div class="card-row">
                     <span class="label">Balance</span>
                     <span class="value ${student.balance > 0 ? 'text-danger' : 'text-success'}">
-                        ${student.balance > 0 ? '₹' + formatNumber(student.balance) : '✓ Paid'}
+                        ${student.balance > 0 ? '₹' + formatCurrency(student.balance) : '✓ Paid'}
                     </span>
                 </div>
             </div>
             <div class="card-actions">
-                <a href="student-profile.html?id=${student.id}" class="btn btn-outline btn-sm">
+                <a href="#" class="btn btn-outline btn-sm disabled" title="Coming Soon">
                     <i class="fas fa-eye"></i> View
                 </a>
                 <button class="btn btn-primary btn-sm" onclick="showActionMenu(event, '${student.id}')">
@@ -285,11 +285,11 @@ function setupActionMenu() {
 
     // Setup action handlers
     document.getElementById('actionView').addEventListener('click', () => {
-        window.location.href = `student-profile.html?id=${currentStudentId}`;
+        showToast('Student profile coming soon', 'info');
     });
 
     document.getElementById('actionEdit').addEventListener('click', () => {
-        window.location.href = `add-student.html?id=${currentStudentId}`;
+        window.location.href = `add.html?id=${currentStudentId}`;
     });
 
     document.getElementById('actionPayment').addEventListener('click', () => {
@@ -444,10 +444,10 @@ async function loadPaymentEnrollments(studentId) {
             tbody.innerHTML += `
                 <tr>
                     <td>${e.courses?.name || 'Unknown'}</td>
-                    <td>₹${formatNumber(total)}</td>
-                    <td class="text-success">₹${formatNumber(paid)}</td>
+                    <td>₹${formatCurrency(total)}</td>
+                    <td class="text-success">₹${formatCurrency(paid)}</td>
                     <td class="${balance > 0 ? 'text-danger' : 'text-success'}">
-                        ${balance > 0 ? '₹' + formatNumber(balance) : '✓ Paid'}
+                        ${balance > 0 ? '₹' + formatCurrency(balance) : '✓ Paid'}
                     </td>
                 </tr>
             `;
@@ -456,7 +456,7 @@ async function loadPaymentEnrollments(studentId) {
             if (balance > 0) {
                 const option = document.createElement('option');
                 option.value = e.id;
-                option.textContent = `${e.courses?.name} (Balance: ₹${formatNumber(balance)})`;
+                option.textContent = `${e.courses?.name} (Balance: ₹${formatCurrency(balance)})`;
                 option.dataset.balance = balance;
                 courseSelect.appendChild(option);
             }
@@ -564,34 +564,7 @@ function getInitials(name) {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
-function formatNumber(num) {
-    return new Intl.NumberFormat('en-IN').format(num);
-}
-
 function capitalizeFirst(str) {
+    if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function showToast(message, type = 'info') {
-    // Remove existing toast
-    const existing = document.querySelector('.toast');
-    if (existing) existing.remove();
-
-    // Create toast
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-        <span>${message}</span>
-    `;
-    document.body.appendChild(toast);
-
-    // Show toast
-    setTimeout(() => toast.classList.add('show'), 10);
-
-    // Hide after 3 seconds
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
 }

@@ -13,10 +13,10 @@
         href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="../css/base.css?v=1.5">
+    <link rel="stylesheet" href="../css/layout.css?v=1.5">
+    <link rel="stylesheet" href="../css/components.css?v=1.5">
+    <link rel="stylesheet" href="../css/pages.css?v=1.5">
 </head>
 
 <body>
@@ -24,7 +24,7 @@
         <!-- Sidebar -->
         <aside class="admin-sidebar" id="adminSidebar">
             <div class="sidebar-header">
-                <a href="dashboard.html" class="sidebar-logo">
+                <a href="../dashboard.html" class="sidebar-logo">
                     <i class="fas fa-graduation-cap"></i>
                     <span>Craftsoft</span>
                 </a>
@@ -33,15 +33,15 @@
                 </button>
             </div>
             <nav class="sidebar-nav">
-                <a href="dashboard.html" class="sidebar-link">
+                <a href="../dashboard.html" class="sidebar-link">
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="students.html" class="sidebar-link active">
+                <a href="index.html" class="sidebar-link active">
                     <i class="fas fa-user-graduate"></i>
                     <span>Students</span>
                 </a>
-                <a href="add-student.html" class="sidebar-sublink">
+                <a href="add.html" class="sidebar-sublink">
                     <span class="sublink-line"></span>
                     <span>Add Student</span>
                 </a>
@@ -134,7 +134,7 @@
                         <i class="far fa-folder-open"></i>
                         <h3>No students yet</h3>
                         <p>Add your first student to get started</p>
-                        <a href="add-student.html" class="btn btn-primary">
+                        <a href="add.html" class="btn btn-primary">
                             + Add Student
                         </a>
                     </div>
@@ -307,10 +307,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="js/supabase.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/receipt-pdf.js"></script>
-    <script src="js/students.js"></script>
+    <script src="../js/supabase.js?v=1.5"></script>
+    <script src="../js/common.js?v=1.5"></script>
+    <script src="../js/auth.js?v=1.5"></script>
+    <script src="../js/receipt-pdf.js?v=1.5"></script>
+    <script src="../js/students.js?v=1.5"></script>
 </body>
 
 </html>

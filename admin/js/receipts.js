@@ -115,7 +115,7 @@ function renderReceipts(payments) {
                 </div>
             </td>
             <td>${payment.student_enrollments?.courses?.name || '-'}</td>
-            <td class="text-success">₹${formatNumber(payment.amount)}</td>
+            <td class="text-success">₹${formatCurrency(payment.amount)}</td>
             <td>
                 <button class="btn btn-outline btn-sm" onclick="downloadReceipt('${payment.id}')">
                     <i class="fas fa-download"></i>
@@ -135,7 +135,7 @@ function renderReceipts(payments) {
                         <p>${payment.receipt_number || 'Receipt ID Pending'}</p>
                     </div>
                 </div>
-                <span class="amount text-success">₹${formatNumber(payment.amount)}</span>
+                <span class="amount text-success">₹${formatCurrency(payment.amount)}</span>
             </div>
             <div class="card-body">
                 <div class="card-row">
@@ -192,36 +192,7 @@ function getInitials(name) {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
-function formatNumber(num) {
-    return new Intl.NumberFormat('en-IN').format(num);
-}
-
+// Rename formatDateStrip to formatDate (or just keep it if used elsewhere, but common.js has formatDate)
 function formatDateStrip(dateStr) {
-    if (!dateStr) return '-';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-    });
-}
-
-function showToast(message, type = 'info') {
-    const existing = document.querySelector('.toast');
-    if (existing) existing.remove();
-
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-        <span>${message}</span>
-    `;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add('show'), 10);
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    return formatDate(dateStr);
 }

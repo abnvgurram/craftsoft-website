@@ -13,10 +13,10 @@
         href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="../css/base.css?v=1.5">
+    <link rel="stylesheet" href="../css/layout.css?v=1.5">
+    <link rel="stylesheet" href="../css/components.css?v=1.5">
+    <link rel="stylesheet" href="../css/pages.css?v=1.5">
 </head>
 
 <body>
@@ -24,7 +24,7 @@
         <!-- Sidebar -->
         <aside class="admin-sidebar" id="adminSidebar">
             <div class="sidebar-header">
-                <a href="dashboard.html" class="sidebar-logo">
+                <a href="../dashboard.html" class="sidebar-logo">
                     <i class="fas fa-graduation-cap"></i>
                     <span>Craftsoft</span>
                 </a>
@@ -33,15 +33,15 @@
                 </button>
             </div>
             <nav class="sidebar-nav">
-                <a href="dashboard.html" class="sidebar-link">
+                <a href="../dashboard.html" class="sidebar-link">
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="students.html" class="sidebar-link active">
+                <a href="index.html" class="sidebar-link">
                     <i class="fas fa-user-graduate"></i>
                     <span>Students</span>
                 </a>
-                <a href="add-student.html" class="sidebar-sublink active">
+                <a href="add.html" class="sidebar-sublink active">
                     <span class="sublink-line"></span>
                     <span>Add Student</span>
                 </a>
@@ -85,7 +85,7 @@
                 <button class="hamburger-btn" id="sidebarToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <a href="students.html" class="back-link">
+                <a href="index.html" class="back-link">
                     <i class="fas fa-arrow-left"></i>
                     <span>Back to Students</span>
                 </a>
@@ -194,7 +194,7 @@
 
                     <!-- Form Actions -->
                     <div class="form-actions">
-                        <a href="students.html" class="btn btn-cancel">Cancel</a>
+                        <a href="index.html" class="btn btn-cancel">Cancel</a>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
                             Save Student
@@ -283,9 +283,10 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/add-student.js"></script>
+    <script src="../js/supabase.js?v=1.5"></script>
+    <script src="../js/common.js?v=1.5"></script>
+    <script src="../js/auth.js?v=1.5"></script>
+    <script src="../js/add-student.js?v=1.5"></script>
 </body>
 
 </html>

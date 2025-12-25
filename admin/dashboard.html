@@ -13,10 +13,10 @@
         href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="css/base.css?v=1.5">
+    <link rel="stylesheet" href="css/layout.css?v=1.5">
+    <link rel="stylesheet" href="css/components.css?v=1.5">
+    <link rel="stylesheet" href="css/pages.css?v=1.5">
 </head>
 
 <body>
@@ -37,19 +37,19 @@
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="students.html" class="sidebar-link">
+                <a href="students/index.html" class="sidebar-link">
                     <i class="fas fa-user-graduate"></i>
                     <span>Students</span>
                 </a>
-                <a href="add-student.html" class="sidebar-sublink">
+                <a href="students/add.html" class="sidebar-sublink">
                     <span class="sublink-line"></span>
                     <span>Add Student</span>
                 </a>
-                <a href="payments.html" class="sidebar-sublink">
+                <a href="students/payments.html" class="sidebar-sublink">
                     <span class="sublink-line"></span>
                     <span>Payments</span>
                 </a>
-                <a href="receipts.html" class="sidebar-sublink">
+                <a href="students/receipts.html" class="sidebar-sublink">
                     <span class="sublink-line"></span>
                     <span>Receipts</span>
                 </a>
@@ -146,15 +146,15 @@
                 <div class="quick-actions">
                     <h3>Quick Actions</h3>
                     <div class="actions-grid">
-                        <a href="add-student.html" class="action-card">
+                        <a href="students/add.html" class="action-card">
                             <i class="fas fa-user-plus"></i>
                             <span>Add Student</span>
                         </a>
-                        <a href="students.html" class="action-card">
+                        <a href="students/index.html" class="action-card">
                             <i class="fas fa-users"></i>
                             <span>View Students</span>
                         </a>
-                        <a href="#" class="action-card disabled">
+                        <a href="students/receipts.html" class="action-card">
                             <i class="fas fa-file-invoice"></i>
                             <span>Receipts</span>
                         </a>
@@ -206,9 +206,10 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script src="js/supabase.js?v=1.5"></script>
+    <script src="js/common.js?v=1.5"></script>
+    <script src="js/auth.js?v=1.5"></script>
+    <script src="js/dashboard.js?v=1.5"></script>
 </body>
 
 </html>

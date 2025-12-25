@@ -108,7 +108,7 @@ async function validateSessionOrRedirect() {
 
     if (!session || !hasValidTabSession() || isSessionExpired()) {
         clearTabSession();
-        window.location.replace('index.html');
+        window.location.replace('/admin/index.html');
     }
 }
 
@@ -122,7 +122,7 @@ async function checkExistingSession() {
 
     // Only redirect if BOTH Supabase session AND tab session exist
     if (session && hasValidTabSession() && !isSessionExpired()) {
-        window.location.replace('dashboard.html');
+        window.location.replace('/admin/dashboard.html');
     } else if (session && !hasValidTabSession()) {
         // Supabase has session but tab doesn't - clear Supabase session
         // This ensures new tab requires login
@@ -137,7 +137,7 @@ async function requireAuth() {
     // Check all conditions: Supabase session, tab session, and not expired
     if (!session || !hasValidTabSession() || isSessionExpired()) {
         clearTabSession();
-        window.location.replace('index.html');
+        window.location.replace('/admin/index.html');
         return null;
     }
 
@@ -259,12 +259,12 @@ async function signOut() {
         if (error) throw error;
 
         // Replace history to prevent back navigation
-        window.location.replace('index.html');
+        window.location.replace('/admin/index.html');
     } catch (error) {
         console.error('Sign out error:', error);
         // Force redirect even on error
         clearTabSession();
-        window.location.replace('index.html');
+        window.location.replace('/admin/index.html');
     }
 }
 
@@ -275,7 +275,7 @@ async function forceLogout(message) {
 
     // Store message to show on login page
     sessionStorage.setItem('logout_message', message || 'You have been logged out');
-    window.location.replace('index.html');
+    window.location.replace('/admin/index.html');
 }
 
 // Password Reset

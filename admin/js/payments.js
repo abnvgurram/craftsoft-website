@@ -113,7 +113,7 @@ function renderPayments(payments) {
                 </div>
             </td>
             <td>${payment.student_enrollments?.courses?.name || '-'}</td>
-            <td class="text-success">₹${formatNumber(payment.amount)}</td>
+            <td class="text-success">₹${formatCurrency(payment.amount)}</td>
             <td><span class="mode-badge mode-${payment.payment_mode}">${capitalizeFirst(payment.payment_mode)}</span></td>
             <td>${payment.reference_id || '-'}</td>
             <td>
@@ -135,7 +135,7 @@ function renderPayments(payments) {
                         <p>${payment.student_enrollments?.courses?.name || '-'}</p>
                     </div>
                 </div>
-                <span class="amount text-success">₹${formatNumber(payment.amount)}</span>
+                <span class="amount text-success">₹${formatCurrency(payment.amount)}</span>
             </div>
             <div class="card-body">
                 <div class="card-row">
@@ -256,40 +256,7 @@ function getInitials(name) {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
-function formatNumber(num) {
-    return new Intl.NumberFormat('en-IN').format(num);
-}
-
-function formatDate(dateStr) {
-    if (!dateStr) return '-';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-    });
-}
-
 function capitalizeFirst(str) {
+    if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function showToast(message, type = 'info') {
-    const existing = document.querySelector('.toast');
-    if (existing) existing.remove();
-
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-        <span>${message}</span>
-    `;
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add('show'), 10);
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
 }

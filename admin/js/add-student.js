@@ -144,8 +144,8 @@ async function loadStudentData(studentId) {
 
     } catch (error) {
         console.error('Error loading student:', error);
-        alert('Failed to load student data');
-        window.location.href = 'students.html';
+        showToast('Failed to load student data', 'error');
+        window.location.href = 'index.html';
     }
 }
 
@@ -203,7 +203,7 @@ function removeCourseCard(button) {
         updateCourseNumbers();
         calculateFees();
     } else {
-        alert('At least one course is required');
+        showToast('At least one course is required', 'warning');
     }
 }
 
@@ -316,12 +316,12 @@ async function saveStudent() {
         const baseFee = parseFloat(card.querySelector('.course-fee').value) || 0;
 
         if (!courseId) {
-            alert('Please select a course for all enrollment cards');
+            showToast('Please select a course for all enrollment cards', 'warning');
             return;
         }
 
         if (baseFee <= 0) {
-            alert('Please enter a valid fee for all courses');
+            showToast('Please enter a valid fee for all courses', 'warning');
             return;
         }
 
@@ -412,21 +412,20 @@ async function saveStudent() {
 
         if (enrollError) throw enrollError;
 
-        alert(isEditMode ? 'Student updated successfully!' : 'Student added successfully!');
-        window.location.href = 'students.html';
+        showToast(isEditMode ? 'Student updated successfully!' : 'Student added successfully!', 'success');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1500);
 
     } catch (error) {
         console.error('Error saving student:', error);
-        alert('Failed to save student: ' + error.message);
+        showToast('Failed to save student: ' + error.message, 'error');
     }
 }
 
 // ============================================
 // UTILITIES
 // ============================================
-function formatNumber(num) {
-    return new Intl.NumberFormat('en-IN').format(num);
-}
 
 // Logout
 function showLogoutModal() {

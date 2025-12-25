@@ -50,7 +50,7 @@ async function loadDashboardStats() {
             .select('amount, payment_date');
 
         const totalCollected = payments?.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0) || 0;
-        document.getElementById('totalCollected').textContent = '₹' + formatNumber(totalCollected);
+        document.getElementById('totalCollected').textContent = '₹' + formatCurrency(totalCollected);
 
         // 3. Get pending fees from enrollments
         const { data: enrollments } = await supabase
@@ -59,7 +59,7 @@ async function loadDashboardStats() {
 
         const totalFees = enrollments?.reduce((sum, e) => sum + parseFloat(e.final_fee || 0), 0) || 0;
         const pending = totalFees - totalCollected;
-        document.getElementById('pendingFees').textContent = '₹' + formatNumber(pending > 0 ? pending : 0);
+        document.getElementById('pendingFees').textContent = '₹' + formatCurrency(pending > 0 ? pending : 0);
 
         // 4. Get active course count
         const { count: courseCount } = await supabase
@@ -107,7 +107,7 @@ async function loadRecentActivity() {
                 <div class="activity-details">
                     <p class="activity-text">
                         <strong>${payment.students?.name || 'Unknown'}</strong> paid 
-                        <span class="activity-amount">₹${formatNumber(payment.amount)}</span> 
+                        <span class="activity-amount">₹${formatCurrency(payment.amount)}</span> 
                         for <strong>${payment.student_enrollments?.courses?.name || 'Course'}</strong>
                     </p>
                     <span class="activity-time">${formatRelativeTime(payment.payment_date)}</span>
@@ -121,9 +121,7 @@ async function loadRecentActivity() {
     }
 }
 
-function formatNumber(num) {
-    return new Intl.NumberFormat('en-IN').format(num);
-}
+
 
 function formatRelativeTime(dateStr) {
     const date = new Date(dateStr);
