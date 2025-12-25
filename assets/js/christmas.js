@@ -1,13 +1,13 @@
 /* ============================================
    CHRISTMAS SNOWFALL - JavaScript
-   Active until: January 1st, 2025 23:59:59 IST
+   Active until: January 1st, 2026 23:59:59 IST
    ============================================ */
 
 (function () {
     'use strict';
 
-    // Check if Christmas season (until Jan 1, 2025 23:59:59 IST)
-    const endDate = new Date('2025-01-01T23:59:59+05:30');
+    // Check if Christmas season (until Jan 1, 2026 23:59:59 IST)
+    const endDate = new Date('2026-01-01T23:59:59+05:30');
     const now = new Date();
 
     if (now > endDate) {
