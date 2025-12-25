@@ -2,16 +2,52 @@
    Dashboard Core Logic
    - Auth check
    - Session protection
+   - Single tab enforcement
    - Sidebar navigation
    - Logout
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', async () => {
     // ============================================
+    // SINGLE TAB ENFORCEMENT
+    // ============================================
+
+    const SESSION_KEY = 'craftsoft_admin_session_tab';
+    const tabId = Date.now().toString() + Math.random().toString(36);
+
+    // Check if another tab is already open
+    const existingTab = sessionStorage.getItem(SESSION_KEY);
+
+    if (existingTab && existingTab !== tabId) {
+        // Another tab is already open - redirect to signin
+        alert('Admin session is already open in another tab. Please use that tab.');
+        window.location.replace('signin.html');
+        return;
+    }
+
+    // Mark this tab as the active one
+    sessionStorage.setItem(SESSION_KEY, tabId);
+
+    // Listen for storage changes from other tabs
+    window.addEventListener('storage', (e) => {
+        if (e.key === SESSION_KEY && e.newValue !== tabId) {
+            // Another tab took over or cleared the session
+            window.location.replace('signin.html');
+        }
+    });
+
+    // Clear on unload
+    window.addEventListener('beforeunload', () => {
+        if (sessionStorage.getItem(SESSION_KEY) === tabId) {
+            sessionStorage.removeItem(SESSION_KEY);
+        }
+    });
+
+    // ============================================
     // SESSION PROTECTION
     // ============================================
 
-    // Prevent caching
+    // Prevent caching and back/forward
     if (window.history && window.history.pushState) {
         window.history.pushState(null, '', window.location.href);
         window.addEventListener('popstate', () => {
