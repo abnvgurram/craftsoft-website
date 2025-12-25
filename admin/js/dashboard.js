@@ -9,9 +9,8 @@
 
 // ============================================
 // SINGLE TAB SESSION - RUNS IMMEDIATELY
-// (before page renders to prevent flickering)
+// Must be outside DOMContentLoaded to prevent flickering
 // ============================================
-
 (function () {
     const LOCK_KEY = 'craftsoft_admin_lock';
     const LOCK_TIMEOUT = 2000; // 2 seconds
@@ -24,7 +23,8 @@
         if (now - lockTime < LOCK_TIMEOUT) {
             // Another tab is active - redirect immediately
             window.location.replace('signin.html');
-            return; // Stop script execution
+            // Stop script execution
+            throw new Error('Duplicate tab - redirecting');
         }
     }
 
@@ -34,17 +34,13 @@
     // Keep refreshing the lock
     setInterval(() => {
         localStorage.setItem(LOCK_KEY, Date.now().toString());
-    }, 1000);
+    }, 500);
 
     // Clear lock when tab closes
     window.addEventListener('beforeunload', () => {
         localStorage.removeItem(LOCK_KEY);
     });
 })();
-
-// ============================================
-// MAIN DASHBOARD LOGIC (after DOM loads)
-// ============================================
 
 document.addEventListener('DOMContentLoaded', async () => {
 
