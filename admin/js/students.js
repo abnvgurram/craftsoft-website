@@ -301,10 +301,15 @@ function setupActionMenu() {
         window.location.href = `student-profile.html?id=${currentStudentId}&action=receipt`;
     });
 
-    document.getElementById('actionDeactivate').addEventListener('click', async () => {
-        if (confirm('Are you sure you want to deactivate this student?')) {
-            await updateStudentStatus(currentStudentId, 'inactive');
-        }
+    document.getElementById('actionDeactivate').addEventListener('click', () => {
+        hideActionMenu();
+        showConfirmModal(
+            'Deactivate Student',
+            'Are you sure you want to deactivate this student? They will no longer appear in active lists.',
+            async () => {
+                await updateStudentStatus(currentStudentId, 'inactive');
+            }
+        );
     });
 }
 
@@ -504,6 +509,31 @@ function hideLogoutModal() {
 
 async function confirmLogout() {
     await signOut();
+}
+
+// ============================================
+// CONFIRM MODAL
+// ============================================
+let confirmCallback = null;
+
+function showConfirmModal(title, message, onConfirm) {
+    document.getElementById('confirmModalTitle').textContent = title;
+    document.getElementById('confirmModalText').textContent = message;
+    confirmCallback = onConfirm;
+
+    document.getElementById('confirmModalAction').onclick = async () => {
+        if (confirmCallback) {
+            await confirmCallback();
+        }
+        hideConfirmModal();
+    };
+
+    document.getElementById('confirmModal').classList.add('show');
+}
+
+function hideConfirmModal() {
+    document.getElementById('confirmModal').classList.remove('show');
+    confirmCallback = null;
 }
 
 // ============================================

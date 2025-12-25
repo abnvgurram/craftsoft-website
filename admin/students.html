@@ -280,6 +280,21 @@
         </div>
     </div>
 
+    <!-- Confirm Modal (Generic) -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content confirm-modal">
+            <div class="modal-icon" id="confirmModalIcon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="modal-title" id="confirmModalTitle">Are you sure?</h3>
+            <p class="modal-text" id="confirmModalText">This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="hideConfirmModal()">Cancel</button>
+                <button class="btn btn-danger" id="confirmModalAction">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>

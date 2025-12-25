@@ -525,6 +525,22 @@
     min-width: 100px;
 }
 
+/* Confirm Modal */
+.confirm-modal {
+    max-width: 400px;
+    padding: 32px;
+}
+
+.confirm-modal .modal-icon {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.confirm-modal .modal-icon.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
 /* Action Menu Modal */
 .action-menu {
     position: fixed;
