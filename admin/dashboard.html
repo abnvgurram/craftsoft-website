@@ -28,6 +28,18 @@
     <!-- Styles -->
     <link rel="stylesheet" href="css/admin-auth.css">
     <link rel="stylesheet" href="css/dashboard.css">
+
+    <!-- Single Tab Check - MUST be in head to run before body renders -->
+    <script>
+        (function () {
+            var LOCK_KEY = 'craftsoft_admin_lock';
+            var now = Date.now();
+            var lock = localStorage.getItem(LOCK_KEY);
+            if (lock && (now - parseInt(lock, 10)) < 2000) {
+                window.location.replace('signin.html');
+            }
+        })();
+    </script>
 </head>
 
 <body>

@@ -8,29 +8,16 @@
    ============================================ */
 
 // ============================================
-// SINGLE TAB SESSION (runs IMMEDIATELY before page renders)
+// SINGLE TAB SESSION - Set lock and keep refreshing
+// (The redirect check is in dashboard.html head)
 // ============================================
 (function () {
     const LOCK_KEY = 'craftsoft_admin_lock';
-    const LOCK_TIMEOUT = 2000; // 2 seconds
 
-    const now = Date.now();
-    const existingLock = localStorage.getItem(LOCK_KEY);
+    // Set our lock immediately
+    localStorage.setItem(LOCK_KEY, Date.now().toString());
 
-    if (existingLock) {
-        const lockTime = parseInt(existingLock, 10);
-        if (now - lockTime < LOCK_TIMEOUT) {
-            // Another tab is active - redirect immediately and stop
-            window.stop(); // Stop page loading
-            window.location.replace('signin.html');
-            return; // Exit IIFE
-        }
-    }
-
-    // Set our lock
-    localStorage.setItem(LOCK_KEY, now.toString());
-
-    // Keep refreshing the lock
+    // Keep refreshing the lock every 500ms
     setInterval(() => {
         localStorage.setItem(LOCK_KEY, Date.now().toString());
     }, 500);
