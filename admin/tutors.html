@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Students | Abhi's Craft Soft Admin</title>
+    <title>Tutors | Abhi's Craft Soft Admin</title>
 
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -94,12 +94,12 @@
                         <span>Dashboard</span>
                     </a>
 
-                    <a href="students.html" class="nav-item active">
+                    <a href="students.html" class="nav-item">
                         <i class="fas fa-users nav-icon"></i>
                         <span>Students</span>
                     </a>
 
-                    <a href="tutors.html" class="nav-item">
+                    <a href="tutors.html" class="nav-item active">
                         <i class="fas fa-chalkboard-teacher nav-icon"></i>
                         <span>Tutors</span>
                     </a>
@@ -134,7 +134,7 @@
                     <button class="mobile-menu-btn" id="mobileMenuBtn">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <h1 class="page-title">Students</h1>
+                    <h1 class="page-title">Tutors</h1>
                 </div>
 
                 <div class="header-right">
@@ -194,49 +194,50 @@
                 <div class="page-actions-bar">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="studentSearch" placeholder="Search by name, ID, phone...">
+                        <input type="text" id="tutorSearch" placeholder="Search by name, ID, phone...">
                     </div>
                     <div class="filter-group">
                         <select id="courseFilter" class="filter-select">
                             <option value="">All Courses</option>
                         </select>
-                        <select id="sortBy" class="filter-select">
-                            <option value="newest">Newest First</option>
-                            <option value="oldest">Oldest First</option>
-                            <option value="name_asc">Name A-Z</option>
-                            <option value="name_desc">Name Z-A</option>
+                        <select id="modeFilter" class="filter-select">
+                            <option value="">All Modes</option>
+                            <option value="offline">Offline</option>
+                            <option value="online">Online</option>
+                            <option value="both">Both</option>
                         </select>
                     </div>
-                    <button class="btn-primary" id="addStudentBtn">
+                    <button class="btn-primary" id="addTutorBtn">
                         <i class="fas fa-plus"></i>
-                        <span>Add Student</span>
+                        <span>Add Tutor</span>
                     </button>
                 </div>
 
-                <!-- Students Table (Desktop) -->
+                <!-- Tutors Table (Desktop) -->
                 <div class="data-table-container">
-                    <table class="data-table" id="studentsTable">
+                    <table class="data-table" id="tutorsTable">
                         <thead>
                             <tr>
-                                <th>Student ID</th>
+                                <th>Tutor ID</th>
                                 <th>Name</th>
                                 <th>Phone</th>
                                 <th>Course(s)</th>
-                                <th>Joining Date</th>
+                                <th>Mode</th>
+                                <th>Availability</th>
                                 <th>WhatsApp</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="studentsTableBody">
+                        <tbody id="tutorsTableBody">
                             <!-- Dynamic content -->
                         </tbody>
                     </table>
 
                     <!-- Empty State -->
                     <div class="empty-state" id="emptyState" style="display: none;">
-                        <i class="fas fa-user-graduate"></i>
-                        <h3>No Students Yet</h3>
-                        <p>Add your first student to get started!</p>
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <h3>No Tutors Yet</h3>
+                        <p>Add your first tutor to get started!</p>
                     </div>
 
                     <!-- Pagination -->
@@ -251,151 +252,102 @@
                     </div>
                 </div>
 
-                <!-- Students Cards (Mobile) -->
-                <div class="data-cards" id="studentsCards">
+                <!-- Tutors Cards (Mobile) -->
+                <div class="data-cards" id="tutorsCards">
                     <!-- Dynamic content -->
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Add Student Modal -->
-    <div class="modal-overlay" id="studentModalOverlay">
-        <div class="modal student-modal" id="studentModal">
+    <!-- Add Tutor Modal -->
+    <div class="modal-overlay" id="tutorModalOverlay">
+        <div class="modal student-modal" id="tutorModal">
             <div class="modal-header">
-                <h2 id="studentModalTitle">Add New Student</h2>
-                <button class="modal-close" id="closeStudentModal">
+                <h2 id="tutorModalTitle">Add New Tutor</h2>
+                <button class="modal-close" id="closeTutorModal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="studentForm">
+                <form id="tutorForm">
                     <!-- Row 1: Name -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="firstName">First Name <span class="required">*</span></label>
-                            <input type="text" id="firstName" placeholder="e.g. Rahul" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="surname">Surname <span class="required">*</span></label>
-                            <input type="text" id="surname" placeholder="e.g. Sharma" required>
-                        </div>
+                    <div class="form-group">
+                        <label for="fullName">Full Name <span class="required">*</span></label>
+                        <input type="text" id="fullName" placeholder="e.g. Sneha Reddy" required>
                     </div>
 
                     <!-- Row 2: Contact -->
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="phone">Phone / WhatsApp <span class="required">*</span></label>
+                            <label for="tutorPhone">Phone / WhatsApp <span class="required">*</span></label>
                             <div class="phone-input-group">
-                                <input type="text" id="countryCode" class="phone-country-code" placeholder="+91"
+                                <input type="text" id="tutorCountryCode" class="phone-country-code" placeholder="+91"
                                     value="+91" maxlength="5">
-                                <input type="tel" id="phone" placeholder="9876543210" maxlength="10" required>
+                                <input type="tel" id="tutorPhone" placeholder="9876543210" maxlength="10" required>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="email">Email <span class="optional">(optional)</span></label>
-                            <input type="email" id="email" placeholder="student@email.com">
+                            <label for="tutorEmail">Email <span class="optional">(optional)</span></label>
+                            <input type="email" id="tutorEmail" placeholder="tutor@email.com">
                         </div>
                     </div>
 
                     <!-- Row 3: Courses -->
                     <div class="form-group">
-                        <label for="courses">Courses <span class="required">*</span></label>
-                        <div class="multi-select-dropdown" id="coursesDropdown">
-                            <div class="multi-select-trigger" id="coursesTrigger">
+                        <label for="tutorCourses">Courses <span class="required">*</span></label>
+                        <div class="multi-select-dropdown" id="tutorCoursesDropdown">
+                            <div class="multi-select-trigger" id="tutorCoursesTrigger">
                                 <span class="placeholder">Select courses...</span>
                                 <i class="fas fa-chevron-down"></i>
                             </div>
-                            <div class="multi-select-options" id="coursesOptions">
+                            <div class="multi-select-options" id="tutorCoursesOptions">
                                 <!-- Dynamic course options -->
                             </div>
                         </div>
-                        <div class="selected-tags" id="selectedCourses"></div>
+                        <div class="selected-tags" id="selectedTutorCourses"></div>
                     </div>
 
-                    <!-- Row 4: Tutors -->
-                    <div class="form-group" id="tutorsGroup" style="display: none;">
-                        <label>Assigned Tutors</label>
-                        <div class="tutor-assignments" id="tutorAssignments">
-                            <!-- Dynamic tutor assignments per course -->
-                        </div>
+                    <!-- Row 4: LinkedIn -->
+                    <div class="form-group">
+                        <label for="linkedin">LinkedIn <span class="optional">(optional)</span></label>
+                        <input type="url" id="linkedin" placeholder="https://linkedin.com/in/username">
                     </div>
 
-                    <!-- Row 5: Fees -->
-                    <div class="form-row form-row-3">
-                        <div class="form-group">
-                            <label for="fee">Total Fee (₹)</label>
-                            <input type="number" id="fee" placeholder="0" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="discount">Discount (₹)</label>
-                            <input type="number" id="discount" placeholder="0" value="0">
-                        </div>
-                        <div class="form-group">
-                            <label for="finalFee">Final Fee (₹)</label>
-                            <input type="number" id="finalFee" placeholder="0" readonly>
-                        </div>
-                    </div>
-
-                    <!-- Row 6: Dates -->
+                    <!-- Row 5: Mode & Availability -->
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="demoDate">Demo Date</label>
-                            <input type="date" id="demoDate">
+                            <label for="teachingMode">Teaching Mode <span class="required">*</span></label>
+                            <select id="teachingMode" required>
+                                <option value="">Select mode...</option>
+                                <option value="offline">Offline</option>
+                                <option value="online">Online</option>
+                                <option value="both">Both</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="joiningDate">Joining Date</label>
-                            <input type="date" id="joiningDate">
-                        </div>
-                    </div>
-
-                    <!-- Row 7: Batch & Lead -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="batchTime">Batch Time</label>
-                            <input type="time" id="batchTime">
-                        </div>
-                        <div class="form-group">
-                            <label for="leadSource">Lead Source</label>
-                            <select id="leadSource">
-                                <option value="">Select source...</option>
-                                <option value="website">Website</option>
-                                <option value="linkedin">LinkedIn</option>
-                                <option value="walkin">Walk-in</option>
-                                <option value="referral">Friend Referral</option>
+                            <label for="availability">Availability <span class="required">*</span></label>
+                            <select id="availability" required>
+                                <option value="">Select availability...</option>
+                                <option value="weekdays">Weekdays</option>
+                                <option value="weekends">Weekends</option>
+                                <option value="flexible">Flexible</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Row 8: Occupation -->
+                    <!-- Row 6: Notes -->
                     <div class="form-group">
-                        <label for="occupation">Current Occupation</label>
-                        <select id="occupation">
-                            <option value="">Select occupation...</option>
-                            <option value="student">Student</option>
-                            <option value="working">Working Professional</option>
-                            <option value="career_break">Career Break</option>
-                        </select>
-                    </div>
-
-                    <!-- Row 9: Address -->
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <textarea id="address" rows="2" placeholder="Street, City, State"></textarea>
-                    </div>
-
-                    <!-- Row 10: Notes -->
-                    <div class="form-group">
-                        <label for="notes">Notes / Remarks</label>
-                        <textarea id="notes" rows="2" placeholder="Any additional notes..."></textarea>
+                        <label for="tutorNotes">Notes / Remarks</label>
+                        <textarea id="tutorNotes" rows="2" placeholder="Any additional notes..."></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-secondary" id="cancelStudentBtn">Cancel</button>
-                <button type="submit" class="btn-primary" id="saveStudentBtn">
+                <button type="button" class="btn-secondary" id="cancelTutorBtn">Cancel</button>
+                <button type="submit" class="btn-primary" id="saveTutorBtn">
                     <i class="fas fa-save"></i>
-                    <span>Save Student</span>
+                    <span>Save Tutor</span>
                 </button>
             </div>
         </div>
@@ -405,7 +357,7 @@
     <script src="js/ui-components.js"></script>
     <script src="js/admin-common.js"></script>
     <script src="js/admin-switcher.js"></script>
-    <script src="js/students.js"></script>
+    <script src="js/tutors.js"></script>
 </body>
 
 </html>

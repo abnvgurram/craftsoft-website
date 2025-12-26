@@ -86,8 +86,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const statStudents = document.getElementById('statStudents');
         if (statStudents) statStudents.textContent = studentCount;
 
-        // Tutors, Inquiries, Revenue will be added in later phases
-        // For now they stay at 0
+        // Load tutor count from localStorage
+        const tutorCount = localStorage.getItem('craftsoft_tutor_count') || 0;
+        const statTutors = document.getElementById('statTutors');
+        if (statTutors) statTutors.textContent = tutorCount;
+
+        // Inquiries, Revenue will be added in later phases
     }
 
     loadDashboardStats();

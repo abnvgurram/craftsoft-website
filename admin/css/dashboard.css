@@ -1474,6 +1474,40 @@ body {
     background: #bbf7d0;
 }
 
+.action-btn.linkedin {
+    background: #e0f2fe;
+    color: #0077b5;
+    text-decoration: none;
+}
+
+.action-btn.linkedin:hover {
+    background: #bae6fd;
+}
+
+/* Mode Badges */
+.mode-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.mode-badge.mode-offline {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.mode-badge.mode-online {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.mode-badge.mode-both {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
 .phone-cell {
     display: flex;
     align-items: center;
