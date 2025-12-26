@@ -1367,6 +1367,39 @@ body {
     background: #fecaca;
 }
 
+.action-btn.whatsapp {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.action-btn.whatsapp:hover {
+    background: #bbf7d0;
+}
+
+.phone-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+/* Tutor Select Dropdown */
+.tutor-select {
+    padding: 6px 10px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 0.8125rem;
+    font-family: var(--font-secondary);
+    color: var(--gray-700);
+    background: var(--white);
+    cursor: pointer;
+    min-width: 140px;
+}
+
+.tutor-select:focus {
+    outline: none;
+    border-color: var(--primary-400);
+}
+
 /* Empty State */
 .empty-state {
     text-align: center;

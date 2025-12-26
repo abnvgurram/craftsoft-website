@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // State
     let students = [];
     let selectedCourses = [];
+    let selectedTutors = {}; // { courseCode: tutorId }
     let editingStudentId = null;
 
     // ============================================
@@ -169,14 +170,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         tutorsGroup.style.display = 'block';
         tutorAssignments.innerHTML = selectedCourses.map(code => {
             const course = COURSES.find(c => c.code === code);
-            const tutor = TUTORS.find(t => t.courses.includes(code));
+            const availableTutors = TUTORS.filter(t => t.courses.includes(code));
+            const currentTutor = selectedTutors[code] || '';
             return `
                 <div class="tutor-assignment">
                     <span class="tutor-assignment-course">${course.name}</span>
-                    <span class="tutor-assignment-name">${tutor ? tutor.name : 'TBA'}</span>
+                    <select class="tutor-select" data-course="${code}">
+                        <option value="">Select tutor...</option>
+                        ${availableTutors.map(t => `
+                            <option value="${t.id}" ${currentTutor == t.id ? 'selected' : ''}>${t.name}</option>
+                        `).join('')}
+                    </select>
                 </div>
             `;
         }).join('');
+
+        // Attach change listeners
+        tutorAssignments.querySelectorAll('.tutor-select').forEach(select => {
+            select.addEventListener('change', (e) => {
+                selectedTutors[e.target.dataset.course] = e.target.value;
+            });
+        });
     }
 
     function updateFees() {
@@ -217,6 +231,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function resetCourseSelection() {
         selectedCourses = [];
+        selectedTutors = {};
         coursesOptions.querySelectorAll('.multi-select-option').forEach(opt => {
             opt.classList.remove('selected');
             opt.querySelector('input').checked = false;
@@ -280,10 +295,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             phone: phone,
             email: document.getElementById('email').value.trim() || null,
             courses: selectedCourses,
-            tutors: selectedCourses.map(code => {
-                const tutor = TUTORS.find(t => t.courses.includes(code));
-                return tutor ? tutor.id : null;
-            }).filter(Boolean),
+            tutors: selectedTutors,
             fee: parseInt(feeInput.value) || 0,
             discount: parseInt(discountInput.value) || 0,
             final_fee: parseInt(finalFeeInput.value) || 0,
@@ -419,7 +431,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             <tr data-id="${student.id}">
                 <td><span class="student-id">${student.id}</span></td>
                 <td><span class="student-name">${student.name}</span></td>
-                <td>${student.phone}</td>
+                <td>
+                    <div class="phone-cell">
+                        <span>${student.phone}</span>
+                        <button class="action-btn whatsapp" title="WhatsApp" onclick="openWhatsApp('${student.phone}')">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
+                    </div>
+                </td>
                 <td>
                     <div class="course-tags">
                         ${student.courses.map(code => {
@@ -480,8 +499,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function formatDate(dateStr) {
         const date = new Date(dateStr);
-        return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
     }
+
+    // ============================================
+    // WhatsApp Integration
+    // ============================================
+    window.openWhatsApp = function (phone) {
+        // Clean phone number
+        let cleanPhone = phone.replace(/[^0-9]/g, '');
+        // Add India country code if not present
+        if (!cleanPhone.startsWith('91') && cleanPhone.length === 10) {
+            cleanPhone = '91' + cleanPhone;
+        }
+        window.open(`https://wa.me/${cleanPhone}`, '_blank');
+    };
 
     // ============================================
     // Edit Student
@@ -510,6 +545,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Restore course selection
         selectedCourses = [...(student.courses || [])];
+        selectedTutors = student.tutors || {};
         coursesOptions.querySelectorAll('.multi-select-option').forEach(opt => {
             const code = opt.dataset.code;
             if (selectedCourses.includes(code)) {
