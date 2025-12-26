@@ -1290,8 +1290,9 @@ body {
 }
 
 .phone-country-code {
-    width: 55px;
-    padding: 10px 6px;
+    flex: 0 0 50px;
+    max-width: 50px;
+    padding: 10px 4px;
     background: var(--gray-50);
     border: 1px solid var(--gray-200);
     border-right: none;
