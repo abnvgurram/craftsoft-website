@@ -43,8 +43,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         return JSON.parse(localStorage.getItem(SAVED_ADMINS_KEY) || '[]');
     }
 
+    function getAvatarColor(initial) {
+        const colors = [
+            'linear-gradient(135deg, #2896cd 0%, #6C5CE7 100%)', // Blue-Purple
+            'linear-gradient(135deg, #10B981 0%, #059669 100%)', // Green
+            'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', // Orange
+            'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)', // Red
+            'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)', // Indigo
+            'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)'  // Pink
+        ];
+        const charCode = initial.charCodeAt(0) || 0;
+        return colors[charCode % colors.length];
+    }
+
     function saveAdmin(admin) {
         let saved = getSavedAdmins();
+        const initial = admin.full_name.charAt(0).toUpperCase();
         // Remove if already exists (to update info)
         saved = saved.filter(a => a.id !== admin.id);
         saved.push({
@@ -52,10 +66,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             admin_id: admin.admin_id,
             full_name: admin.full_name,
             email: admin.email,
-            avatar: admin.full_name.charAt(0).toUpperCase()
+            avatar: initial,
+            color: getAvatarColor(initial)
         });
         localStorage.setItem(SAVED_ADMINS_KEY, JSON.stringify(saved));
-        renderSavedAdmins();
     }
 
     function renderSavedAdmins() {
@@ -93,10 +107,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         const nameEl = document.getElementById('currentAdminName');
         const idEl = document.getElementById('currentAdminId');
         const avatarEl = document.getElementById('currentAdminAvatar');
+        const mainNavNameEl = document.getElementById('adminName');
+        const mainNavIdEl = document.getElementById('adminId');
+
+        const initial = admin.full_name.charAt(0).toUpperCase();
+        const color = getAvatarColor(initial);
 
         if (nameEl) nameEl.textContent = admin.full_name;
         if (idEl) idEl.textContent = admin.admin_id;
-        if (avatarEl) avatarEl.textContent = admin.full_name.charAt(0).toUpperCase();
+        if (avatarEl) {
+            avatarEl.textContent = initial;
+            avatarEl.style.background = color;
+        }
+
+        // Main navbar update
+        if (mainNavNameEl) mainNavNameEl.textContent = admin.full_name;
+        if (mainNavIdEl) mainNavIdEl.textContent = admin.admin_id;
+
+        // Also update welcome message if exists
+        const welcomeName = document.getElementById('welcomeName');
+        const welcomeId = document.getElementById('welcomeAdminId');
+        const welcomeEmail = document.getElementById('welcomeEmail');
+        if (welcomeName) welcomeName.textContent = admin.full_name;
+        if (welcomeId) welcomeId.textContent = admin.admin_id;
+        if (welcomeEmail) welcomeEmail.textContent = admin.email;
     }
 
     function renderSavedAdminsList(currentUserId) {
@@ -110,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             savedAdminsList.innerHTML = otherAdmins.map(admin => `
                 <div class="saved-admin" data-admin-id="${admin.id}" data-email="${admin.email}">
-                    <div class="saved-admin-avatar">${admin.avatar}</div>
+                    <div class="saved-admin-avatar" style="background: ${admin.color || getAvatarColor(admin.avatar)}">${admin.avatar}</div>
                     <div class="saved-admin-info">
                         <div class="saved-admin-name">${admin.full_name}</div>
                         <div class="saved-admin-id">${admin.admin_id}</div>

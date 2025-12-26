@@ -30,6 +30,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return JSON.parse(localStorage.getItem(SAVED_ADMINS_KEY) || '[]');
     }
 
+    function getAvatarColor(initial) {
+        const colors = [
+            'linear-gradient(135deg, #2896cd 0%, #6C5CE7 100%)', // Blue-Purple
+            'linear-gradient(135deg, #10B981 0%, #059669 100%)', // Green
+            'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', // Orange
+            'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)', // Red
+            'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)', // Indigo
+            'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)'  // Pink
+        ];
+        const charCode = initial.charCodeAt(0) || 0;
+        return colors[charCode % colors.length];
+    }
+
     async function initAccountPicker() {
         const urlParams = new URLSearchParams(window.location.search);
         const action = urlParams.get('action');
@@ -50,18 +63,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const { data: { session } } = await window.supabaseClient.auth.getSession();
         const currentUserId = session ? session.user.id : null;
 
-        accountList.innerHTML = saved.map(admin => `
-            <div class="account-item ${admin.id === currentUserId ? 'active' : ''}" 
-                 data-identifier="${admin.admin_id}">
-                <div class="account-avatar">${admin.avatar}</div>
-                <div class="account-info">
-                    <div class="account-name">${admin.full_name}</div>
-                    <div class="account-id-badge">${admin.admin_id}</div>
-                    ${admin.id === currentUserId ? '<div class="account-status">Active Session</div>' : ''}
+        accountList.innerHTML = saved.map(admin => {
+            const initial = admin.avatar || admin.full_name.charAt(0);
+            const color = admin.color || getAvatarColor(initial);
+
+            return `
+                <div class="account-item ${admin.id === currentUserId ? 'active' : ''}" 
+                     data-identifier="${admin.admin_id}">
+                    <div class="account-avatar" style="background: ${color}">${initial}</div>
+                    <div class="account-info">
+                        <div class="account-name">${admin.full_name}</div>
+                        <div class="account-id-badge">${admin.admin_id}</div>
+                        ${admin.id === currentUserId ? '<div class="account-status">Active Session</div>' : ''}
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
                 </div>
-                <i class="fas fa-chevron-right"></i>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         // Item clicks
         accountList.querySelectorAll('.account-item').forEach(item => {
