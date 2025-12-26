@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.preventDefault();
             e.stopPropagation();
             debugLog('Redirecting to signin...', 'info');
-            window.location.href = 'signin.html';
+            window.location.href = 'signin.html?from=logout';
         });
     });
 

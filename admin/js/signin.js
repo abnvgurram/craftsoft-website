@@ -28,8 +28,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Check if already logged in
+    // Check if already logged in (skip if user came from logout)
     async function checkExistingSession() {
+        // If user clicked logout, don't auto-redirect back
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('from') === 'logout') {
+            // User intentionally came here from logout - stay on signin
+            return;
+        }
+
         try {
             const { data: { session } } = await window.supabaseClient.auth.getSession();
             if (session && session.user) {
