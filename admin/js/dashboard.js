@@ -64,18 +64,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function showDuplicateTabError() {
-        document.body.innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #f1f5f9; padding: 20px;">
-                <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 400px;">
-                    <div style="width: 80px; height: 80px; background: #fee2e2; color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem;">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; color: #1e293b; margin-bottom: 10px;">Session Already Active</h2>
-                    <p style="color: #64748b; margin-bottom: 20px;">Admin panel is already open in another tab. Please use that tab or close it first.</p>
-                    <button onclick="window.location.href='signin.html';" style="background: linear-gradient(135deg, #2896cd 0%, #6C5CE7 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;">Go to Sign In</button>
-                </div>
-            </div>
-        `;
+        // Bank-level security: Immediate redirect, no content shown
+        window.location.replace('signin.html');
     }
 
     // ============================================
@@ -151,76 +141,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const admin = await loadAdminData();
 
-    // ============================================
-    // SINGLE SESSION ENFORCEMENT
-    // ============================================
-
-    async function validateSessionToken() {
-        const localToken = localStorage.getItem('craftsoft_session_token');
-
-        if (!localToken) {
-            // No local token - force logout
-            showSessionExpiredModal('No session token found');
-            return false;
-        }
-
-        try {
-            // Get current token from database
-            const { data: adminData, error } = await window.supabaseClient
-                .from('admins')
-                .select('session_token')
-                .eq('id', session.user.id)
-                .single();
-
-            if (error || !adminData) {
-                console.error('Error checking session:', error);
-                return true; // Don't logout on error, might be temporary
-            }
-
-            // Compare tokens
-            if (adminData.session_token && adminData.session_token !== localToken) {
-                // Token mismatch - someone else logged in
-                showSessionExpiredModal('You have been logged in from another device');
-                return false;
-            }
-
-            return true;
-        } catch (e) {
-            console.error('Session validation error:', e);
-            return true; // Don't logout on error
-        }
-    }
-
-    function showSessionExpiredModal(reason) {
-        // Clear local data
+    function forceLogout() {
+        // Bank-level security: Clear all data and redirect immediately
         localStorage.removeItem('craftsoft_session_token');
         sessionStorage.removeItem('craftsoft_admin_session');
-
-        document.body.innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #f1f5f9; padding: 20px;">
-                <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 420px;">
-                    <div style="width: 80px; height: 80px; background: #fef3c7; color: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem;">
-                        <i class="fas fa-user-lock"></i>
-                    </div>
-                    <h2 style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; color: #1e293b; margin-bottom: 10px;">Session Expired</h2>
-                    <p style="color: #64748b; margin-bottom: 20px;">${reason}. Please sign in again to continue.</p>
-                    <button onclick="window.location.replace('signin.html');" style="background: linear-gradient(135deg, #2896cd 0%, #6C5CE7 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;">Sign In Again</button>
-                </div>
-            </div>
-        `;
-
-        // Sign out from Supabase
         window.supabaseClient.auth.signOut();
+        window.location.replace('signin.html');
     }
-
-    // Validate session token on page load
-    const isValid = await validateSessionToken();
-    if (!isValid) return;
-
-    // Check session token every 30 seconds
-    setInterval(async () => {
-        await validateSessionToken();
-    }, 30000);
 
     // Update UI with admin info
     if (admin) {

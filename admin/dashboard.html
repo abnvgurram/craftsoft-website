@@ -28,9 +28,39 @@
     <!-- Styles -->
     <link rel="stylesheet" href="css/admin-auth.css">
     <link rel="stylesheet" href="css/dashboard.css">
+
+    <!-- BANK-LEVEL SECURITY: Hide content until auth verified -->
+    <style>
+        .dashboard-layout {
+            display: none !important;
+        }
+
+        body.auth-verified .dashboard-layout {
+            display: flex !important;
+        }
+    </style>
 </head>
 
 <body>
+    <!-- Immediate Auth Check - Runs before page renders -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script>
+        (async function () {
+            try {
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                if (!session || !session.user || !session.user.email_confirmed_at) {
+                    window.location.replace('signin.html');
+                    return;
+                }
+                // Auth verified - show content
+                document.body.classList.add('auth-verified');
+            } catch (e) {
+                window.location.replace('signin.html');
+            }
+        })();
+    </script>
+
     <div class="dashboard-layout">
         <!-- Sidebar Overlay (Mobile) -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>

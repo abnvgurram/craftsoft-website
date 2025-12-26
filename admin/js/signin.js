@@ -221,18 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 .update({ email_verified: true })
                 .eq('email', email);
 
-            // Generate unique session token for single-session enforcement
-            const sessionToken = Date.now().toString(36) + Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2);
-
-            // Store session token in database (invalidates any other active sessions)
-            await window.supabaseClient
-                .from('admins')
-                .update({ session_token: sessionToken })
-                .eq('email', email);
-
-            // Store session token locally
-            localStorage.setItem('craftsoft_session_token', sessionToken);
-
             // Success - prevent back navigation and redirect
             preventBackNavigation();
 
