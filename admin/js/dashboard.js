@@ -154,8 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // ============================================
-    // LOGOUT (redirect only - preserves session for other tabs)
-    // Like FB/Instagram behavior
+    // LOGOUT (with confirmation modal)
     // ============================================
 
     const logoutBtns = document.querySelectorAll('[data-logout]');
@@ -164,8 +163,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            // Redirect with param so signin doesn't auto-redirect back
-            window.location.href = 'signin.html?from=logout';
+
+            window.modal.confirm(
+                'Logout',
+                'Are you sure you want to leave?',
+                () => {
+                    // Redirect with param so signin doesn't auto-redirect back
+                    window.location.href = 'signin.html?from=logout';
+                }
+            );
         });
     });
 });
