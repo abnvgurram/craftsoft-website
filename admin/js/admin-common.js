@@ -107,4 +107,52 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // ============================================
+    // SESSION TOKEN ENFORCEMENT
+    // ============================================
+
+    async function validateSessionToken() {
+        try {
+            if (!window.supabaseClient) return;
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (!session) return;
+
+            const { data: admin } = await window.supabaseClient
+                .from('admins')
+                .select('session_token')
+                .eq('id', session.user.id)
+                .single();
+
+            const localToken = sessionStorage.getItem('craftsoft_session_token');
+
+            // If DB token exists and mismatch with local tab token -> Session conflict
+            if (admin && admin.session_token && localToken && admin.session_token !== localToken) {
+                sessionStorage.removeItem('craftsoft_session_token');
+                window.location.replace('signin.html?reason=session_conflict');
+            }
+        } catch (e) {
+            console.error('Session validation error:', e);
+        }
+    }
+
+    // Run on load and every 10 seconds
+    setTimeout(() => {
+        validateSessionToken();
+        setInterval(validateSessionToken, 10000);
+    }, 1000);
+
+    // ============================================
+    // GLOBAL HELPERS
+    // ============================================
+
+    window.updateSessionToken = async (userId) => {
+        const newToken = (typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : Math.random().toString(36).substring(2);
+        await window.supabaseClient
+            .from('admins')
+            .update({ session_token: newToken })
+            .eq('id', userId);
+        sessionStorage.setItem('craftsoft_session_token', newToken);
+        return newToken;
+    };
 });

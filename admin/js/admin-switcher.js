@@ -226,6 +226,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                         if (error) throw error;
 
+                        const { data: { user } } = await window.supabaseClient.auth.getUser();
+                        if (user && window.updateSessionToken) {
+                            await window.updateSessionToken(user.id);
+                        }
+
                         window.toast.show('Switched successfully!', 'success');
                         setTimeout(() => window.location.reload(), 500);
                     } catch (e) {

@@ -128,7 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Skip auto-redirect if:
         // 1. User clicked logout
         // 2. User clicked "Add another admin"
-        if (urlParams.get('from') === 'logout' || urlParams.get('action') === 'add_account') {
+        // 3. User was kicked out due to session conflict
+        if (urlParams.get('from') === 'logout' || urlParams.get('action') === 'add_account' || urlParams.get('reason') === 'session_conflict') {
+            if (urlParams.get('reason') === 'session_conflict') {
+                window.toast.error('Session Conflict', 'You were logged out because this account was logged in from another device or tab.');
+            }
             return;
         }
 
@@ -313,11 +317,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Update email_verified in admins table
+            // Update email_verified and generate session token
             await window.supabaseClient
                 .from('admins')
                 .update({ email_verified: true })
                 .eq('email', email);
+
+            if (window.updateSessionToken) {
+                await window.updateSessionToken(data.user.id);
+            }
 
             // Success - prevent back navigation and redirect
             preventBackNavigation();
