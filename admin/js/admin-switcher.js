@@ -344,15 +344,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (logoutCurrentBtn) {
         logoutCurrentBtn.addEventListener('click', () => {
-            window.modal.confirm('Logout', 'Are you sure you want to leave?', async () => {
-                // Remove from saved list
-                const { data: { session } } = await window.supabaseClient.auth.getSession();
-                if (session) {
-                    let saved = getSavedAdmins();
-                    saved = saved.filter(a => a.id !== session.user.id);
-                    localStorage.setItem(SAVED_ADMINS_KEY, JSON.stringify(saved));
-                }
-
+            window.modal.confirm('Logout', 'Are you sure you want to end your session?', async () => {
+                // Just sign out, keep in saved list
+                await window.supabaseClient.auth.signOut();
                 window.location.href = 'signin.html?from=logout';
             });
         });
