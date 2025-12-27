@@ -5,38 +5,38 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
     // ============================================
-    // DATA: Courses + Services
+    // DATA: Courses + Services (with short codes)
     // ============================================
     const COURSES = [
-        { code: 'C01', name: 'Graphic Design', category: 'Design' },
-        { code: 'C02', name: 'UI/UX Design', category: 'Design' },
-        { code: 'C03', name: 'Full Stack Development (MERN)', category: 'Engineering' },
-        { code: 'C04', name: 'Python Full Stack Development', category: 'Engineering' },
-        { code: 'C05', name: 'Java Full Stack Development', category: 'Engineering' },
-        { code: 'C06', name: 'DSA Mastery', category: 'Engineering' },
-        { code: 'C07', name: 'Data Analytics', category: 'Engineering' },
-        { code: 'C08', name: 'Salesforce Administration', category: 'Engineering' },
-        { code: 'C09', name: 'Python Programming', category: 'Engineering' },
-        { code: 'C10', name: 'React JS', category: 'Engineering' },
-        { code: 'C11', name: 'Git & GitHub', category: 'Engineering' },
-        { code: 'C12', name: 'DevOps Engineering', category: 'Cloud' },
-        { code: 'C13', name: 'AWS Cloud Excellence', category: 'Cloud' },
-        { code: 'C14', name: 'DevSecOps', category: 'Cloud' },
-        { code: 'C15', name: 'Microsoft Azure', category: 'Cloud' },
-        { code: 'C16', name: 'Automation with Python', category: 'Cloud' },
-        { code: 'C17', name: 'Spoken English Mastery', category: 'Soft Skills' },
-        { code: 'C18', name: 'Soft Skills Training', category: 'Soft Skills' },
-        { code: 'C19', name: 'Resume Writing & Interview Prep', category: 'Soft Skills' },
-        { code: 'C20', name: 'Handwriting Improvement', category: 'Soft Skills' }
+        { code: 'C01', short: 'GD', name: 'Graphic Design', category: 'Design' },
+        { code: 'C02', short: 'UX', name: 'UI/UX Design', category: 'Design' },
+        { code: 'C03', short: 'MERN', name: 'Full Stack Development (MERN)', category: 'Engineering' },
+        { code: 'C04', short: 'PyFS', name: 'Python Full Stack Development', category: 'Engineering' },
+        { code: 'C05', short: 'JavaFS', name: 'Java Full Stack Development', category: 'Engineering' },
+        { code: 'C06', short: 'DSA', name: 'DSA Mastery', category: 'Engineering' },
+        { code: 'C07', short: 'DA', name: 'Data Analytics', category: 'Engineering' },
+        { code: 'C08', short: 'SF', name: 'Salesforce Administration', category: 'Engineering' },
+        { code: 'C09', short: 'Py', name: 'Python Programming', category: 'Engineering' },
+        { code: 'C10', short: 'React', name: 'React JS', category: 'Engineering' },
+        { code: 'C11', short: 'Git', name: 'Git & GitHub', category: 'Engineering' },
+        { code: 'C12', short: 'DevOps', name: 'DevOps Engineering', category: 'Cloud' },
+        { code: 'C13', short: 'AWS', name: 'AWS Cloud Excellence', category: 'Cloud' },
+        { code: 'C14', short: 'DevSec', name: 'DevSecOps', category: 'Cloud' },
+        { code: 'C15', short: 'Azure', name: 'Microsoft Azure', category: 'Cloud' },
+        { code: 'C16', short: 'AutoPy', name: 'Automation with Python', category: 'Cloud' },
+        { code: 'C17', short: 'Eng', name: 'Spoken English Mastery', category: 'Soft Skills' },
+        { code: 'C18', short: 'Soft', name: 'Soft Skills Training', category: 'Soft Skills' },
+        { code: 'C19', short: 'Resume', name: 'Resume Writing & Interview Prep', category: 'Soft Skills' },
+        { code: 'C20', short: 'HW', name: 'Handwriting Improvement', category: 'Soft Skills' }
     ];
 
     const SERVICES = [
-        { code: 'S01', name: 'Graphic Design Services' },
-        { code: 'S02', name: 'UI/UX Design Services' },
-        { code: 'S03', name: 'Website Development' },
-        { code: 'S04', name: 'Cloud & DevOps' },
-        { code: 'S05', name: 'Branding & Identity' },
-        { code: 'S06', name: 'Career Services' }
+        { code: 'S01', short: 'S-GD', name: 'Graphic Design Services' },
+        { code: 'S02', short: 'S-UX', name: 'UI/UX Design Services' },
+        { code: 'S03', short: 'S-Web', name: 'Website Development' },
+        { code: 'S04', short: 'S-Cloud', name: 'Cloud & DevOps' },
+        { code: 'S05', short: 'S-Brand', name: 'Branding & Identity' },
+        { code: 'S06', short: 'S-Career', name: 'Career Services' }
     ];
 
     const STATUS_CONFIG = {
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function initFormListeners() {
         // Expected Start - show custom month picker
         expectedStartSelect.addEventListener('change', () => {
-            customMonthGroup.style.display = expectedStartSelect.value === 'custom' ? 'block' : 'none';
+            customMonthGroup.style.display = expectedStartSelect.value === 'custom' ? 'flex' : 'none';
         });
 
         // Demo toggle
@@ -232,7 +232,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             lead_source: document.getElementById('leadSource').value || null,
             occupation: document.getElementById('occupation').value || null,
             expected_start: expectedStartSelect.value || null,
-            custom_month: expectedStartSelect.value === 'custom' ? document.getElementById('customMonth').value : null,
+            custom_month: expectedStartSelect.value === 'custom'
+                ? `${document.getElementById('customYearSelect').value}-${document.getElementById('customMonthSelect').value}`
+                : null,
             schedule_demo: scheduleDemoCheckbox.checked,
             demo_date: scheduleDemoCheckbox.checked ? document.getElementById('demoDate').value : null,
             demo_time: scheduleDemoCheckbox.checked ? document.getElementById('demoTime').value : null,
@@ -423,13 +425,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // ============================================
-    // Helper: Get Interest Name
+    // Helper: Get Interest Short Code
     // ============================================
-    function getInterestName(code) {
+    function getInterestShortCode(code) {
         const course = COURSES.find(c => c.code === code);
-        if (course) return course.name.split(' ')[0];
+        if (course) return course.short;
         const service = SERVICES.find(s => s.code === code);
-        if (service) return service.name.split(' ')[0];
+        if (service) return service.short;
         return code;
     }
 
@@ -473,7 +475,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <td><span class="student-id">${inq.id}</span></td>
                     <td><span class="student-name">${inq.name}</span></td>
                     <td>${inq.phone}</td>
-                    <td><span class="course-tag">${getInterestName(inq.course_service)}</span></td>
+                    <td><span class="course-tag">${getInterestShortCode(inq.course_service)}</span></td>
                     <td>
                         <span class="status-badge" style="--status-color: ${statusCfg.color}">
                             <i class="${statusCfg.icon}"></i> ${statusCfg.label}
@@ -526,7 +528,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                     <div class="data-card-row">
                         <i class="fas fa-book"></i>
-                        <span>${getInterestName(inq.course_service)}</span>
+                        <span>${getInterestShortCode(inq.course_service)}</span>
                     </div>
                     <div class="data-card-row">
                         <span class="status-badge" style="--status-color: ${statusCfg.color}">
@@ -586,8 +588,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         expectedStartSelect.value = inq.expected_start || '';
 
         if (inq.expected_start === 'custom' && inq.custom_month) {
-            customMonthGroup.style.display = 'block';
-            document.getElementById('customMonth').value = inq.custom_month;
+            customMonthGroup.style.display = 'flex';
+            const [year, month] = inq.custom_month.split('-');
+            document.getElementById('customYearSelect').value = year || '2025';
+            document.getElementById('customMonthSelect').value = month || '01';
         } else {
             customMonthGroup.style.display = 'none';
         }
