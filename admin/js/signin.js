@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const accountList = document.getElementById('accountList');
     const useAnotherBtn = document.getElementById('useAnotherBtn');
     const authSubtitle = document.getElementById('authSubtitle');
+    const backToAccounts = document.getElementById('backToAccounts');
+    const backToAccountsBtn = document.getElementById('backToAccountsBtn');
 
     // Form fields
     const identifierInput = document.getElementById('identifier');
@@ -50,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // If action is add_account or no saved admins, show form directly
         if (action === 'add_account' || saved.length === 0) {
-            showLoginForm();
+            showLoginForm(false);
             return;
         }
 
@@ -60,8 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
         authSubtitle.textContent = 'Choose an account to continue';
 
         // Get current active session if any (just for status badge)
-        const { data: { session } } = await window.supabaseClient.auth.getSession();
-        const currentUserId = session ? session.user.id : null;
+        let currentUserId = null;
+        try {
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            currentUserId = session ? session.user.id : null;
+        } catch (e) { /* ignore */ }
 
         accountList.innerHTML = saved.map(admin => {
             const initial = admin.avatar || admin.full_name.charAt(0);
@@ -76,27 +81,52 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="account-id-badge">${admin.admin_id}</div>
                         ${admin.id === currentUserId ? '<div class="account-status">Active Session</div>' : ''}
                     </div>
-                    <i class="fas fa-chevron-right"></i>
+                    <button class="remove-account-btn" title="Remove account" data-id="${admin.id}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                    ${admin.id !== currentUserId ? '<i class="fas fa-chevron-right"></i>' : ''}
                 </div>
             `;
         }).join('');
 
-        // Item clicks
+        // Item clicks (Select Account)
         accountList.querySelectorAll('.account-item').forEach(item => {
-            item.addEventListener('click', () => {
+            item.addEventListener('click', (e) => {
+                // Don't trigger if clicked on remove button
+                if (e.target.closest('.remove-account-btn')) return;
+
                 const identifier = item.getAttribute('data-identifier');
                 identifierInput.value = identifier;
-                showLoginForm(true); // Is switching
+                showLoginForm(true); // Is switching from list
+            });
+        });
+
+        // Remove Account Clicks
+        accountList.querySelectorAll('.remove-account-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const idToRemove = btn.getAttribute('data-id');
+                window.modal.confirm('Remove Account', 'Remove this account from the list?', () => {
+                    const updated = getSavedAdmins().filter(a => a.id !== idToRemove);
+                    localStorage.setItem(SAVED_ADMINS_KEY, JSON.stringify(updated));
+                    initAccountPicker(); // Re-render
+                });
             });
         });
     }
 
-    function showLoginForm(isSwitching = false) {
+    function showLoginForm(showBack = false) {
         accountPicker.classList.remove('show');
         form.style.display = 'flex';
         authSubtitle.textContent = 'Sign in with your email or Admin ID';
 
-        if (isSwitching) {
+        if (showBack) {
+            if (backToAccounts) backToAccounts.style.display = 'block';
+        } else {
+            if (backToAccounts) backToAccounts.style.display = 'none';
+        }
+
+        if (identifierInput.value) {
             passwordInput.focus();
         } else {
             identifierInput.focus();
@@ -104,7 +134,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (useAnotherBtn) {
-        useAnotherBtn.addEventListener('click', () => showLoginForm());
+        useAnotherBtn.addEventListener('click', () => {
+            identifierInput.value = '';
+            passwordInput.value = '';
+            showLoginForm(true);
+        });
+    }
+
+    if (backToAccountsBtn) {
+        backToAccountsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Clear input and go back to picker
+            passwordInput.value = '';
+            identifierInput.value = ''; // Optional: clear identifier if going back to full list
+            initAccountPicker();
+        });
     }
 
     initAccountPicker();

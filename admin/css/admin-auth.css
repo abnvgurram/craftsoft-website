@@ -929,3 +929,47 @@ body {
     color: var(--primary-600);
     background: var(--primary-50);
 }
+
+/* Remove Account Button */
+.account-item {
+    position: relative;
+    padding-right: 3rem;
+    /* Make space for remove button */
+}
+
+.remove-account-btn {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--gray-400);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-base);
+    opacity: 0;
+    z-index: 2;
+}
+
+.account-item:hover .remove-account-btn {
+    opacity: 1;
+}
+
+/* For touch devices, always show opacity 1 if no hover capability */
+@media (hover: none) {
+    .remove-account-btn {
+        opacity: 1;
+        color: var(--gray-500);
+    }
+}
+
+.remove-account-btn:hover {
+    background: var(--error-light);
+    color: var(--error);
+}
