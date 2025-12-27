@@ -223,24 +223,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         const countryCode = document.getElementById('inquiryCountryCode').value.trim() || '+91';
         const fullPhone = countryCode + phone.replace(/\D/g, '');
 
+        // Supabase data (only columns in table)
         const inquiryData = {
             id: editingInquiryId || generateInquiryId(),
             name: name,
             phone: fullPhone,
-            email: document.getElementById('inquiryEmail').value.trim() || null,
-            course_service: courseService,
-            lead_source: document.getElementById('leadSource').value || null,
-            occupation: document.getElementById('occupation').value || null,
+            interest_type: courseService.startsWith('S') ? 'service' : 'course',
+            interest_code: courseService,
+            source: document.getElementById('leadSource').value || null,
             expected_start: expectedStartSelect.value || null,
             custom_month: expectedStartSelect.value === 'custom'
                 ? `${document.getElementById('customYearSelect').value}-${document.getElementById('customMonthSelect').value}`
                 : null,
+            status: status,
+            notes: document.getElementById('inquiryNotes').value.trim() || null
+        };
+
+        // Extra fields for localStorage (not in Supabase)
+        const localExtraData = {
+            email: document.getElementById('inquiryEmail').value.trim() || null,
+            course_service: courseService,
+            occupation: document.getElementById('occupation').value || null,
             schedule_demo: scheduleDemoCheckbox.checked,
             demo_date: scheduleDemoCheckbox.checked ? document.getElementById('demoDate').value : null,
-            demo_time: scheduleDemoCheckbox.checked ? document.getElementById('demoTime').value : null,
-            status: status,
-            notes: document.getElementById('inquiryNotes').value.trim() || null,
-            created_at: editingInquiryId ? undefined : new Date().toISOString()
+            demo_time: scheduleDemoCheckbox.checked ? document.getElementById('demoTime').value : null
         };
 
         saveInquiryBtn.disabled = true;
@@ -248,13 +254,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             if (editingInquiryId) {
+                // Update in Supabase
+                const { error } = await window.supabaseClient
+                    .from('inquiries')
+                    .update(inquiryData)
+                    .eq('id', editingInquiryId);
+
+                if (error) throw error;
+
                 const index = inquiries.findIndex(i => i.id === editingInquiryId);
                 if (index !== -1) {
-                    inquiries[index] = { ...inquiries[index], ...inquiryData };
+                    inquiries[index] = { ...inquiries[index], ...inquiryData, ...localExtraData };
                 }
                 window.toast.success('Updated', 'Inquiry updated successfully');
             } else {
-                inquiries.push(inquiryData);
+                // Insert to Supabase
+                const { error } = await window.supabaseClient
+                    .from('inquiries')
+                    .insert([inquiryData]);
+
+                if (error) throw error;
+
+                inquiries.push({ ...inquiryData, ...localExtraData, created_at: new Date().toISOString() });
                 window.toast.success('Added', 'Inquiry added successfully');
             }
 
@@ -265,7 +286,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error('Error saving inquiry:', error);
-            window.toast.error('Error', 'Failed to save inquiry');
+            window.toast.error('Error', 'Failed to save inquiry: ' + error.message);
         } finally {
             saveInquiryBtn.disabled = false;
             saveInquiryBtn.innerHTML = '<i class="fas fa-save"></i> <span>Save Inquiry</span>';
@@ -277,18 +298,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ============================================
     async function loadInquiries() {
         try {
-            const stored = localStorage.getItem('craftsoft_inquiries');
-            inquiries = stored ? JSON.parse(stored) : [];
+            // Try loading from Supabase first
+            const { data: supabaseInquiries, error } = await window.supabaseClient
+                .from('inquiries')
+                .select('*')
+                .order('created_at', { ascending: false });
 
+            if (error) {
+                console.warn('Supabase load failed, using localStorage:', error.message);
+                const stored = localStorage.getItem('craftsoft_inquiries');
+                inquiries = stored ? JSON.parse(stored) : [];
+            } else {
+                // Supabase is source of truth - sync to localStorage
+                inquiries = supabaseInquiries || [];
+                saveInquiriesToStorage();
+            }
+
+            // Seed mock data if empty
             if (inquiries.length === 0) {
-                inquiries = [
+                const mockInquiries = [
                     {
                         id: 'INQ-001',
                         name: 'Amit Sharma',
                         phone: '+919876543210',
                         email: 'amit@example.com',
+                        interest_type: 'course',
+                        interest_code: 'C03',
                         course_service: 'C03',
-                        lead_source: 'website',
+                        source: 'website',
                         occupation: 'student',
                         expected_start: 'immediate',
                         custom_month: null,
@@ -304,8 +341,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         name: 'Neha Reddy',
                         phone: '+918765432109',
                         email: 'neha@example.com',
+                        interest_type: 'course',
+                        interest_code: 'C02',
                         course_service: 'C02',
-                        lead_source: 'instagram',
+                        source: 'instagram',
                         occupation: 'working',
                         expected_start: 'next_month',
                         custom_month: null,
@@ -315,25 +354,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                         status: 'contacted',
                         notes: 'Looking for weekend batches',
                         created_at: new Date().toISOString()
-                    },
-                    {
-                        id: 'INQ-003',
-                        name: 'Kiran Patel',
-                        phone: '+919988776655',
-                        email: null,
-                        course_service: 'S05',
-                        lead_source: 'walkin',
-                        occupation: null,
-                        expected_start: 'this_month',
-                        custom_month: null,
-                        schedule_demo: false,
-                        demo_date: null,
-                        demo_time: null,
-                        status: 'converted',
-                        notes: 'Branding project for startup',
-                        created_at: new Date().toISOString()
                     }
                 ];
+
+                // Insert mock data to Supabase
+                for (const inq of mockInquiries) {
+                    const { id, name, phone, interest_type, interest_code, source, expected_start, custom_month, status, notes } = inq;
+                    await window.supabaseClient
+                        .from('inquiries')
+                        .insert([{ id, name, phone, interest_type, interest_code, source, expected_start, custom_month, status, notes }])
+                        .catch(e => console.warn('Mock insert skipped:', e.message));
+                }
+
+                inquiries = mockInquiries;
                 saveInquiriesToStorage();
             }
 
@@ -342,6 +375,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error('Error loading inquiries:', error);
+            const stored = localStorage.getItem('craftsoft_inquiries');
+            inquiries = stored ? JSON.parse(stored) : [];
+            applyFiltersAndSort();
         }
     }
 
@@ -475,7 +511,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <td><span class="student-id">${inq.id}</span></td>
                     <td><span class="student-name">${inq.name}</span></td>
                     <td>${inq.phone}</td>
-                    <td><span class="course-tag">${getInterestShortCode(inq.course_service)}</span></td>
+                    <td><span class="course-tag">${getInterestShortCode(inq.interest_code || inq.course_service)}</span></td>
                     <td>
                         <span class="status-badge" style="--status-color: ${statusCfg.color}">
                             <i class="${statusCfg.icon}"></i> ${statusCfg.label}
@@ -528,7 +564,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                     <div class="data-card-row">
                         <i class="fas fa-book"></i>
-                        <span>${getInterestShortCode(inq.course_service)}</span>
+                        <span>${getInterestShortCode(inq.interest_code || inq.course_service)}</span>
                     </div>
                     <div class="data-card-row">
                         <span class="status-badge" style="--status-color: ${statusCfg.color}">
@@ -572,18 +608,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Parse phone
         if (inq.phone) {
-            const phoneMatch = inq.phone.match(/^(\+\d{1,4})(\d+)$/);
-            if (phoneMatch) {
-                document.getElementById('inquiryCountryCode').value = phoneMatch[1];
-                document.getElementById('inquiryPhone').value = phoneMatch[2];
+            let cleanPhone = inq.phone.replace(/[^\d+]/g, '');
+
+            if (cleanPhone.startsWith('+91')) {
+                document.getElementById('inquiryCountryCode').value = '+91';
+                document.getElementById('inquiryPhone').value = cleanPhone.slice(3);
+            } else if (cleanPhone.startsWith('+')) {
+                const match = cleanPhone.match(/^(\+\d{1,4})(\d+)$/);
+                if (match) {
+                    document.getElementById('inquiryCountryCode').value = match[1];
+                    document.getElementById('inquiryPhone').value = match[2];
+                } else {
+                    document.getElementById('inquiryCountryCode').value = '+91';
+                    document.getElementById('inquiryPhone').value = cleanPhone.replace(/\+/g, '');
+                }
             } else {
                 document.getElementById('inquiryCountryCode').value = '+91';
-                document.getElementById('inquiryPhone').value = inq.phone.replace(/[^0-9]/g, '');
+                document.getElementById('inquiryPhone').value = cleanPhone;
             }
+        } else {
+            document.getElementById('inquiryCountryCode').value = '+91';
+            document.getElementById('inquiryPhone').value = '';
         }
 
-        courseServiceSelect.value = inq.course_service || '';
-        document.getElementById('leadSource').value = inq.lead_source || '';
+        courseServiceSelect.value = inq.interest_code || inq.course_service || '';
+        document.getElementById('leadSource').value = inq.source || inq.lead_source || '';
         document.getElementById('occupation').value = inq.occupation || '';
         expectedStartSelect.value = inq.expected_start || '';
 
@@ -622,12 +671,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.modal.confirm(
                 'Delete Inquiry',
                 `Are you sure you want to delete inquiry from <strong>${inq.name}</strong>?`,
-                () => {
-                    inquiries = inquiries.filter(i => i.id !== id);
-                    saveInquiriesToStorage();
-                    applyFiltersAndSort();
-                    updateDashboardStats();
-                    window.toast.success('Deleted', 'Inquiry removed successfully');
+                async () => {
+                    try {
+                        const { error } = await window.supabaseClient
+                            .from('inquiries')
+                            .delete()
+                            .eq('id', id);
+
+                        if (error) throw error;
+
+                        inquiries = inquiries.filter(i => i.id !== id);
+                        saveInquiriesToStorage();
+                        applyFiltersAndSort();
+                        updateDashboardStats();
+                        window.toast.success('Deleted', 'Inquiry removed successfully');
+                    } catch (error) {
+                        console.error('Delete error:', error);
+                        window.toast.error('Error', 'Failed to delete: ' + error.message);
+                    }
                 }
             );
         }
