@@ -31,12 +31,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         { code: '20', short: 'HW', name: 'Handwriting Improvement' }
     ];
 
-    const STATUS_CONFIG = {
-        paid: { label: 'Paid', icon: 'fa-solid fa-circle-check', color: '#22c55e' },
-        pending: { label: 'Pending', icon: 'fa-solid fa-clock', color: '#f59e0b' },
-        failed: { label: 'Failed', icon: 'fa-solid fa-circle-xmark', color: '#ef4444' },
-        refunded: { label: 'Refunded', icon: 'fa-solid fa-rotate-left', color: '#8b5cf6' }
-    };
+    // Status is always 'paid' - no need for status config
+    // Removed status dropdown and filter
 
     const METHOD_CONFIG = {
         upi: { label: 'UPI', icon: 'fa-solid fa-mobile-screen' },
@@ -75,15 +71,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const courseSelectGroup = document.getElementById('courseSelectGroup');
 
     // Filter & Pagination Elements
-    const statusFilter = document.getElementById('statusFilter');
     const methodFilter = document.getElementById('methodFilter');
     const prevPageBtn = document.getElementById('prevPage');
     const nextPageBtn = document.getElementById('nextPage');
     const paginationInfo = document.getElementById('paginationInfo');
-
-    // Stats Elements
-    const statCollected = document.getElementById('statCollected');
-    const statPending = document.getElementById('statPending');
 
     // State
     let payments = [];
@@ -126,11 +117,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Filters
     // ============================================
     function initFilters() {
-        statusFilter.addEventListener('change', () => {
-            currentPage = 1;
-            applyFiltersAndSort();
-        });
-
         methodFilter.addEventListener('change', () => {
             currentPage = 1;
             applyFiltersAndSort();
@@ -196,7 +182,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             setDefaultDate();
             studentInfoDisplay.style.display = 'none';
             courseSelect.innerHTML = '<option value="">Select course...</option>';
-            document.getElementById('paymentStatus').value = 'paid';
             currentStudentPhone = '';
 
             // Show add mode, hide edit mode
@@ -281,7 +266,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const amount = document.getElementById('paymentAmount').value;
         const method = document.getElementById('paymentMethod').value;
         const paymentDate = paymentDateInput.value;
-        const status = document.getElementById('paymentStatus').value;
 
         if (!amount || amount <= 0) {
             window.toast.warning('Required', 'Please enter a valid amount');
@@ -308,7 +292,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             method: method,
             payment_date: paymentDate,
             transaction_id: document.getElementById('transactionId').value.trim() || null,
-            status: status,
             notes: document.getElementById('paymentNotes').value.trim() || null,
             created_at: editingPaymentId ? undefined : new Date().toISOString()
         };
@@ -354,7 +337,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 payments = [
                     {
                         id: '03-ACS-RK001',
-                        student_id: 'S-ACS-001',
+                        student_id: 'ACS-03-001',
                         student_name: 'Ravi Kumar',
                         student_phone: '+919876543210',
                         course_code: '03',
@@ -362,13 +345,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                         method: 'upi',
                         payment_date: '2024-12-27',
                         transaction_id: 'UPI123456789',
-                        status: 'paid',
                         notes: 'First installment',
                         created_at: new Date().toISOString()
                     },
                     {
                         id: '02-ACS-SR001',
-                        student_id: 'S-ACS-002',
+                        student_id: 'ACS-02-001',
                         student_name: 'Sneha Reddy',
                         student_phone: '+918765432109',
                         course_code: '02',
@@ -376,13 +358,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                         method: 'cash',
                         payment_date: '2024-12-26',
                         transaction_id: null,
-                        status: 'pending',
                         notes: 'Partial payment',
                         created_at: new Date().toISOString()
                     },
                     {
                         id: '13-ACS-AS001',
-                        student_id: 'S-ACS-003',
+                        student_id: 'ACS-13-001',
                         student_name: 'Amit Sharma',
                         student_phone: '+919988776655',
                         course_code: '13',
@@ -390,7 +371,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         method: 'bank',
                         payment_date: '2024-12-25',
                         transaction_id: 'NEFT98765432',
-                        status: 'paid',
                         notes: 'Full payment',
                         created_at: new Date().toISOString()
                     }
@@ -414,16 +394,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Update Stats
     // ============================================
     function updateStats() {
-        const collected = payments
-            .filter(p => p.status === 'paid')
-            .reduce((sum, p) => sum + p.amount, 0);
+        const collected = payments.reduce((sum, p) => sum + p.amount, 0);
 
-        const pending = payments
-            .filter(p => p.status === 'pending')
-            .reduce((sum, p) => sum + p.amount, 0);
-
-        statCollected.textContent = formatCurrency(collected);
-        statPending.textContent = formatCurrency(pending);
+        const statCollected = document.getElementById('statCollected');
+        if (statCollected) {
+            statCollected.textContent = formatCurrency(collected);
+        }
 
         // Update dashboard stats
         localStorage.setItem('craftsoft_revenue', collected);
@@ -447,12 +423,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 p.id.toLowerCase().includes(searchQuery) ||
                 p.student_id.toLowerCase().includes(searchQuery)
             );
-        }
-
-        // Status filter
-        const selectedStatus = statusFilter.value;
-        if (selectedStatus) {
-            result = result.filter(p => p.status === selectedStatus);
         }
 
         // Method filter
@@ -562,7 +532,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Table View (Desktop)
         paymentsTableBody.innerHTML = data.map(pay => {
-            const statusCfg = STATUS_CONFIG[pay.status] || STATUS_CONFIG.pending;
             const methodCfg = METHOD_CONFIG[pay.method] || { label: pay.method, icon: 'fa-solid fa-money-bill' };
 
             return `
@@ -574,11 +543,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <td>
                         <span class="method-badge">
                             <i class="${methodCfg.icon}"></i> ${methodCfg.label}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="status-badge" style="--status-color: ${statusCfg.color}">
-                            <i class="${statusCfg.icon}"></i> ${statusCfg.label}
                         </span>
                     </td>
                     <td>${formatDate(pay.payment_date)}</td>
@@ -603,7 +567,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Card View (Mobile)
         paymentsCards.innerHTML = data.map(pay => {
-            const statusCfg = STATUS_CONFIG[pay.status] || STATUS_CONFIG.pending;
             const methodCfg = METHOD_CONFIG[pay.method] || { label: pay.method, icon: 'fa-solid fa-money-bill' };
 
             return `
@@ -624,7 +587,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                     <div class="data-card-name">${pay.student_name}</div>
                     <div class="data-card-row payment-amount">
-                        <i class="fas fa-indian-rupee-sign"></i>
                         <strong>${formatCurrency(pay.amount)}</strong>
                     </div>
                     <div class="data-card-row">
@@ -632,12 +594,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <span>${getCourseShortCode(pay.course_code)}</span>
                     </div>
                     <div class="data-card-row">
-                        <span class="status-badge" style="--status-color: ${statusCfg.color}">
-                            <i class="${statusCfg.icon}"></i> ${statusCfg.label}
-                        </span>
                         <span class="method-badge">
                             <i class="${methodCfg.icon}"></i> ${methodCfg.label}
                         </span>
+                        <span class="data-card-date">${formatDate(pay.payment_date)}</span>
                     </div>
                 </div>
             `;
@@ -680,7 +640,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('paymentMethod').value = pay.method || '';
         paymentDateInput.value = pay.payment_date || '';
         document.getElementById('transactionId').value = pay.transaction_id || '';
-        document.getElementById('paymentStatus').value = pay.status || 'paid';
         document.getElementById('paymentNotes').value = pay.notes || '';
 
         openModal(true);
