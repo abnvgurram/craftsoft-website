@@ -49,8 +49,7 @@ export default function Header({ onMobileToggle }) {
     const savedAdmins = JSON.parse(localStorage.getItem('craftsoft_saved_admins') || '[]');
     // Filter out the current logged-in user
     const otherAccounts = savedAdmins.filter(admin =>
-        admin.identifier !== adminProfile?.admin_id &&
-        admin.identifier !== adminProfile?.email
+        admin.admin_id !== adminProfile?.admin_id
     );
 
     const handleSwitchAccount = (identifier) => {
@@ -155,17 +154,17 @@ export default function Header({ onMobileToggle }) {
 
                         {/* Other Accounts */}
                         {otherAccounts.map((account, index) => (
-                            <MenuItem key={index} onClick={() => handleSwitchAccount(account.identifier)} sx={{ py: 1.5 }}>
+                            <MenuItem key={index} onClick={() => handleSwitchAccount(account.admin_id)} sx={{ py: 1.5 }}>
                                 <ListItemIcon>
-                                    <Avatar sx={{ width: 24, height: 24, fontSize: '0.75rem', bgcolor: 'primary.light' }}>
-                                        {account.name?.charAt(0) || 'A'}
+                                    <Avatar sx={{ width: 32, height: 32, fontSize: '0.875rem', bgcolor: 'primary.light' }}>
+                                        {account.full_name?.charAt(0) || 'A'}
                                     </Avatar>
                                 </ListItemIcon>
                                 <ListItemText
-                                    primary={account.name}
-                                    secondary={account.identifier}
-                                    primaryTypographyProps={{ variant: 'body2', fontWeight: 500 }}
-                                    secondaryTypographyProps={{ variant: 'caption' }}
+                                    primary={account.full_name}
+                                    secondary={account.admin_id}
+                                    primaryTypographyProps={{ variant: 'body2', fontWeight: 600 }}
+                                    secondaryTypographyProps={{ variant: 'caption', color: 'text.secondary' }}
                                 />
                             </MenuItem>
                         ))}
