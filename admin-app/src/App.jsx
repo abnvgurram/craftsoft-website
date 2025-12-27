@@ -26,7 +26,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        <BrowserRouter>
+        <BrowserRouter basename="/admin">
           <Routes>
             <Route path="/signin" element={<Signin />} />
 
