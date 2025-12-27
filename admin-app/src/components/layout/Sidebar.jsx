@@ -4,6 +4,7 @@ import {
     Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Divider
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import {
     Dashboard as DashboardIcon,
     School as SchoolIcon,
@@ -33,6 +34,7 @@ const MENU_ITEMS = [
 export default function Sidebar({ mobileOpen, onClose }) {
     const location = useLocation();
     const navigate = useNavigate();
+    const { adminProfile } = useAuth();
 
     const content = (
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -52,6 +54,25 @@ export default function Sidebar({ mobileOpen, onClose }) {
                         WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
                     }}>Soft</Box>
                 </Typography>
+            </Box>
+
+            {/* User Info Block */}
+            <Box sx={{ px: 3, mb: 1 }}>
+                <Box sx={{
+                    p: 1.5,
+                    bgcolor: 'background.paper',
+                    border: '1px solid',
+                    borderColor: 'grey.200',
+                    borderRadius: 2,
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.primary' }}>
+                        {adminProfile?.full_name || 'Admin'}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                        {adminProfile?.admin_id || 'ID'}
+                    </Typography>
+                </Box>
             </Box>
 
             <List sx={{ px: 2, flex: 1 }}>
