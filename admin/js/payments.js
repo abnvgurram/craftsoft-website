@@ -333,6 +333,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             const stored = localStorage.getItem('craftsoft_payments');
             payments = stored ? JSON.parse(stored) : [];
 
+            // Version check - clear old format data
+            const version = localStorage.getItem('craftsoft_payments_version');
+            if (version !== 'v2') {
+                localStorage.removeItem('craftsoft_payments');
+                payments = [];
+                localStorage.setItem('craftsoft_payments_version', 'v2');
+            }
+
             if (payments.length === 0) {
                 payments = [
                     {
