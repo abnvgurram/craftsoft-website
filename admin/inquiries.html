@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Tutors | Abhi's Craft Soft Admin</title>
+    <title>Inquiries | Abhi's Craft Soft Admin</title>
 
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -99,12 +99,12 @@
                         <span>Students</span>
                     </a>
 
-                    <a href="tutors.html" class="nav-item active">
+                    <a href="tutors.html" class="nav-item">
                         <i class="fas fa-chalkboard-teacher nav-icon"></i>
                         <span>Tutors</span>
                     </a>
 
-                    <a href="inquiries.html" class="nav-item">
+                    <a href="inquiries.html" class="nav-item active">
                         <i class="fas fa-envelope-open-text nav-icon"></i>
                         <span>Inquiries</span>
                     </a>
@@ -134,7 +134,7 @@
                     <button class="mobile-menu-btn" id="mobileMenuBtn">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <h1 class="page-title">Tutors</h1>
+                    <h1 class="page-title">Inquiries</h1>
                 </div>
 
                 <div class="header-right">
@@ -194,26 +194,32 @@
                 <div class="page-actions-bar">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="tutorSearch" placeholder="Search by name, ID, phone...">
+                        <input type="text" id="inquirySearch" placeholder="Search by name, phone, email...">
                     </div>
                     <div class="filter-group">
-                        <select id="courseFilter" class="filter-select">
-                            <option value="">All Courses</option>
+                        <select id="statusFilter" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="new">🙂 New</option>
+                            <option value="contacted">📞 Contacted</option>
+                            <option value="converted">👤 Converted</option>
+                            <option value="lost">😢 Lost</option>
                         </select>
-                        <select id="modeFilter" class="filter-select">
-                            <option value="">All Modes</option>
-                            <option value="offline">Offline</option>
-                            <option value="online">Online</option>
-                            <option value="both">Both</option>
+                        <select id="sourceFilter" class="filter-select">
+                            <option value="">All Sources</option>
+                            <option value="website">🌐 Website</option>
+                            <option value="instagram">📷 Instagram</option>
+                            <option value="linkedin">💼 LinkedIn</option>
+                            <option value="classifieds">📰 Classifieds</option>
+                            <option value="walkin">🚶 Walk-in</option>
                         </select>
                     </div>
-                    <button class="btn-primary" id="addTutorBtn">
+                    <button class="btn-primary" id="addInquiryBtn">
                         <i class="fas fa-plus"></i>
-                        <span>Add Tutor</span>
+                        <span>Add Inquiry</span>
                     </button>
                 </div>
 
-                <!-- Tutors Table (Desktop) -->
+                <!-- Inquiries Table (Desktop) -->
                 <div class="data-table-container" id="tableContainer">
                     <!-- Skeleton Loader (Table) -->
                     <div class="skeleton-table" id="skeletonTable">
@@ -223,7 +229,6 @@
                             <div class="skeleton-cell skeleton phone"></div>
                             <div class="skeleton-cell skeleton course"></div>
                             <div class="skeleton-cell skeleton date"></div>
-                            <div class="skeleton-cell skeleton date"></div>
                             <div class="skeleton-cell skeleton btn"></div>
                             <div class="skeleton-cell actions">
                                 <div class="skeleton-cell skeleton btn"></div>
@@ -236,7 +241,6 @@
                             <div class="skeleton-cell skeleton phone"></div>
                             <div class="skeleton-cell skeleton course"></div>
                             <div class="skeleton-cell skeleton date"></div>
-                            <div class="skeleton-cell skeleton date"></div>
                             <div class="skeleton-cell skeleton btn"></div>
                             <div class="skeleton-cell actions">
                                 <div class="skeleton-cell skeleton btn"></div>
@@ -248,7 +252,6 @@
                             <div class="skeleton-cell skeleton name"></div>
                             <div class="skeleton-cell skeleton phone"></div>
                             <div class="skeleton-cell skeleton course"></div>
-                            <div class="skeleton-cell skeleton date"></div>
                             <div class="skeleton-cell skeleton date"></div>
                             <div class="skeleton-cell skeleton btn"></div>
                             <div class="skeleton-cell actions">
@@ -258,29 +261,29 @@
                         </div>
                     </div>
 
-                    <table class="data-table" id="tutorsTable" style="display: none;">
+                    <table class="data-table" id="inquiriesTable" style="display: none;">
                         <thead>
                             <tr>
-                                <th>Tutor ID</th>
+                                <th>ID</th>
                                 <th>Name</th>
                                 <th>Phone</th>
-                                <th>Course(s)</th>
-                                <th>Mode</th>
-                                <th>Availability</th>
+                                <th>Interest</th>
+                                <th>Status</th>
+                                <th>Demo</th>
                                 <th>WhatsApp</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="tutorsTableBody">
+                        <tbody id="inquiriesTableBody">
                             <!-- Dynamic content -->
                         </tbody>
                     </table>
 
                     <!-- Empty State -->
                     <div class="empty-state" id="emptyState" style="display: none;">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                        <h3>No Tutors Yet</h3>
-                        <p>Add your first tutor to get started!</p>
+                        <i class="fas fa-envelope-open-text"></i>
+                        <h3>No Inquiries Yet</h3>
+                        <p>Add your first inquiry to get started!</p>
                     </div>
 
                     <!-- Pagination -->
@@ -295,7 +298,7 @@
                     </div>
                 </div>
 
-                <!-- Tutors Cards (Mobile) -->
+                <!-- Inquiries Cards (Mobile) -->
                 <!-- Skeleton Cards (Mobile) -->
                 <div class="skeleton-cards" id="skeletonCards">
                     <div class="skeleton-card">
@@ -335,101 +338,147 @@
                         </div>
                     </div>
                 </div>
-                <div class="data-cards" id="tutorsCards" style="display: none;">
+                <div class="data-cards" id="inquiriesCards" style="display: none;">
                     <!-- Dynamic content -->
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Add Tutor Modal -->
-    <div class="modal-overlay" id="tutorModalOverlay">
-        <div class="modal student-modal" id="tutorModal">
+    <!-- Add Inquiry Modal -->
+    <div class="modal-overlay" id="inquiryModalOverlay">
+        <div class="modal student-modal" id="inquiryModal">
             <div class="modal-header">
-                <h2 id="tutorModalTitle">Add New Tutor</h2>
-                <button class="modal-close" id="closeTutorModal">
+                <h2 id="inquiryModalTitle">Add New Inquiry</h2>
+                <button class="modal-close" id="closeInquiryModal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="tutorForm">
-                    <!-- Row 1: Name -->
-                    <div class="form-group">
-                        <label for="fullName">Full Name <span class="required">*</span></label>
-                        <input type="text" id="fullName" placeholder="e.g. Sneha Reddy" required>
-                    </div>
-
-                    <!-- Row 2: Contact -->
+                <form id="inquiryForm">
+                    <!-- Section: Contact Info -->
+                    <div class="form-section-title">Contact Information</div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="tutorPhone">Phone / WhatsApp <span class="required">*</span></label>
-                            <div class="phone-input-group">
-                                <input type="text" id="tutorCountryCode" class="phone-country-code" placeholder="+91"
-                                    value="+91" maxlength="5">
-                                <input type="tel" id="tutorPhone" placeholder="9876543210" maxlength="10" required>
-                            </div>
+                            <label for="inquiryName">Name <span class="required">*</span></label>
+                            <input type="text" id="inquiryName" placeholder="e.g. Amit Sharma" required>
                         </div>
                         <div class="form-group">
-                            <label for="tutorEmail">Email <span class="optional">(optional)</span></label>
-                            <input type="email" id="tutorEmail" placeholder="tutor@email.com">
+                            <label for="inquiryEmail">Email <span class="optional">(optional)</span></label>
+                            <input type="email" id="inquiryEmail" placeholder="amit@email.com">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inquiryPhone">Phone / WhatsApp <span class="required">*</span></label>
+                        <div class="phone-input-group">
+                            <input type="text" id="inquiryCountryCode" class="phone-country-code" placeholder="+91"
+                                value="+91" maxlength="5">
+                            <input type="tel" id="inquiryPhone" placeholder="9876543210" maxlength="10" required>
                         </div>
                     </div>
 
-                    <!-- Row 3: Courses -->
-                    <div class="form-group">
-                        <label for="tutorCourses">Courses <span class="required">*</span></label>
-                        <div class="multi-select-dropdown" id="tutorCoursesDropdown">
-                            <div class="multi-select-trigger" id="tutorCoursesTrigger">
-                                <span class="placeholder">Select courses...</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                            <div class="multi-select-options" id="tutorCoursesOptions">
-                                <!-- Dynamic course options -->
-                            </div>
-                        </div>
-                        <div class="selected-tags" id="selectedTutorCourses"></div>
-                    </div>
-
-                    <!-- Row 4: LinkedIn -->
-                    <div class="form-group">
-                        <label for="linkedin">LinkedIn <span class="optional">(optional)</span></label>
-                        <input type="url" id="linkedin" placeholder="https://linkedin.com/in/username">
-                    </div>
-
-                    <!-- Row 5: Mode & Availability -->
+                    <!-- Section: Interest -->
+                    <div class="form-section-title">Interest</div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="teachingMode">Teaching Mode <span class="required">*</span></label>
-                            <select id="teachingMode" required>
-                                <option value="">Select mode...</option>
-                                <option value="offline">Offline</option>
-                                <option value="online">Online</option>
-                                <option value="both">Both</option>
+                            <label for="courseService">Course / Service <span class="required">*</span></label>
+                            <select id="courseService" required>
+                                <option value="">Select interest...</option>
+                                <optgroup label="Courses">
+                                    <!-- Dynamic courses -->
+                                </optgroup>
+                                <optgroup label="Services">
+                                    <!-- Dynamic services -->
+                                </optgroup>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="availability">Availability <span class="required">*</span></label>
-                            <select id="availability" required>
-                                <option value="">Select availability...</option>
-                                <option value="weekdays">Weekdays</option>
-                                <option value="weekends">Weekends</option>
-                                <option value="flexible">Flexible</option>
+                            <label for="leadSource">Lead Source</label>
+                            <select id="leadSource">
+                                <option value="">Select source...</option>
+                                <option value="website">🌐 Website</option>
+                                <option value="instagram">📷 Instagram</option>
+                                <option value="linkedin">💼 LinkedIn</option>
+                                <option value="classifieds">📰 Classifieds</option>
+                                <option value="walkin">🚶 Walk-in</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Row 6: Notes -->
+                    <!-- Section: Current Status -->
+                    <div class="form-section-title">Current Status</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="occupation">Occupation</label>
+                            <select id="occupation">
+                                <option value="">Select occupation...</option>
+                                <option value="student">Student</option>
+                                <option value="working">Working Professional</option>
+                                <option value="career_break">Career Break</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="expectedStart">Expected Start</label>
+                            <select id="expectedStart">
+                                <option value="">Select timing...</option>
+                                <option value="immediate">⚡ Immediate</option>
+                                <option value="this_month">📅 This Month</option>
+                                <option value="next_month">📅 Next Month</option>
+                                <option value="custom">📆 Specific Month</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="customMonthGroup" style="display: none;">
+                        <label for="customMonth">Select Month & Year</label>
+                        <input type="month" id="customMonth">
+                    </div>
+
+                    <!-- Section: Demo Scheduling -->
+                    <div class="form-section-title">Demo Scheduling</div>
                     <div class="form-group">
-                        <label for="tutorNotes">Notes / Remarks</label>
-                        <textarea id="tutorNotes" rows="2" placeholder="Any additional notes..."></textarea>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="scheduleDemo">
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-text">Schedule a Demo</span>
+                        </label>
+                    </div>
+                    <div class="form-row" id="demoFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="demoDate">Demo Date</label>
+                            <input type="date" id="demoDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="demoTime">Demo Time</label>
+                            <input type="time" id="demoTime">
+                        </div>
+                    </div>
+
+                    <!-- Section: Inquiry Status -->
+                    <div class="form-section-title">Inquiry Status</div>
+                    <div class="form-group">
+                        <label for="inquiryStatus">Status <span class="required">*</span></label>
+                        <select id="inquiryStatus" required>
+                            <option value="new">🙂 New</option>
+                            <option value="contacted">📞 Contacted</option>
+                            <option value="converted">👤 Converted</option>
+                            <option value="lost">😢 Lost</option>
+                        </select>
+                    </div>
+
+                    <!-- Section: Notes -->
+                    <div class="form-section-title">Notes</div>
+                    <div class="form-group">
+                        <label for="inquiryNotes">Notes / Remarks</label>
+                        <textarea id="inquiryNotes" rows="3"
+                            placeholder="Any additional notes about this inquiry..."></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-secondary" id="cancelTutorBtn">Cancel</button>
-                <button type="submit" class="btn-primary" id="saveTutorBtn">
+                <button type="button" class="btn-secondary" id="cancelInquiryBtn">Cancel</button>
+                <button type="submit" class="btn-primary" id="saveInquiryBtn">
                     <i class="fas fa-save"></i>
-                    <span>Save Tutor</span>
+                    <span>Save Inquiry</span>
                 </button>
             </div>
         </div>
@@ -439,7 +488,7 @@
     <script src="js/ui-components.js"></script>
     <script src="js/admin-common.js"></script>
     <script src="js/admin-switcher.js"></script>
-    <script src="js/tutors.js"></script>
+    <script src="js/inquiries.js"></script>
 </body>
 
 </html>

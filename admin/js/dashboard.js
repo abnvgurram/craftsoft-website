@@ -91,7 +91,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const statTutors = document.getElementById('statTutors');
         if (statTutors) statTutors.textContent = tutorCount;
 
-        // Inquiries, Revenue will be added in later phases
+        // Load inquiry count from localStorage
+        const inquiryCount = localStorage.getItem('craftsoft_inquiry_count') || 0;
+        const statInquiries = document.getElementById('statInquiries');
+        if (statInquiries) statInquiries.textContent = inquiryCount;
+
+        // Revenue will be added in later phases
     }
 
     loadDashboardStats();
