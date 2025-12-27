@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.preventDefault();
             e.stopPropagation();
             switcher.classList.toggle('active');
-            console.log('Switcher toggled:', switcher.classList.contains('active'));
         });
 
         // Touch support

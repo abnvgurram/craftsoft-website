@@ -141,9 +141,4 @@ document.addEventListener('DOMContentLoaded', async function () {
     setActiveNav();
     preventBackNavigation();
     await loadAdminInfo();
-
-    // Debug log
-    console.log('Admin panel initialized');
-    console.log('Sidebar:', sidebar ? 'found' : 'not found');
-    console.log('Mobile menu btn:', mobileMenuBtn ? 'found' : 'not found');
 });
