@@ -204,13 +204,6 @@
                         <div class="stat-label">Pending</div>
                     </div>
                 </div>
-                <div class="stat-item stat-info">
-                    <div class="stat-icon"><i class="fas fa-calendar"></i></div>
-                    <div class="stat-info">
-                        <div class="stat-value" id="statThisMonth">₹0</div>
-                        <div class="stat-label">This Month</div>
-                    </div>
-                </div>
             </div>
 
             <!-- Page Content -->
@@ -219,7 +212,7 @@
                 <div class="page-actions-bar">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="paymentSearch" placeholder="Search by student, ID...">
+                        <input type="text" id="paymentSearch" placeholder="Search by name, student ID, receipt...">
                     </div>
                     <div class="filter-group">
                         <select id="statusFilter" class="filter-select">
@@ -289,13 +282,14 @@
                     <table class="data-table" id="paymentsTable" style="display: none;">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>Receipt</th>
                                 <th>Student</th>
                                 <th>Amount</th>
                                 <th>Course</th>
                                 <th>Method</th>
                                 <th>Status</th>
                                 <th>Date</th>
+                                <th>📲</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -381,30 +375,55 @@
             </div>
             <div class="modal-body">
                 <form id="paymentForm">
-                    <!-- Section: Student -->
-                    <div class="form-section-title">Student</div>
-                    <div class="form-group">
-                        <label for="studentSelect">Select Student <span class="required">*</span></label>
-                        <select id="studentSelect" required>
-                            <option value="">Select student...</option>
-                            <!-- Dynamic students -->
-                        </select>
-                    </div>
-                    <div class="student-info-display" id="studentInfoDisplay" style="display: none;">
-                        <div class="info-item">
-                            <span class="info-label">ID:</span>
-                            <span class="info-value" id="displayStudentId">-</span>
+                    <!-- Section: Student (Add Mode) -->
+                    <div class="form-section-title" id="studentSectionTitle">Student</div>
+
+                    <!-- Add Mode: Student Selection -->
+                    <div id="studentSelectGroup">
+                        <div class="form-group">
+                            <label for="studentSelect">Select Student <span class="required">*</span></label>
+                            <select id="studentSelect" required>
+                                <option value="">Select student...</option>
+                                <!-- Dynamic students -->
+                            </select>
                         </div>
-                        <div class="info-item">
-                            <span class="info-label">Phone:</span>
-                            <span class="info-value" id="displayStudentPhone">-</span>
+                        <div class="student-info-display" id="studentInfoDisplay" style="display: none;">
+                            <div class="info-item">
+                                <span class="info-label">ID:</span>
+                                <span class="info-value" id="displayStudentId">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Phone:</span>
+                                <span class="info-value" id="displayStudentPhone">-</span>
+                            </div>
+                            <button type="button" class="action-btn whatsapp" id="modalWhatsappBtn" title="WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Edit Mode: Locked Student Display -->
+                    <div id="studentLockedDisplay" class="locked-info-card" style="display: none;">
+                        <div class="locked-student-info">
+                            <i class="fas fa-user-lock"></i>
+                            <div class="locked-details">
+                                <span class="locked-name" id="lockedStudentName">-</span>
+                                <span class="locked-meta" id="lockedStudentMeta">-</span>
+                            </div>
+                            <button type="button" class="action-btn whatsapp" id="lockedWhatsappBtn" title="WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </button>
+                        </div>
+                        <div class="locked-course">
+                            <span class="locked-label">Course:</span>
+                            <span class="locked-value" id="lockedCourseName">-</span>
                         </div>
                     </div>
 
                     <!-- Section: Payment Details -->
                     <div class="form-section-title">Payment Details</div>
                     <div class="form-row">
-                        <div class="form-group">
+                        <div class="form-group" id="courseSelectGroup">
                             <label for="courseSelect">Course <span class="required">*</span></label>
                             <select id="courseSelect" required>
                                 <option value="">Select course...</option>

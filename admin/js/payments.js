@@ -1,6 +1,7 @@
 /**
  * Payments Management Module
- * Phase 5: Payment CRUD Operations
+ * Phase 5: Enhanced Payment CRUD Operations
+ * Receipt Format: CourseCode-ACS-Initials+PaymentNo (e.g., 01-ACS-AC001)
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -68,6 +69,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const studentInfoDisplay = document.getElementById('studentInfoDisplay');
     const paymentDateInput = document.getElementById('paymentDate');
 
+    // Add/Edit mode elements
+    const studentSelectGroup = document.getElementById('studentSelectGroup');
+    const studentLockedDisplay = document.getElementById('studentLockedDisplay');
+    const courseSelectGroup = document.getElementById('courseSelectGroup');
+
     // Filter & Pagination Elements
     const statusFilter = document.getElementById('statusFilter');
     const methodFilter = document.getElementById('methodFilter');
@@ -78,12 +84,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Stats Elements
     const statCollected = document.getElementById('statCollected');
     const statPending = document.getElementById('statPending');
-    const statThisMonth = document.getElementById('statThisMonth');
 
     // State
     let payments = [];
     let students = [];
     let editingPaymentId = null;
+    let currentStudentPhone = '';
+
     let currentPage = 1;
     let filteredPayments = [];
 
@@ -143,6 +150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 studentInfoDisplay.style.display = 'flex';
                 document.getElementById('displayStudentId').textContent = student.id;
                 document.getElementById('displayStudentPhone').textContent = student.phone;
+                currentStudentPhone = student.phone;
 
                 // Populate courses dropdown
                 const studentCourses = student.courses || [];
@@ -154,8 +162,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 studentInfoDisplay.style.display = 'none';
                 courseSelect.innerHTML = '<option value="">Select course...</option>';
+                currentStudentPhone = '';
             }
         });
+
+        // WhatsApp buttons
+        const modalWhatsappBtn = document.getElementById('modalWhatsappBtn');
+        if (modalWhatsappBtn) {
+            modalWhatsappBtn.addEventListener('click', () => {
+                if (currentStudentPhone) openWhatsApp(currentStudentPhone);
+            });
+        }
+
+        const lockedWhatsappBtn = document.getElementById('lockedWhatsappBtn');
+        if (lockedWhatsappBtn) {
+            lockedWhatsappBtn.addEventListener('click', () => {
+                if (currentStudentPhone) openWhatsApp(currentStudentPhone);
+            });
+        }
     }
 
     // ============================================
@@ -173,6 +197,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             studentInfoDisplay.style.display = 'none';
             courseSelect.innerHTML = '<option value="">Select course...</option>';
             document.getElementById('paymentStatus').value = 'paid';
+            currentStudentPhone = '';
+
+            // Show add mode, hide edit mode
+            studentSelectGroup.style.display = 'block';
+            studentLockedDisplay.style.display = 'none';
+            courseSelectGroup.style.display = 'block';
+            studentSelect.required = true;
+            courseSelect.required = true;
         }
     }
 
@@ -182,6 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         editingPaymentId = null;
         paymentForm.reset();
         studentInfoDisplay.style.display = 'none';
+        currentStudentPhone = '';
     }
 
     addPaymentBtn.addEventListener('click', () => openModal(false));
@@ -192,11 +225,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // ============================================
-    // Generate Payment ID
+    // Generate Receipt Number
+    // Format: CourseCode-ACS-Initials+PaymentNo
+    // Example: 01-ACS-AC001
     // ============================================
-    function generatePaymentId() {
-        const sequence = (payments.length + 1).toString().padStart(3, '0');
-        return `PAY-${sequence}`;
+    function generateReceiptNumber(studentName, courseCode) {
+        // Extract initials from name (first letter of first two words)
+        const words = studentName.trim().split(/\s+/);
+        const initials = words.slice(0, 2).map(w => w[0].toUpperCase()).join('');
+
+        // Count existing payments for this student + course combo
+        const existingPayments = payments.filter(p =>
+            p.student_name === studentName && p.course_code === courseCode
+        );
+        const paymentNo = (existingPayments.length + 1).toString().padStart(3, '0');
+
+        return `${courseCode}-ACS-${initials}${paymentNo}`;
     }
 
     // ============================================
@@ -205,22 +249,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     savePaymentBtn.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        const studentId = studentSelect.value;
-        const courseCode = courseSelect.value;
+        let studentId, studentName, studentPhone, courseCode;
+
+        if (editingPaymentId) {
+            // Edit mode - get from locked display
+            const pay = payments.find(p => p.id === editingPaymentId);
+            studentId = pay.student_id;
+            studentName = pay.student_name;
+            studentPhone = pay.student_phone;
+            courseCode = pay.course_code;
+        } else {
+            // Add mode - get from selects
+            studentId = studentSelect.value;
+            courseCode = courseSelect.value;
+
+            if (!studentId) {
+                window.toast.warning('Required', 'Please select a student');
+                return;
+            }
+
+            if (!courseCode) {
+                window.toast.warning('Required', 'Please select a course');
+                return;
+            }
+
+            const student = students.find(s => s.id === studentId);
+            studentName = student ? student.name : 'Unknown';
+            studentPhone = student ? student.phone : '';
+        }
+
         const amount = document.getElementById('paymentAmount').value;
         const method = document.getElementById('paymentMethod').value;
         const paymentDate = paymentDateInput.value;
         const status = document.getElementById('paymentStatus').value;
-
-        if (!studentId) {
-            window.toast.warning('Required', 'Please select a student');
-            return;
-        }
-
-        if (!courseCode) {
-            window.toast.warning('Required', 'Please select a course');
-            return;
-        }
 
         if (!amount || amount <= 0) {
             window.toast.warning('Required', 'Please enter a valid amount');
@@ -237,13 +298,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        const student = students.find(s => s.id === studentId);
-
         const paymentData = {
-            id: editingPaymentId || generatePaymentId(),
+            id: editingPaymentId || generateReceiptNumber(studentName, courseCode),
             student_id: studentId,
-            student_name: student ? student.name : 'Unknown',
-            student_phone: student ? student.phone : '',
+            student_name: studentName,
+            student_phone: studentPhone,
             course_code: courseCode,
             amount: parseFloat(amount),
             method: method,
@@ -294,7 +353,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (payments.length === 0) {
                 payments = [
                     {
-                        id: 'PAY-001',
+                        id: '03-ACS-RK001',
                         student_id: 'S-ACS-001',
                         student_name: 'Ravi Kumar',
                         student_phone: '+919876543210',
@@ -308,7 +367,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         created_at: new Date().toISOString()
                     },
                     {
-                        id: 'PAY-002',
+                        id: '02-ACS-SR001',
                         student_id: 'S-ACS-002',
                         student_name: 'Sneha Reddy',
                         student_phone: '+918765432109',
@@ -322,7 +381,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         created_at: new Date().toISOString()
                     },
                     {
-                        id: 'PAY-003',
+                        id: '13-ACS-AS001',
                         student_id: 'S-ACS-003',
                         student_name: 'Amit Sharma',
                         student_phone: '+919988776655',
@@ -363,19 +422,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             .filter(p => p.status === 'pending')
             .reduce((sum, p) => sum + p.amount, 0);
 
-        const now = new Date();
-        const thisMonth = payments
-            .filter(p => {
-                const pDate = new Date(p.payment_date);
-                return p.status === 'paid' &&
-                    pDate.getMonth() === now.getMonth() &&
-                    pDate.getFullYear() === now.getFullYear();
-            })
-            .reduce((sum, p) => sum + p.amount, 0);
-
         statCollected.textContent = formatCurrency(collected);
         statPending.textContent = formatCurrency(pending);
-        statThisMonth.textContent = formatCurrency(thisMonth);
 
         // Update dashboard stats
         localStorage.setItem('craftsoft_revenue', collected);
@@ -391,7 +439,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function applyFiltersAndSort() {
         let result = [...payments];
 
-        // Search filter
+        // Search filter (name, student ID, receipt)
         const searchQuery = paymentSearch.value.toLowerCase().trim();
         if (searchQuery) {
             result = result.filter(p =>
@@ -467,6 +515,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         return course ? course.short : code;
     }
 
+    function getCourseName(code) {
+        const course = COURSES.find(c => c.code === code);
+        return course ? course.name : code;
+    }
+
+    // ============================================
+    // WhatsApp Integration
+    // ============================================
+    function openWhatsApp(phone) {
+        let cleanPhone = phone.replace(/[^0-9]/g, '');
+        window.open(`https://wa.me/${cleanPhone}`, '_blank');
+    }
+
+    window.openWhatsAppPayment = function (phone) {
+        openWhatsApp(phone);
+    };
+
     // ============================================
     // Render Payments
     // ============================================
@@ -518,6 +583,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </td>
                     <td>${formatDate(pay.payment_date)}</td>
                     <td>
+                        <button class="action-btn whatsapp" title="WhatsApp" onclick="openWhatsAppPayment('${pay.student_phone}')">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
+                    </td>
+                    <td>
                         <div class="action-btns">
                             <button class="action-btn edit" title="Edit" onclick="editPayment('${pay.id}')">
                                 <i class="fas fa-pen"></i>
@@ -541,6 +611,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="data-card-header">
                         <span class="data-card-id">${pay.id}</span>
                         <div class="action-btns">
+                            <button class="action-btn whatsapp" title="WhatsApp" onclick="openWhatsAppPayment('${pay.student_phone}')">
+                                <i class="fab fa-whatsapp"></i>
+                            </button>
                             <button class="action-btn edit" title="Edit" onclick="editPayment('${pay.id}')">
                                 <i class="fas fa-pen"></i>
                             </button>
@@ -579,27 +652,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // ============================================
-    // Edit Payment
+    // Edit Payment (with locked student/course)
     // ============================================
     window.editPayment = function (id) {
         const pay = payments.find(p => p.id === id);
         if (!pay) return;
 
         editingPaymentId = id;
-        document.getElementById('paymentModalTitle').textContent = 'Edit Payment';
+        document.getElementById('paymentModalTitle').textContent = `Edit Payment — ${id}`;
         savePaymentBtn.querySelector('span').textContent = 'Update Payment';
 
-        // Populate form
-        studentSelect.value = pay.student_id || '';
+        // Hide add mode, show edit mode (locked)
+        studentSelectGroup.style.display = 'none';
+        studentLockedDisplay.style.display = 'block';
+        courseSelectGroup.style.display = 'none';
+        studentSelect.required = false;
+        courseSelect.required = false;
 
-        // Trigger student change to load courses
-        const event = new Event('change');
-        studentSelect.dispatchEvent(event);
+        // Populate locked display
+        document.getElementById('lockedStudentName').textContent = pay.student_name;
+        document.getElementById('lockedStudentMeta').textContent = `${pay.student_id} | ${pay.student_phone}`;
+        document.getElementById('lockedCourseName').textContent = getCourseName(pay.course_code);
+        currentStudentPhone = pay.student_phone;
 
-        setTimeout(() => {
-            courseSelect.value = pay.course_code || '';
-        }, 100);
-
+        // Populate editable fields
         document.getElementById('paymentAmount').value = pay.amount || '';
         document.getElementById('paymentMethod').value = pay.method || '';
         paymentDateInput.value = pay.payment_date || '';
@@ -620,7 +696,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (window.modal) {
             window.modal.confirm(
                 'Delete Payment',
-                `Are you sure you want to delete payment <strong>${pay.id}</strong> (${formatCurrency(pay.amount)})?`,
+                `Are you sure you want to delete receipt <strong>${pay.id}</strong> (${formatCurrency(pay.amount)})?`,
                 () => {
                     payments = payments.filter(p => p.id !== id);
                     savePaymentsToStorage();
