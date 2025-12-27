@@ -76,7 +76,22 @@ export default function Header({ onMobileToggle }) {
                 </Typography>
 
                 <Box>
-                    <IconButton onClick={handleMenu} sx={{ p: 0 }}>
+                    <IconButton
+                        onClick={handleMenu}
+                        sx={{
+                            p: 0.5,
+                            borderRadius: 2,
+                            '&:hover': { bgcolor: 'action.hover' }
+                        }}
+                    >
+                        <Box sx={{ mr: 1.5, textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 700, lineHeight: 1.2, color: 'text.primary' }}>
+                                {adminProfile?.full_name || 'Admin'}
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
+                                {adminProfile?.admin_id || 'ID'}
+                            </Typography>
+                        </Box>
                         <Avatar sx={{
                             width: 40, height: 40,
                             background: 'linear-gradient(135deg, #2896cd 0%, #6C5CE7 100%)',
