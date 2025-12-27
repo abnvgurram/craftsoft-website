@@ -1043,3 +1043,13 @@ body {
         transform: translateY(-50%) scale(1);
     }
 }
+
+/* Fix spacing for back buttons */
+#backToAccounts {
+    margin-top: 0;
+    margin-bottom: var(--spacing-xs);
+}
+
+#backToAccounts+.auth-back-link {
+    margin-top: var(--spacing-sm);
+}
