@@ -107,6 +107,10 @@
             // Render the account panel
             AccountManager.renderAccountPanel('account-panel-container');
 
+            // Initialize session timeout (5 min inactivity = warning)
+            const { SessionTimeout } = window.AdminUtils;
+            SessionTimeout.init();
+
             // Listen for auth state changes (within this tab)
             window.supabaseConfig.onAuthStateChange((event, newSession) => {
                 if (event === 'SIGNED_OUT') {

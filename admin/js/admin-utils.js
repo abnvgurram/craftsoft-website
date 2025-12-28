@@ -1156,6 +1156,205 @@ const AccountManager = {
 };
 
 // ============================================
+// Session Timeout (Inactivity Lock)
+// ============================================
+const SessionTimeout = {
+    INACTIVITY_TIMEOUT: 5 * 60 * 1000, // 5 minutes in ms
+    WARNING_DURATION: 15, // 15 seconds countdown
+
+    inactivityTimer: null,
+    countdownTimer: null,
+    countdownSeconds: 15,
+    isWarningShown: false,
+    modalElement: null,
+
+    // Activity events to track
+    activityEvents: ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'],
+
+    // Initialize session timeout
+    init() {
+        this.resetTimer();
+        this.bindActivityListeners();
+    },
+
+    // Bind activity listeners
+    bindActivityListeners() {
+        this.activityEvents.forEach(event => {
+            document.addEventListener(event, () => this.handleActivity(), { passive: true });
+        });
+
+        // Also reset on visibility change (tab becomes visible)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && !this.isWarningShown) {
+                this.resetTimer();
+            }
+        });
+    },
+
+    // Handle user activity
+    handleActivity() {
+        if (!this.isWarningShown) {
+            this.resetTimer();
+        }
+    },
+
+    // Reset the inactivity timer
+    resetTimer() {
+        if (this.inactivityTimer) {
+            clearTimeout(this.inactivityTimer);
+        }
+
+        this.inactivityTimer = setTimeout(() => {
+            this.showWarning();
+        }, this.INACTIVITY_TIMEOUT);
+    },
+
+    // Show timeout warning modal
+    showWarning() {
+        if (this.isWarningShown) return;
+
+        this.isWarningShown = true;
+        this.countdownSeconds = this.WARNING_DURATION;
+
+        // Create modal
+        this.modalElement = document.createElement('div');
+        this.modalElement.id = 'session-timeout-modal';
+        this.modalElement.className = 'session-timeout-overlay';
+        this.modalElement.innerHTML = `
+            <div class="session-timeout-modal">
+                <div class="session-timeout-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <h3 class="session-timeout-title">Session Expiring</h3>
+                <p class="session-timeout-message">
+                    You've been inactive for 5 minutes.<br>
+                    For security, you'll be logged out in:
+                </p>
+                <div class="session-timeout-countdown" id="timeout-countdown">
+                    ${this.formatTime(this.countdownSeconds)}
+                </div>
+                <div class="session-timeout-actions">
+                    <button class="btn btn-outline" id="timeout-logout-btn">
+                        Logout Now
+                    </button>
+                    <button class="btn btn-primary" id="timeout-stay-btn">
+                        <i class="fa-solid fa-check"></i>
+                        Stay Logged In
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(this.modalElement);
+        document.body.style.overflow = 'hidden';
+
+        // Show with animation
+        requestAnimationFrame(() => {
+            this.modalElement.classList.add('active');
+        });
+
+        // Bind button events
+        document.getElementById('timeout-stay-btn').addEventListener('click', () => {
+            this.extendSession();
+        });
+
+        document.getElementById('timeout-logout-btn').addEventListener('click', () => {
+            this.logout();
+        });
+
+        // Start countdown
+        this.startCountdown();
+    },
+
+    // Format time as MM:SS
+    formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    },
+
+    // Start countdown timer
+    startCountdown() {
+        const countdownEl = document.getElementById('timeout-countdown');
+
+        this.countdownTimer = setInterval(() => {
+            this.countdownSeconds--;
+
+            if (countdownEl) {
+                countdownEl.textContent = this.formatTime(this.countdownSeconds);
+
+                // Add urgency class when low
+                if (this.countdownSeconds <= 5) {
+                    countdownEl.classList.add('urgent');
+                }
+            }
+
+            if (this.countdownSeconds <= 0) {
+                this.logout();
+            }
+        }, 1000);
+    },
+
+    // User chose to stay logged in
+    extendSession() {
+        this.hideWarning();
+        this.resetTimer();
+
+        const { Toast } = window.AdminUtils;
+        Toast.success('Session Extended', 'You can continue working');
+    },
+
+    // Hide warning modal
+    hideWarning() {
+        if (this.countdownTimer) {
+            clearInterval(this.countdownTimer);
+            this.countdownTimer = null;
+        }
+
+        if (this.modalElement) {
+            this.modalElement.classList.remove('active');
+            document.body.style.overflow = '';
+
+            setTimeout(() => {
+                if (this.modalElement) {
+                    this.modalElement.remove();
+                    this.modalElement = null;
+                }
+            }, 300);
+        }
+
+        this.isWarningShown = false;
+    },
+
+    // Logout user
+    async logout() {
+        this.hideWarning();
+
+        const { NavigationSecurity, Toast } = window.AdminUtils;
+        Toast.info('Session Expired', 'Logging out...');
+
+        // Clear timers
+        if (this.inactivityTimer) {
+            clearTimeout(this.inactivityTimer);
+        }
+
+        // Perform secure logout
+        await NavigationSecurity.secureLogout();
+    },
+
+    // Stop all timers (call when leaving page)
+    destroy() {
+        if (this.inactivityTimer) {
+            clearTimeout(this.inactivityTimer);
+        }
+        if (this.countdownTimer) {
+            clearInterval(this.countdownTimer);
+        }
+        this.hideWarning();
+    }
+};
+
+// ============================================
 // Initialize on DOM Ready
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -1171,6 +1370,7 @@ window.AdminUtils = {
     Security,
     NavigationSecurity,
     AccountManager,
+    SessionTimeout,
     requireAuth,
     requireNoAuth,
     formatAdminId,
