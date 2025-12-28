@@ -73,10 +73,15 @@ const Auth = {
                     .from('admins')
                     .select('email, status')
                     .eq('admin_id', identifier)
-                    .single();
+                    .maybeSingle();
 
-                if (adminError || !adminData) {
-                    return { success: false, error: 'Admin ID not found' };
+                if (adminError) {
+                    console.error('Admin lookup error:', adminError);
+                    return { success: false, error: 'Error looking up Admin ID' };
+                }
+
+                if (!adminData) {
+                    return { success: false, error: 'Admin ID not found. Please use your email to login.' };
                 }
 
                 if (adminData.status !== 'ACTIVE') {
