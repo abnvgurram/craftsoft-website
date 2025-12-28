@@ -176,10 +176,37 @@
             }
         }
     </style>
+    <style>
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            .error-page-container {
+                padding: var(--spacing-2xl) var(--spacing-md);
+            }
+
+            .error-code {
+                font-size: 5rem;
+                /* Fallback/Smaller */
+            }
+
+            .illustration-icon {
+                font-size: 4rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Navbar -->
+    <!-- Navbar (Matched with Index) -->
     <nav class="navbar" id="navbar">
         <div class="container nav-container">
             <a href="/" class="logo">
