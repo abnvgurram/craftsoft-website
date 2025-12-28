@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
 import {
-    AppBar, Toolbar, IconButton, Typography, Box, Avatar, Menu, MenuItem, Divider, ListItemIcon, Button, ListItemText
+    AppBar, Toolbar, IconButton, Typography, Box, Avatar, Menu, MenuItem, Divider, ListItemIcon, Button, ListItemText,
+    Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -37,8 +38,7 @@ export default function Header({ onMobileToggle }) {
 
     const handleLogout = () => {
         handleClose();
-        signOut();
-        navigate('/signin', { replace: true });
+        setLogoutDialogOpen(true);
     };
 
     const handleAddAccount = () => {
@@ -49,6 +49,14 @@ export default function Header({ onMobileToggle }) {
     const [savedAdmins, setSavedAdmins] = useState(() =>
         JSON.parse(localStorage.getItem('craftsoft_saved_admins') || '[]')
     );
+
+    const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+
+    const confirmLogout = () => {
+        setLogoutDialogOpen(false);
+        signOut();
+        navigate('/signin', { replace: true });
+    };
 
     // Filter out the current logged-in user
     const otherAccounts = savedAdmins.filter(admin =>
@@ -215,6 +223,31 @@ export default function Header({ onMobileToggle }) {
                             </Button>
                         </MenuItem>
                     </Menu>
+
+                    <Dialog
+                        open={logoutDialogOpen}
+                        onClose={() => setLogoutDialogOpen(false)}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                        PaperProps={{ sx: { borderRadius: 3, minWidth: 320 } }}
+                    >
+                        <DialogTitle id="alert-dialog-title" sx={{ fontWeight: 700 }}>
+                            {"Sign out?"}
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogContentText id="alert-dialog-description">
+                                Are you sure you want to sign out of <b>{adminProfile?.full_name}</b>?
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions sx={{ p: 2 }}>
+                            <Button onClick={() => setLogoutDialogOpen(false)} sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                                Cancel
+                            </Button>
+                            <Button onClick={confirmLogout} variant="contained" color="error" autoFocus sx={{ borderRadius: 2, px: 3 }}>
+                                Sign Out
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </Box>
             </Toolbar>
         </AppBar>
