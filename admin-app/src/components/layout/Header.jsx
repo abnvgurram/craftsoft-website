@@ -217,17 +217,22 @@ export default function Header({ onMobileToggle }) {
                             </MenuItem>
                         )}
                         <Divider />
-                        <MenuItem onClick={handleLogout} sx={{ py: 1.5, bgcolor: 'grey.50' }}>
+                        <Box sx={{ p: 1.5, bgcolor: 'grey.50' }}>
                             <Button
                                 fullWidth
                                 variant="outlined"
                                 color="inherit"
                                 size="small"
                                 onClick={handleLogout}
+                                sx={{
+                                    borderColor: 'grey.300',
+                                    color: 'text.primary',
+                                    '&:hover': { bgcolor: 'white', borderColor: 'grey.400' }
+                                }}
                             >
                                 Sign out
                             </Button>
-                        </MenuItem>
+                        </Box>
                     </Menu>
 
                     <LoginModal
@@ -248,7 +253,7 @@ export default function Header({ onMobileToggle }) {
                             sx: {
                                 borderRadius: 4,
                                 padding: 1,
-                                minWidth: 320,
+                                minWidth: 400, // Increased
                                 background: 'rgba(255, 255, 255, 0.9)',
                                 backdropFilter: 'blur(10px)',
                                 boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
