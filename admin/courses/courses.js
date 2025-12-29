@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) headerContainer.innerHTML = AdminHeader.render('Courses');
 
+    const admin = await window.Auth.getCurrentAdmin();
+    await AdminSidebar.renderAccountPanel(session, admin);
+
     await loadCourses();
 
     document.getElementById('sync-courses-btn')?.addEventListener('click', syncCourses);

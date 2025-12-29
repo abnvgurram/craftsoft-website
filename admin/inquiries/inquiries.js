@@ -6,4 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     AdminSidebar.init('inquiries');
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) headerContainer.innerHTML = AdminHeader.render('Inquiries');
+
+    const admin = await window.Auth.getCurrentAdmin();
+    await AdminSidebar.renderAccountPanel(session, admin);
 });

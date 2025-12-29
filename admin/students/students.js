@@ -22,6 +22,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         headerContainer.innerHTML = AdminHeader.render('Students');
     }
 
+    // Render Account Panel
+    const admin = await window.Auth.getCurrentAdmin();
+    await AdminSidebar.renderAccountPanel(session, admin);
+
     // Load Data
     await loadCoursesForStudents();
     await loadTutorsForStudents();

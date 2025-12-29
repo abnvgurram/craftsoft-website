@@ -7,4 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) headerContainer.innerHTML = AdminHeader.render('Receipts');
+
+    const admin = await window.Auth.getCurrentAdmin();
+    await AdminSidebar.renderAccountPanel(session, admin);
 });

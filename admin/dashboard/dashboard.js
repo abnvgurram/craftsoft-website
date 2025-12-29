@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Check Auth
     const { NavigationSecurity } = window.AdminUtils || {};
-    // Optional: NavigationSecurity.initProtectedPage(); (if implemented)
 
     const session = await window.supabaseConfig.getSession();
     if (!session) {
@@ -9,22 +7,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // 2. Init Sidebar (Highlight 'dashboard')
+    // Init Sidebar
     AdminSidebar.init('dashboard');
 
-    // 3. Render Header
+    // Render Header
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {
         headerContainer.innerHTML = AdminHeader.render('Dashboard');
     }
 
-    // 4. Render Dashboard Content
-    renderDashboard();
+    // Render Account Panel & Dashboard Content
+    const admin = await window.Auth.getCurrentAdmin();
+    if (admin) {
+        await AdminSidebar.renderAccountPanel(session, admin);
+        renderDashboard(admin);
+    }
 });
 
-async function renderDashboard() {
+function renderDashboard(admin) {
     const content = document.getElementById('dashboard-content');
-    const admin = await window.Auth.getCurrentAdmin();
 
     content.innerHTML = `
         <div class="welcome-card">

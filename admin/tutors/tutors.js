@@ -19,8 +19,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {
         headerContainer.innerHTML = AdminHeader.render('Tutors');
-        // Note: The Add button is inside content-card in HTML, so we don't need it in header actions
     }
+
+    // Render Account Panel
+    const admin = await window.Auth.getCurrentAdmin();
+    await AdminSidebar.renderAccountPanel(session, admin);
 
     // Load Data
     await loadCoursesForTutors();

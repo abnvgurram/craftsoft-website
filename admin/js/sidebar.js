@@ -133,6 +133,23 @@ const AdminSidebar = {
         if (SessionTimeout) {
             SessionTimeout.init();
         }
+    },
+
+    async renderAccountPanel(session, admin) {
+        const { AccountManager } = window.AdminUtils || {};
+        if (!AccountManager || !session || !admin) return;
+
+        // Add current account
+        AccountManager.addAccount({
+            id: session.user.id,
+            admin_id: admin.admin_id,
+            email: admin.email,
+            full_name: admin.full_name,
+            initials: AccountManager.getInitials(admin.full_name)
+        }, true);
+
+        AccountManager.storeSession(session.user.id, session);
+        AccountManager.renderAccountPanel('account-panel-container');
     }
 };
 
