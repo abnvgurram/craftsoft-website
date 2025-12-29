@@ -141,6 +141,9 @@ const AdminHeader = {
         return `
             <header class="admin-header">
                 <div class="admin-header-left">
+                    <button class="mobile-menu-btn" aria-label="Menu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
                     <span class="header-logo">CraftSoft</span>
                     <span class="header-divider"></span>
                     <h1 class="page-title">${title}</h1>
