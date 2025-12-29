@@ -1475,32 +1475,14 @@
             const closeBtn = document.getElementById('close-student-modal');
             const cancelBtn = document.getElementById('cancel-student-btn');
             const saveBtn = document.getElementById('save-student-btn');
+            const demoFieldsDiv = document.getElementById('student-modal').querySelector('.demo-fields');
 
             // Initialize tutor list based on current courses
             if (student?.courses?.length > 0) {
                 updateTutorCheckboxes(student.courses, student.tutors || []);
             }
 
-            // Calculate fee from selected courses
-            const calculateFeeFromCourses = () => {
-                const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
-                    .map(cb => cb.value);
-                let totalFee = 0;
-                selectedCourses.forEach(code => {
-                    const course = allCoursesForStudents.find(c => c.course_code === code);
-                    if (course && course.fee) {
-                        totalFee += parseFloat(course.fee);
-                    }
-                });
-                const feeInput = document.getElementById('student-fee');
-                const discountInput = document.getElementById('student-discount');
-                const finalFeeInput = document.getElementById('student-final-fee');
-                feeInput.value = totalFee;
-                const discount = parseFloat(discountInput.value) || 0;
-                finalFeeInput.value = Math.max(0, totalFee - discount);
-            };
-
-            // Handle course checkbox changes - update tutors AND fee
+            // Handle course checkbox changes - update tutors (fee is per course, not sum)
             document.querySelectorAll('input[name="student-courses"]').forEach(cb => {
                 cb.addEventListener('change', () => {
                     const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
@@ -1508,16 +1490,19 @@
                     const currentTutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked'))
                         .map(t => t.value);
                     updateTutorCheckboxes(selectedCourses, currentTutors);
-                    calculateFeeFromCourses();
                 });
             });
 
-            // Handle demo radio change
-            document.querySelectorAll('input[name="demo-scheduled"]').forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    const demoFields = modal.querySelector('.demo-fields');
-                    if (demoFields) {
-                        demoFields.style.display = e.target.value === 'yes' ? '' : 'none';
+            // Handle demo radio change - toggle visibility
+            const demoRadios = document.querySelectorAll('input[name="demo-scheduled"]');
+            demoRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (demoFieldsDiv) {
+                        if (this.value === 'yes') {
+                            demoFieldsDiv.style.display = 'grid';
+                        } else {
+                            demoFieldsDiv.style.display = 'none';
+                        }
                     }
                 });
             });
