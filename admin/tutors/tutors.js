@@ -260,6 +260,11 @@ async function saveTutor() {
             });
             if (error) throw error;
             Toast.success('Added', 'Tutor added successfully');
+
+            // Log activity
+            if (window.DashboardActivities) {
+                window.DashboardActivities.add('tutor_added', name, '../tutors/');
+            }
         }
         closeForm();
         await loadTutors();

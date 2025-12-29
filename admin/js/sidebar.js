@@ -69,13 +69,15 @@ const AdminSidebar = {
     },
 
     bindEvents() {
-        const menuBtn = document.getElementById('mobile-menu-btn');
         const sidebar = document.getElementById('admin-sidebar');
         const overlay = document.getElementById('sidebar-overlay');
 
-        menuBtn?.addEventListener('click', () => {
-            sidebar?.classList.toggle('open');
-            overlay?.classList.toggle('active');
+        // Use event delegation for mobile menu (button rendered later in header)
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#mobile-menu-btn')) {
+                sidebar?.classList.toggle('open');
+                overlay?.classList.toggle('active');
+            }
         });
 
         overlay?.addEventListener('click', () => {

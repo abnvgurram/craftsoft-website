@@ -207,6 +207,13 @@ async function saveFee() {
         const { error } = await window.supabaseClient.from('courses').update({ fee }).eq('id', courseId);
         if (error) throw error;
         Toast.success('Saved', 'Fee updated successfully');
+
+        // Log activity
+        const courseName = document.getElementById('fee-course-name').value;
+        if (window.DashboardActivities) {
+            window.DashboardActivities.add('fee_updated', courseName, '../courses/');
+        }
+
         closeFeeForm();
         await loadCourses();
     } catch (e) {

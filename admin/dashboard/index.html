@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - CraftSoft Admin</title>
-    <link rel="icon" href="../../assets/images/logo-main.webp" type="image/webp">
+    <link rel="icon" href="../../favicon.ico" type="image/x-icon">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,11 +29,98 @@
         <main class="admin-main">
             <div id="header-container"></div>
 
-            <div class="content-card">
-                <div class="section-divider"></div>
-                <div class="welcome-section" id="dashboard-content">
-                    <div class="loading-spinner">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Loading...
+            <div class="dashboard-content">
+                <!-- Stats Row 1: Main Stats -->
+                <div class="stats-row stats-row-3">
+                    <div class="stat-card" id="stat-students">
+                        <div class="stat-icon stat-icon-students">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="total-students">-</div>
+                            <div class="stat-label">Total Students</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" id="stat-courses">
+                        <div class="stat-icon stat-icon-courses">
+                            <i class="fa-solid fa-book-bookmark"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="total-courses">-</div>
+                            <div class="stat-label">Active Courses</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" id="stat-tutors">
+                        <div class="stat-icon stat-icon-tutors">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="total-tutors">-</div>
+                            <div class="stat-label">Total Tutors</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Row 2: Secondary Stats -->
+                <div class="stats-row stats-row-2">
+                    <div class="stat-card stat-card-secondary">
+                        <div class="stat-icon stat-icon-demos">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="demos-today">-</div>
+                            <div class="stat-label">Demos Today</div>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card-secondary">
+                        <div class="stat-icon stat-icon-joined">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="joined-week">-</div>
+                            <div class="stat-label">Joined This Week</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-bolt"></i> Quick Actions</h3>
+                    </div>
+                    <div class="quick-actions">
+                        <a href="../students/" class="quick-action-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            Add Student
+                        </a>
+                        <a href="../tutors/" class="quick-action-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            Add Tutor
+                        </a>
+                        <a href="../inquiries/" class="quick-action-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            Add Inquiry
+                        </a>
+                        <a href="../payments/receipts/" class="quick-action-btn quick-action-primary">
+                            <i class="fa-solid fa-receipt"></i>
+                            Record Fee Payment
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Activities</h3>
+                        <button class="btn btn-sm btn-outline" id="clear-all-activities">
+                            Clear All
+                        </button>
+                    </div>
+                    <div class="activities-list" id="activities-list">
+                        <div class="loading-spinner">
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                            Loading activities...
+                        </div>
                     </div>
                 </div>
             </div>
