@@ -183,6 +183,7 @@ async function openForm(tutorId = null) {
     document.getElementById('tutor-phone').value = '';
     document.getElementById('tutor-email').value = '';
     document.getElementById('tutor-linkedin').value = '';
+    document.getElementById('tutor-notes').value = '';
 
     let tutor = null;
     if (isEdit) {
@@ -198,6 +199,7 @@ async function openForm(tutorId = null) {
         document.getElementById('tutor-phone').value = tutor.phone || '';
         document.getElementById('tutor-email').value = tutor.email || '';
         document.getElementById('tutor-linkedin').value = tutor.linkedin_url || '';
+        document.getElementById('tutor-notes').value = tutor.notes || '';
     }
 
     renderCoursesCheckboxes(tutor?.courses || []);
@@ -223,6 +225,7 @@ async function saveTutor() {
     const phone = document.getElementById('tutor-phone').value.trim();
     const email = document.getElementById('tutor-email').value.trim();
     const linkedin = document.getElementById('tutor-linkedin').value.trim();
+    const notes = document.getElementById('tutor-notes').value.trim();
     const courses = Array.from(document.querySelectorAll('input[name="tutor-courses"]:checked')).map(c => c.value);
 
     // Validation
@@ -237,7 +240,7 @@ async function saveTutor() {
         if (isEdit) {
             const { error } = await window.supabaseClient.from('tutors').update({
                 full_name: name, phone, email: email || null,
-                linkedin_url: linkedin || null, courses
+                linkedin_url: linkedin || null, courses, notes
             }).eq('id', editId);
             if (error) throw error;
             Toast.success('Updated', 'Tutor updated successfully');
@@ -253,7 +256,7 @@ async function saveTutor() {
 
             const { error } = await window.supabaseClient.from('tutors').insert({
                 tutor_id: newId, full_name: name, phone, email: email || null,
-                linkedin_url: linkedin || null, courses, status: 'ACTIVE'
+                linkedin_url: linkedin || null, courses, notes, status: 'ACTIVE'
             });
             if (error) throw error;
             Toast.success('Added', 'Tutor added successfully');

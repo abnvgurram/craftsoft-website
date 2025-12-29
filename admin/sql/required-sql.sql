@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS tutors (
     email TEXT,
     linkedin_url TEXT,
     courses TEXT[],
+    notes TEXT,
     status TEXT DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE')),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
