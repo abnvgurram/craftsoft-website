@@ -856,111 +856,116 @@
             document.body.insertAdjacentHTML('beforeend', modalHTML);
             document.body.style.overflow = 'hidden';
 
-            const modal = document.getElementById('tutor-modal');
-            const closeBtn = document.getElementById('close-tutor-modal');
-            const cancelBtn = document.getElementById('cancel-tutor-btn');
-            const saveBtn = document.getElementById('save-tutor-btn');
+            // Use setTimeout to ensure DOM is fully ready
+            setTimeout(() => {
+                const modal = document.getElementById('tutor-modal');
+                if (!modal) return;
 
-            const closeModal = () => {
-                modal.remove();
-                document.body.style.overflow = '';
-            };
+                const closeBtn = modal.querySelector('#close-tutor-modal');
+                const cancelBtn = modal.querySelector('#cancel-tutor-btn');
+                const saveBtn = modal.querySelector('#save-tutor-btn');
 
-            closeBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                closeModal();
-            });
-            cancelBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                closeModal();
-            });
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
-            });
+                const closeModal = () => {
+                    modal.remove();
+                    document.body.style.overflow = '';
+                };
 
-            saveBtn.addEventListener('click', async () => {
-                const name = document.getElementById('tutor-name').value.trim();
-                const phone = document.getElementById('tutor-phone').value.trim();
-                const email = document.getElementById('tutor-email').value.trim();
-                const linkedin = document.getElementById('tutor-linkedin').value.trim();
-                const selectedCourses = Array.from(document.querySelectorAll('input[name="tutor-courses"]:checked'))
-                    .map(cb => cb.value);
+                closeBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    closeModal();
+                });
+                cancelBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    closeModal();
+                });
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal();
+                });
 
-                // Validation
-                if (!name) {
-                    Toast.error('Required', 'Please enter tutor name');
-                    return;
-                }
-                if (!phone || phone.length !== 10) {
-                    Toast.error('Required', 'Please enter valid 10-digit phone');
-                    return;
-                }
-                if (selectedCourses.length === 0) {
-                    Toast.error('Required', 'Please select at least one course');
-                    return;
-                }
+                saveBtn.addEventListener('click', async () => {
+                    const name = document.getElementById('tutor-name').value.trim();
+                    const phone = document.getElementById('tutor-phone').value.trim();
+                    const email = document.getElementById('tutor-email').value.trim();
+                    const linkedin = document.getElementById('tutor-linkedin').value.trim();
+                    const selectedCourses = Array.from(document.querySelectorAll('input[name="tutor-courses"]:checked'))
+                        .map(cb => cb.value);
 
-                saveBtn.disabled = true;
-                saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
-
-                try {
-                    if (isEdit) {
-                        // Update
-                        const { error } = await window.supabaseClient
-                            .from('tutors')
-                            .update({
-                                full_name: name,
-                                phone: phone,
-                                email: email || null,
-                                linkedin_url: linkedin || null,
-                                courses: selectedCourses
-                            })
-                            .eq('id', tutorId);
-
-                        if (error) throw error;
-                        Toast.success('Updated', 'Tutor updated successfully');
-                    } else {
-                        // Generate new tutor ID
-                        const { data: maxData } = await window.supabaseClient
-                            .from('tutors')
-                            .select('tutor_id')
-                            .order('tutor_id', { ascending: false })
-                            .limit(1);
-
-                        let nextNum = 1;
-                        if (maxData && maxData.length > 0) {
-                            const match = maxData[0].tutor_id.match(/T-ACS-(\d+)/);
-                            if (match) nextNum = parseInt(match[1]) + 1;
-                        }
-                        const newTutorId = `T-ACS-${String(nextNum).padStart(3, '0')}`;
-
-                        // Insert
-                        const { error } = await window.supabaseClient
-                            .from('tutors')
-                            .insert({
-                                tutor_id: newTutorId,
-                                full_name: name,
-                                phone: phone,
-                                email: email || null,
-                                linkedin_url: linkedin || null,
-                                courses: selectedCourses,
-                                status: 'ACTIVE'
-                            });
-
-                        if (error) throw error;
-                        Toast.success('Added', 'Tutor added successfully');
+                    // Validation
+                    if (!name) {
+                        Toast.error('Required', 'Please enter tutor name');
+                        return;
+                    }
+                    if (!phone || phone.length !== 10) {
+                        Toast.error('Required', 'Please enter valid 10-digit phone');
+                        return;
+                    }
+                    if (selectedCourses.length === 0) {
+                        Toast.error('Required', 'Please select at least one course');
+                        return;
                     }
 
-                    closeModal();
-                    await loadTutors();
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
-                } catch (error) {
-                    console.error('Save tutor error:', error);
-                    Toast.error('Error', error.message || 'Failed to save tutor');
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isEdit ? 'Update Tutor' : 'Save Tutor'}`;
-                }
-            });
+                    try {
+                        if (isEdit) {
+                            // Update
+                            const { error } = await window.supabaseClient
+                                .from('tutors')
+                                .update({
+                                    full_name: name,
+                                    phone: phone,
+                                    email: email || null,
+                                    linkedin_url: linkedin || null,
+                                    courses: selectedCourses
+                                })
+                                .eq('id', tutorId);
+
+                            if (error) throw error;
+                            Toast.success('Updated', 'Tutor updated successfully');
+                        } else {
+                            // Generate new tutor ID
+                            const { data: maxData } = await window.supabaseClient
+                                .from('tutors')
+                                .select('tutor_id')
+                                .order('tutor_id', { ascending: false })
+                                .limit(1);
+
+                            let nextNum = 1;
+                            if (maxData && maxData.length > 0) {
+                                const match = maxData[0].tutor_id.match(/T-ACS-(\d+)/);
+                                if (match) nextNum = parseInt(match[1]) + 1;
+                            }
+                            const newTutorId = `T-ACS-${String(nextNum).padStart(3, '0')}`;
+
+                            // Insert
+                            const { error } = await window.supabaseClient
+                                .from('tutors')
+                                .insert({
+                                    tutor_id: newTutorId,
+                                    full_name: name,
+                                    phone: phone,
+                                    email: email || null,
+                                    linkedin_url: linkedin || null,
+                                    courses: selectedCourses,
+                                    status: 'ACTIVE'
+                                });
+
+                            if (error) throw error;
+                            Toast.success('Added', 'Tutor added successfully');
+                        }
+
+                        closeModal();
+                        await loadTutors();
+
+                    } catch (error) {
+                        console.error('Save tutor error:', error);
+                        Toast.error('Error', error.message || 'Failed to save tutor');
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isEdit ? 'Update Tutor' : 'Save Tutor'}`;
+                    }
+                });
+            }, 0);
         }
 
         // Open delete confirmation modal
@@ -1471,213 +1476,218 @@
             document.body.insertAdjacentHTML('beforeend', modalHTML);
             document.body.style.overflow = 'hidden';
 
-            const modal = document.getElementById('student-modal');
-            const closeBtn = document.getElementById('close-student-modal');
-            const cancelBtn = document.getElementById('cancel-student-btn');
-            const saveBtn = document.getElementById('save-student-btn');
-            const demoFieldsDiv = document.getElementById('student-modal').querySelector('.demo-fields');
+            // Use setTimeout to ensure DOM is fully ready
+            setTimeout(() => {
+                const modal = document.getElementById('student-modal');
+                if (!modal) return;
 
-            // Initialize tutor list based on current courses
-            if (student?.courses?.length > 0) {
-                updateTutorCheckboxes(student.courses, student.tutors || []);
-            }
+                const closeBtn = modal.querySelector('#close-student-modal');
+                const cancelBtn = modal.querySelector('#cancel-student-btn');
+                const saveBtn = modal.querySelector('#save-student-btn');
+                const demoFieldsDiv = modal.querySelector('.demo-fields');
 
-            // Calculate fee from selected courses (sum of course fees)
-            const calculateFeeFromCourses = () => {
-                const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
-                    .map(cb => cb.value);
-                let totalFee = 0;
-                selectedCourses.forEach(code => {
-                    const course = allCoursesForStudents.find(c => c.course_code === code);
-                    if (course && course.fee) {
-                        totalFee += parseFloat(course.fee);
-                    }
+                // Initialize tutor list based on current courses
+                if (student?.courses?.length > 0) {
+                    updateTutorCheckboxes(student.courses, student.tutors || []);
+                }
+
+                // Calculate fee from selected courses (sum of course fees)
+                const calculateFeeFromCourses = () => {
+                    const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
+                        .map(cb => cb.value);
+                    let totalFee = 0;
+                    selectedCourses.forEach(code => {
+                        const course = allCoursesForStudents.find(c => c.course_code === code);
+                        if (course && course.fee) {
+                            totalFee += parseFloat(course.fee);
+                        }
+                    });
+                    const feeInput = document.getElementById('student-fee');
+                    const discountInput = document.getElementById('student-discount');
+                    const finalFeeInput = document.getElementById('student-final-fee');
+                    feeInput.value = totalFee;
+                    const discount = parseFloat(discountInput.value) || 0;
+                    finalFeeInput.value = Math.max(0, totalFee - discount);
+                };
+
+                // Handle course checkbox changes - update tutors AND fee
+                document.querySelectorAll('input[name="student-courses"]').forEach(cb => {
+                    cb.addEventListener('change', () => {
+                        const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
+                            .map(c => c.value);
+                        const currentTutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked'))
+                            .map(t => t.value);
+                        updateTutorCheckboxes(selectedCourses, currentTutors);
+                        calculateFeeFromCourses();
+                    });
                 });
+
+                // Handle demo radio change - toggle visibility
+                const demoRadios = document.querySelectorAll('input[name="demo-scheduled"]');
+                demoRadios.forEach(radio => {
+                    radio.addEventListener('change', function () {
+                        if (demoFieldsDiv) {
+                            if (this.value === 'yes') {
+                                demoFieldsDiv.style.display = 'grid';
+                            } else {
+                                demoFieldsDiv.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+
+                // Handle fee calculation (when discount changes)
                 const feeInput = document.getElementById('student-fee');
                 const discountInput = document.getElementById('student-discount');
                 const finalFeeInput = document.getElementById('student-final-fee');
-                feeInput.value = totalFee;
-                const discount = parseFloat(discountInput.value) || 0;
-                finalFeeInput.value = Math.max(0, totalFee - discount);
-            };
 
-            // Handle course checkbox changes - update tutors AND fee
-            document.querySelectorAll('input[name="student-courses"]').forEach(cb => {
-                cb.addEventListener('change', () => {
-                    const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
-                        .map(c => c.value);
-                    const currentTutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked'))
-                        .map(t => t.value);
-                    updateTutorCheckboxes(selectedCourses, currentTutors);
-                    calculateFeeFromCourses();
-                });
-            });
+                const calculateFinalFee = () => {
+                    const fee = parseFloat(feeInput.value) || 0;
+                    const discount = parseFloat(discountInput.value) || 0;
+                    finalFeeInput.value = Math.max(0, fee - discount);
+                };
 
-            // Handle demo radio change - toggle visibility
-            const demoRadios = document.querySelectorAll('input[name="demo-scheduled"]');
-            demoRadios.forEach(radio => {
-                radio.addEventListener('change', function () {
-                    if (demoFieldsDiv) {
-                        if (this.value === 'yes') {
-                            demoFieldsDiv.style.display = 'grid';
-                        } else {
-                            demoFieldsDiv.style.display = 'none';
-                        }
-                    }
-                });
-            });
+                feeInput.addEventListener('input', calculateFinalFee);
+                discountInput.addEventListener('input', calculateFinalFee);
 
-            // Handle fee calculation (when discount changes)
-            const feeInput = document.getElementById('student-fee');
-            const discountInput = document.getElementById('student-discount');
-            const finalFeeInput = document.getElementById('student-final-fee');
+                // Close modal function
+                const closeModal = () => {
+                    modal.remove();
+                    document.body.style.overflow = '';
+                };
 
-            const calculateFinalFee = () => {
-                const fee = parseFloat(feeInput.value) || 0;
-                const discount = parseFloat(discountInput.value) || 0;
-                finalFeeInput.value = Math.max(0, fee - discount);
-            };
-
-            feeInput.addEventListener('input', calculateFinalFee);
-            discountInput.addEventListener('input', calculateFinalFee);
-
-            // Close modal function
-            const closeModal = () => {
-                modal.remove();
-                document.body.style.overflow = '';
-            };
-
-            // Bind close events
-            closeBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                closeModal();
-            });
-            cancelBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                closeModal();
-            });
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
-            });
-
-            saveBtn.addEventListener('click', async () => {
-                const fname = document.getElementById('student-fname').value.trim();
-                const lname = document.getElementById('student-lname').value.trim();
-                const phone = document.getElementById('student-phone').value.trim();
-                const email = document.getElementById('student-email').value.trim();
-                const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
-                    .map(cb => cb.value);
-                const selectedTutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked'))
-                    .map(cb => cb.value);
-                const demoScheduled = document.querySelector('input[name="demo-scheduled"]:checked')?.value === 'yes';
-                const demoDate = document.getElementById('student-demo-date').value || null;
-                const demoTime = document.getElementById('student-demo-time').value.trim() || null;
-                const joiningDate = document.getElementById('student-joining-date').value || null;
-                const batchTime = document.getElementById('student-batch-time').value.trim() || null;
-                const fee = parseFloat(document.getElementById('student-fee').value) || 0;
-                const discount = parseFloat(document.getElementById('student-discount').value) || 0;
-                const finalFee = Math.max(0, fee - discount);
-                const notes = document.getElementById('student-notes').value.trim() || null;
-
-                // Validation
-                if (!fname || !lname) {
-                    Toast.error('Required', 'Please enter student name');
-                    return;
-                }
-                if (!phone || phone.length !== 10) {
-                    Toast.error('Required', 'Please enter valid 10-digit phone');
-                    return;
-                }
-                if (selectedCourses.length === 0) {
-                    Toast.error('Required', 'Please select at least one course');
-                    return;
-                }
-                if (selectedTutors.length === 0) {
-                    Toast.error('Required', 'Please select at least one tutor');
-                    return;
-                }
-
-                saveBtn.disabled = true;
-                saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
-
-                try {
-                    if (isEdit) {
-                        // Update
-                        const { error } = await window.supabaseClient
-                            .from('students')
-                            .update({
-                                first_name: fname,
-                                last_name: lname,
-                                phone: phone,
-                                email: email || null,
-                                courses: selectedCourses,
-                                tutors: selectedTutors,
-                                demo_scheduled: demoScheduled,
-                                demo_date: demoDate,
-                                demo_time: demoTime,
-                                joining_date: joiningDate,
-                                batch_time: batchTime,
-                                fee: fee,
-                                discount: discount,
-                                final_fee: finalFee,
-                                notes: notes
-                            })
-                            .eq('id', studentId);
-
-                        if (error) throw error;
-                        Toast.success('Updated', 'Student updated successfully');
-                    } else {
-                        // Generate new student ID
-                        const { data: maxData } = await window.supabaseClient
-                            .from('students')
-                            .select('student_id')
-                            .order('student_id', { ascending: false })
-                            .limit(1);
-
-                        let nextNum = 1;
-                        if (maxData && maxData.length > 0) {
-                            const match = maxData[0].student_id.match(/St-ACS-(\d+)/);
-                            if (match) nextNum = parseInt(match[1]) + 1;
-                        }
-                        const newStudentId = `St-ACS-${String(nextNum).padStart(3, '0')}`;
-
-                        // Insert
-                        const { error } = await window.supabaseClient
-                            .from('students')
-                            .insert({
-                                student_id: newStudentId,
-                                first_name: fname,
-                                last_name: lname,
-                                phone: phone,
-                                email: email || null,
-                                courses: selectedCourses,
-                                tutors: selectedTutors,
-                                demo_scheduled: demoScheduled,
-                                demo_date: demoDate,
-                                demo_time: demoTime,
-                                joining_date: joiningDate,
-                                batch_time: batchTime,
-                                fee: fee,
-                                discount: discount,
-                                final_fee: finalFee,
-                                notes: notes,
-                                status: 'ACTIVE'
-                            });
-
-                        if (error) throw error;
-                        Toast.success('Added', 'Student enrolled successfully');
-                    }
-
+                // Bind close events
+                closeBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
                     closeModal();
-                    await loadStudents();
+                });
+                cancelBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    closeModal();
+                });
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal();
+                });
 
-                } catch (error) {
-                    console.error('Save student error:', error);
-                    Toast.error('Error', error.message || 'Failed to save student');
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isEdit ? 'Update Student' : 'Save Student'}`;
-                }
-            });
+                saveBtn.addEventListener('click', async () => {
+                    const fname = document.getElementById('student-fname').value.trim();
+                    const lname = document.getElementById('student-lname').value.trim();
+                    const phone = document.getElementById('student-phone').value.trim();
+                    const email = document.getElementById('student-email').value.trim();
+                    const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
+                        .map(cb => cb.value);
+                    const selectedTutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked'))
+                        .map(cb => cb.value);
+                    const demoScheduled = document.querySelector('input[name="demo-scheduled"]:checked')?.value === 'yes';
+                    const demoDate = document.getElementById('student-demo-date').value || null;
+                    const demoTime = document.getElementById('student-demo-time').value.trim() || null;
+                    const joiningDate = document.getElementById('student-joining-date').value || null;
+                    const batchTime = document.getElementById('student-batch-time').value.trim() || null;
+                    const fee = parseFloat(document.getElementById('student-fee').value) || 0;
+                    const discount = parseFloat(document.getElementById('student-discount').value) || 0;
+                    const finalFee = Math.max(0, fee - discount);
+                    const notes = document.getElementById('student-notes').value.trim() || null;
+
+                    // Validation
+                    if (!fname || !lname) {
+                        Toast.error('Required', 'Please enter student name');
+                        return;
+                    }
+                    if (!phone || phone.length !== 10) {
+                        Toast.error('Required', 'Please enter valid 10-digit phone');
+                        return;
+                    }
+                    if (selectedCourses.length === 0) {
+                        Toast.error('Required', 'Please select at least one course');
+                        return;
+                    }
+                    if (selectedTutors.length === 0) {
+                        Toast.error('Required', 'Please select at least one tutor');
+                        return;
+                    }
+
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+                    try {
+                        if (isEdit) {
+                            // Update
+                            const { error } = await window.supabaseClient
+                                .from('students')
+                                .update({
+                                    first_name: fname,
+                                    last_name: lname,
+                                    phone: phone,
+                                    email: email || null,
+                                    courses: selectedCourses,
+                                    tutors: selectedTutors,
+                                    demo_scheduled: demoScheduled,
+                                    demo_date: demoDate,
+                                    demo_time: demoTime,
+                                    joining_date: joiningDate,
+                                    batch_time: batchTime,
+                                    fee: fee,
+                                    discount: discount,
+                                    final_fee: finalFee,
+                                    notes: notes
+                                })
+                                .eq('id', studentId);
+
+                            if (error) throw error;
+                            Toast.success('Updated', 'Student updated successfully');
+                        } else {
+                            // Generate new student ID
+                            const { data: maxData } = await window.supabaseClient
+                                .from('students')
+                                .select('student_id')
+                                .order('student_id', { ascending: false })
+                                .limit(1);
+
+                            let nextNum = 1;
+                            if (maxData && maxData.length > 0) {
+                                const match = maxData[0].student_id.match(/St-ACS-(\d+)/);
+                                if (match) nextNum = parseInt(match[1]) + 1;
+                            }
+                            const newStudentId = `St-ACS-${String(nextNum).padStart(3, '0')}`;
+
+                            // Insert
+                            const { error } = await window.supabaseClient
+                                .from('students')
+                                .insert({
+                                    student_id: newStudentId,
+                                    first_name: fname,
+                                    last_name: lname,
+                                    phone: phone,
+                                    email: email || null,
+                                    courses: selectedCourses,
+                                    tutors: selectedTutors,
+                                    demo_scheduled: demoScheduled,
+                                    demo_date: demoDate,
+                                    demo_time: demoTime,
+                                    joining_date: joiningDate,
+                                    batch_time: batchTime,
+                                    fee: fee,
+                                    discount: discount,
+                                    final_fee: finalFee,
+                                    notes: notes,
+                                    status: 'ACTIVE'
+                                });
+
+                            if (error) throw error;
+                            Toast.success('Added', 'Student enrolled successfully');
+                        }
+
+                        closeModal();
+                        await loadStudents();
+
+                    } catch (error) {
+                        console.error('Save student error:', error);
+                        Toast.error('Error', error.message || 'Failed to save student');
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isEdit ? 'Update Student' : 'Save Student'}`;
+                    }
+                });
+            }, 0);
         }
 
         // Open delete confirmation modal
