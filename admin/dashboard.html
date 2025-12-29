@@ -1493,7 +1493,7 @@
 
                 // Calculate fee from selected courses (sum of course fees)
                 const calculateFeeFromCourses = () => {
-                    const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
+                    const selectedCourses = Array.from(modal.querySelectorAll('input[name="student-courses"]:checked'))
                         .map(cb => cb.value);
                     let totalFee = 0;
                     selectedCourses.forEach(code => {
@@ -1502,20 +1502,20 @@
                             totalFee += parseFloat(course.fee);
                         }
                     });
-                    const feeInput = document.getElementById('student-fee');
-                    const discountInput = document.getElementById('student-discount');
-                    const finalFeeInput = document.getElementById('student-final-fee');
-                    feeInput.value = totalFee;
-                    const discount = parseFloat(discountInput.value) || 0;
-                    finalFeeInput.value = Math.max(0, totalFee - discount);
+                    const feeInput = modal.querySelector('#student-fee');
+                    const discountInput = modal.querySelector('#student-discount');
+                    const finalFeeInput = modal.querySelector('#student-final-fee');
+                    if (feeInput) feeInput.value = totalFee;
+                    const discount = parseFloat(discountInput?.value) || 0;
+                    if (finalFeeInput) finalFeeInput.value = Math.max(0, totalFee - discount);
                 };
 
                 // Handle course checkbox changes - update tutors AND fee
-                document.querySelectorAll('input[name="student-courses"]').forEach(cb => {
+                modal.querySelectorAll('input[name="student-courses"]').forEach(cb => {
                     cb.addEventListener('change', () => {
-                        const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
+                        const selectedCourses = Array.from(modal.querySelectorAll('input[name="student-courses"]:checked'))
                             .map(c => c.value);
-                        const currentTutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked'))
+                        const currentTutors = Array.from(modal.querySelectorAll('input[name="student-tutors"]:checked'))
                             .map(t => t.value);
                         updateTutorCheckboxes(selectedCourses, currentTutors);
                         calculateFeeFromCourses();
@@ -1523,8 +1523,7 @@
                 });
 
                 // Handle demo radio change - toggle visibility
-                const demoRadios = document.querySelectorAll('input[name="demo-scheduled"]');
-                demoRadios.forEach(radio => {
+                modal.querySelectorAll('input[name="demo-scheduled"]').forEach(radio => {
                     radio.addEventListener('change', function () {
                         if (demoFieldsDiv) {
                             if (this.value === 'yes') {
@@ -1537,18 +1536,18 @@
                 });
 
                 // Handle fee calculation (when discount changes)
-                const feeInput = document.getElementById('student-fee');
-                const discountInput = document.getElementById('student-discount');
-                const finalFeeInput = document.getElementById('student-final-fee');
+                const feeInput = modal.querySelector('#student-fee');
+                const discountInput = modal.querySelector('#student-discount');
+                const finalFeeInput = modal.querySelector('#student-final-fee');
 
                 const calculateFinalFee = () => {
-                    const fee = parseFloat(feeInput.value) || 0;
-                    const discount = parseFloat(discountInput.value) || 0;
-                    finalFeeInput.value = Math.max(0, fee - discount);
+                    const fee = parseFloat(feeInput?.value) || 0;
+                    const discount = parseFloat(discountInput?.value) || 0;
+                    if (finalFeeInput) finalFeeInput.value = Math.max(0, fee - discount);
                 };
 
-                feeInput.addEventListener('input', calculateFinalFee);
-                discountInput.addEventListener('input', calculateFinalFee);
+                if (feeInput) feeInput.addEventListener('input', calculateFinalFee);
+                if (discountInput) discountInput.addEventListener('input', calculateFinalFee);
 
                 // Close modal function
                 const closeModal = () => {
@@ -1570,23 +1569,23 @@
                 });
 
                 saveBtn.addEventListener('click', async () => {
-                    const fname = document.getElementById('student-fname').value.trim();
-                    const lname = document.getElementById('student-lname').value.trim();
-                    const phone = document.getElementById('student-phone').value.trim();
-                    const email = document.getElementById('student-email').value.trim();
-                    const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
+                    const fname = modal.querySelector('#student-fname')?.value.trim() || '';
+                    const lname = modal.querySelector('#student-lname')?.value.trim() || '';
+                    const phone = modal.querySelector('#student-phone')?.value.trim() || '';
+                    const email = modal.querySelector('#student-email')?.value.trim() || '';
+                    const selectedCourses = Array.from(modal.querySelectorAll('input[name="student-courses"]:checked'))
                         .map(cb => cb.value);
-                    const selectedTutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked'))
+                    const selectedTutors = Array.from(modal.querySelectorAll('input[name="student-tutors"]:checked'))
                         .map(cb => cb.value);
-                    const demoScheduled = document.querySelector('input[name="demo-scheduled"]:checked')?.value === 'yes';
-                    const demoDate = document.getElementById('student-demo-date').value || null;
-                    const demoTime = document.getElementById('student-demo-time').value.trim() || null;
-                    const joiningDate = document.getElementById('student-joining-date').value || null;
-                    const batchTime = document.getElementById('student-batch-time').value.trim() || null;
-                    const fee = parseFloat(document.getElementById('student-fee').value) || 0;
-                    const discount = parseFloat(document.getElementById('student-discount').value) || 0;
+                    const demoScheduled = modal.querySelector('input[name="demo-scheduled"]:checked')?.value === 'yes';
+                    const demoDate = modal.querySelector('#student-demo-date')?.value || null;
+                    const demoTime = modal.querySelector('#student-demo-time')?.value.trim() || null;
+                    const joiningDate = modal.querySelector('#student-joining-date')?.value || null;
+                    const batchTime = modal.querySelector('#student-batch-time')?.value.trim() || null;
+                    const fee = parseFloat(modal.querySelector('#student-fee')?.value) || 0;
+                    const discount = parseFloat(modal.querySelector('#student-discount')?.value) || 0;
                     const finalFee = Math.max(0, fee - discount);
-                    const notes = document.getElementById('student-notes').value.trim() || null;
+                    const notes = modal.querySelector('#student-notes')?.value.trim() || null;
 
                     // Validation
                     if (!fname || !lname) {
