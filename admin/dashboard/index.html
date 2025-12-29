@@ -37,7 +37,7 @@
                             <i class="fa-solid fa-user-graduate"></i>
                         </div>
                         <div class="stat-info">
-                            <div class="stat-value" id="total-students">-</div>
+                            <div class="stat-value" id="total-students" data-target="0">0</div>
                             <div class="stat-label">Total Students</div>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                             <i class="fa-solid fa-book-bookmark"></i>
                         </div>
                         <div class="stat-info">
-                            <div class="stat-value" id="total-courses">-</div>
+                            <div class="stat-value" id="total-courses" data-target="0">0</div>
                             <div class="stat-label">Active Courses</div>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                             <i class="fa-solid fa-chalkboard-user"></i>
                         </div>
                         <div class="stat-info">
-                            <div class="stat-value" id="total-tutors">-</div>
+                            <div class="stat-value" id="total-tutors" data-target="0">0</div>
                             <div class="stat-label">Total Tutors</div>
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                             <i class="fa-solid fa-calendar-check"></i>
                         </div>
                         <div class="stat-info">
-                            <div class="stat-value" id="demos-today">-</div>
+                            <div class="stat-value" id="demos-today" data-target="0">0</div>
                             <div class="stat-label">Demos Today</div>
                         </div>
                     </div>
@@ -77,50 +77,30 @@
                             <i class="fa-solid fa-user-plus"></i>
                         </div>
                         <div class="stat-info">
-                            <div class="stat-value" id="joined-week">-</div>
+                            <div class="stat-value" id="joined-week" data-target="0">0</div>
                             <div class="stat-label">Joined This Week</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Quick Actions -->
-                <div class="content-card">
+                <div class="content-card quick-actions-card">
                     <div class="card-header">
                         <h3><i class="fa-solid fa-bolt"></i> Quick Actions</h3>
                     </div>
                     <div class="quick-actions">
                         <a href="../students/" class="quick-action-btn">
-                            <i class="fa-solid fa-plus"></i>
-                            Add Student
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>Add Student</span>
                         </a>
                         <a href="../tutors/" class="quick-action-btn">
-                            <i class="fa-solid fa-plus"></i>
-                            Add Tutor
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                            <span>Add Tutor</span>
                         </a>
                         <a href="../inquiries/" class="quick-action-btn">
-                            <i class="fa-solid fa-plus"></i>
-                            Add Inquiry
+                            <i class="fa-solid fa-phone-volume"></i>
+                            <span>Add Inquiry</span>
                         </a>
-                        <a href="../payments/receipts/" class="quick-action-btn quick-action-primary">
-                            <i class="fa-solid fa-receipt"></i>
-                            Record Fee Payment
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Recent Activities -->
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Activities</h3>
-                        <button class="btn btn-sm btn-outline" id="clear-all-activities">
-                            Clear All
-                        </button>
-                    </div>
-                    <div class="activities-list" id="activities-list">
-                        <div class="loading-spinner">
-                            <i class="fa-solid fa-spinner fa-spin"></i>
-                            Loading activities...
-                        </div>
                     </div>
                 </div>
             </div>
