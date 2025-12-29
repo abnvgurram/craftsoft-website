@@ -31,7 +31,50 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('add-student-btn')?.addEventListener('click', () => openForm());
     document.getElementById('student-search')?.addEventListener('input', (e) => filterStudents(e.target.value));
+
+    // Check for prefill from inquiry conversion
+    checkPrefill();
 });
+
+function checkPrefill() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('prefill') === '1') {
+        const name = params.get('name') || '';
+        const phone = params.get('phone') || '';
+        const email = params.get('email') || '';
+        const courses = params.get('courses')?.split(',').filter(c => c) || [];
+        const inquiryId = params.get('inquiry_id') || '';
+
+        // Store inquiry ID for later status update
+        if (inquiryId) {
+            sessionStorage.setItem('converting_inquiry_id', inquiryId);
+        }
+
+        // Open form with prefilled data
+        openFormWithPrefill(name, phone, email, courses);
+
+        // Clear URL params
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+}
+
+async function openFormWithPrefill(name, phone, email, courses) {
+    await openForm(false);
+
+    // Split name into first and last
+    const nameParts = name.split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    document.getElementById('student-fname').value = firstName;
+    document.getElementById('student-lname').value = lastName;
+    document.getElementById('student-phone').value = phone;
+    document.getElementById('student-email').value = email;
+
+    // Render courses with pre-selected
+    renderCoursesCheckboxes(courses, {});
+    updateFeeBreakdown();
+}
 
 // =====================
 // Data Loading
@@ -473,6 +516,13 @@ async function saveStudent() {
                 if (demoScheduled) {
                     await window.DashboardActivities.add('demo_scheduled', `${fname} ${lname}`, '../students/');
                 }
+            }
+
+            // Update inquiry status if converting
+            const convertingInquiryId = sessionStorage.getItem('converting_inquiry_id');
+            if (convertingInquiryId) {
+                await window.supabaseClient.from('inquiries').update({ status: 'Converted' }).eq('id', convertingInquiryId);
+                sessionStorage.removeItem('converting_inquiry_id');
             }
         }
         closeForm();
