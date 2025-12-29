@@ -53,6 +53,30 @@ const AdminSidebar = {
             </aside>
 
             <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+            <!-- Mobile Bottom Navigation -->
+            <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+                <a href="${this.rootPath}dashboard/" class="mobile-nav-btn ${this.currentPage === 'dashboard' ? 'active' : ''}">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Home</span>
+                </a>
+                <a href="${this.rootPath}students/" class="mobile-nav-btn ${this.currentPage === 'students' ? 'active' : ''}">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>Students</span>
+                </a>
+                <button class="mobile-nav-btn menu-btn" id="mobile-menu-btn">
+                    <i class="fa-solid fa-bars"></i>
+                    <span>Menu</span>
+                </button>
+                <a href="${this.rootPath}tutors/" class="mobile-nav-btn ${this.currentPage === 'tutors' ? 'active' : ''}">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    <span>Tutors</span>
+                </a>
+                <a href="${this.rootPath}inquiries/" class="mobile-nav-btn ${this.currentPage === 'inquiries' ? 'active' : ''}">
+                    <i class="fa-solid fa-phone-volume"></i>
+                    <span>Inquiries</span>
+                </a>
+            </nav>
         `;
 
         const layout = document.querySelector('.admin-layout');
