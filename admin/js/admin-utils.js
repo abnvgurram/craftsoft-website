@@ -748,9 +748,6 @@ const AccountManager = {
                                     <span class="account-item-id">${acc.admin_id || 'Pending'}</span>
                                 </div>
                                 ${acc.is_current ? '<span class="account-current-badge"><i class="fa-solid fa-check"></i></span>' : ''}
-                                <button class="account-remove-btn" data-remove-id="${acc.id}" title="Remove account">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
                             </div>
                         `).join('')}
                     </div>
@@ -804,21 +801,10 @@ const AccountManager = {
         // Account item click (switch)
         document.querySelectorAll('.account-item').forEach(item => {
             item.addEventListener('click', async (e) => {
-                if (e.target.closest('.account-remove-btn')) return;
-
                 const accountId = item.dataset.accountId;
                 if (!item.classList.contains('current')) {
                     await this.handleSwitchAccount(accountId);
                 }
-            });
-        });
-
-        // Remove account buttons
-        document.querySelectorAll('.account-remove-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const accountId = btn.dataset.removeId;
-                this.handleRemoveAccount(accountId);
             });
         });
 
