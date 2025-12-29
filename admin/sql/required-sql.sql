@@ -20,6 +20,10 @@ CREATE TABLE IF NOT EXISTS courses (
 
 ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Active admins can read courses" ON courses;
+DROP POLICY IF EXISTS "Active admins can insert courses" ON courses;
+DROP POLICY IF EXISTS "Active admins can update courses" ON courses;
+
 CREATE POLICY "Active admins can read courses" ON courses
     FOR SELECT USING (
         EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
@@ -70,6 +74,11 @@ CREATE TABLE IF NOT EXISTS tutors (
 );
 
 ALTER TABLE tutors ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Active admins can read tutors" ON tutors;
+DROP POLICY IF EXISTS "Active admins can insert tutors" ON tutors;
+DROP POLICY IF EXISTS "Active admins can update tutors" ON tutors;
+DROP POLICY IF EXISTS "Active admins can delete tutors" ON tutors;
 
 CREATE POLICY "Active admins can read tutors" ON tutors
     FOR SELECT USING (
@@ -136,6 +145,11 @@ CREATE TABLE IF NOT EXISTS students (
 
 ALTER TABLE students ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Active admins can read students" ON students;
+DROP POLICY IF EXISTS "Active admins can insert students" ON students;
+DROP POLICY IF EXISTS "Active admins can update students" ON students;
+DROP POLICY IF EXISTS "Active admins can delete students" ON students;
+
 CREATE POLICY "Active admins can read students" ON students
     FOR SELECT USING (
         EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
@@ -187,6 +201,10 @@ CREATE TABLE IF NOT EXISTS activities (
 
 ALTER TABLE activities ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Active admins can read activities" ON activities;
+DROP POLICY IF EXISTS "Active admins can insert activities" ON activities;
+DROP POLICY IF EXISTS "Active admins can delete activities" ON activities;
+
 CREATE POLICY "Active admins can read activities" ON activities
     FOR SELECT USING (
         EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
@@ -204,8 +222,8 @@ CREATE POLICY "Active admins can delete activities" ON activities
 
 CREATE INDEX IF NOT EXISTS idx_activities_created ON activities(created_at DESC);
 
--- Enable Realtime for activities
-ALTER PUBLICATION supabase_realtime ADD TABLE activities;
+-- Enable Realtime for activities (run separately if error)
+-- ALTER PUBLICATION supabase_realtime ADD TABLE activities;
 
 
 -- ============================================

@@ -763,7 +763,9 @@ body {
     background: var(--gray-200);
 }
 
-.admin-brand-name {
+.admin-brand-name,
+.header-logo,
+.sidebar-logo-text {
     font-family: 'Outfit', sans-serif;
     font-size: 1.25rem;
     font-weight: 700;
@@ -771,6 +773,27 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+.header-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--admin-input-border);
+    margin: 0 0.5rem;
+}
+
+.page-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--admin-text-secondary);
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .admin-header-right {
@@ -797,11 +820,13 @@ body {
 
 .sidebar-header {
     display: none;
-    padding: 1rem;
+    padding: 1rem 1rem 1rem 1.25rem;
     border-bottom: 1px solid var(--admin-input-border);
+    align-items: center;
+    justify-content: space-between;
 }
 
-.sidebar-close {
+.sidebar-close-btn {
     width: 36px;
     height: 36px;
     background: var(--gray-100);
@@ -811,9 +836,12 @@ body {
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.sidebar-close:hover {
+.sidebar-close-btn:hover {
     background: var(--gray-200);
 }
 
@@ -2854,5 +2882,64 @@ body {
 
     .session-timeout-actions .btn {
         width: 100%;
+    }
+}
+
+/* ============================================
+   Admin Layout - Mobile Responsive
+   ============================================ */
+@media (max-width: 992px) {
+    .mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .header-logo {
+        display: none;
+    }
+
+    .header-divider {
+        display: none;
+    }
+
+    .admin-sidebar {
+        top: 0;
+        transform: translateX(-100%);
+        z-index: 200;
+    }
+
+    .admin-sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar-header {
+        display: flex;
+    }
+
+    .sidebar-overlay {
+        display: block;
+    }
+
+    .admin-main {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-header {
+        padding: 0.75rem 1rem;
+    }
+
+    .admin-main {
+        padding: 1rem;
+    }
+
+    .content-card {
+        padding: 1.25rem;
+    }
+
+    .page-title {
+        font-size: 0.95rem;
     }
 }

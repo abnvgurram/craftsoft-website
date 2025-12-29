@@ -20,6 +20,9 @@ const AdminSidebar = {
             <aside class="admin-sidebar" id="admin-sidebar">
                 <div class="sidebar-header">
                     <span class="sidebar-logo-text">CraftSoft</span>
+                    <button class="sidebar-close-btn" id="sidebar-close-btn">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
 
                 <nav class="sidebar-nav">
@@ -68,21 +71,48 @@ const AdminSidebar = {
         `;
     },
 
+    closeSidebar() {
+        const sidebar = document.getElementById('admin-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        sidebar?.classList.remove('open');
+        overlay?.classList.remove('active');
+    },
+
+    closeAccountDropdowns() {
+        // Close any open account dropdowns
+        document.querySelectorAll('.account-dropdown.open, .logout-dropdown.open').forEach(el => {
+            el.classList.remove('open');
+        });
+    },
+
     bindEvents() {
         const sidebar = document.getElementById('admin-sidebar');
         const overlay = document.getElementById('sidebar-overlay');
 
-        // Use event delegation for mobile menu (button rendered later in header)
+        // Mobile menu button - close account panels first
         document.addEventListener('click', (e) => {
             if (e.target.closest('#mobile-menu-btn')) {
+                e.stopPropagation();
+                this.closeAccountDropdowns();
                 sidebar?.classList.toggle('open');
                 overlay?.classList.toggle('active');
+            }
+
+            // Close sidebar when clicking sidebar close button
+            if (e.target.closest('#sidebar-close-btn')) {
+                this.closeSidebar();
+            }
+
+            // Close sidebar when clicking on account panel (on mobile)
+            if (e.target.closest('.account-trigger, .logout-dropdown')) {
+                if (window.innerWidth <= 768) {
+                    this.closeSidebar();
+                }
             }
         });
 
         overlay?.addEventListener('click', () => {
-            sidebar?.classList.remove('open');
-            overlay?.classList.remove('active');
+            this.closeSidebar();
         });
 
         const paymentsItem = document.querySelector('.sidebar-item.has-submenu');
@@ -91,8 +121,6 @@ const AdminSidebar = {
             paymentsItem.closest('.sidebar-group')?.classList.toggle('expanded');
         });
     },
-
-    // AccountManager doesn't need init - it's stateless
 
     initSessionTimeout() {
         const utils = window.AdminUtils;
@@ -131,6 +159,8 @@ const AdminHeader = {
                     <button class="mobile-menu-btn" id="mobile-menu-btn">
                         <i class="fa-solid fa-bars"></i>
                     </button>
+                    <span class="header-logo">CraftSoft</span>
+                    <span class="header-divider"></span>
                     <h1 class="page-title">${title}</h1>
                 </div>
                 <div class="header-actions">
