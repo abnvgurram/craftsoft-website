@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutors - CraftSoft Admin</title>
-    <link rel="icon" href="../../assets/images/logo-main.webp" type="image/webp">
+    <link rel="icon" href="../../favicon.ico" type="image/x-icon">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,6 +46,59 @@
                         <input type="text" id="tutor-search" placeholder="Search tutors...">
                     </div>
                 </div>
+
+                <!-- Inline Form (hidden by default) -->
+                <div class="inline-form-container" id="tutor-form-container" style="display: none;">
+                    <div class="inline-form-header">
+                        <h3 id="form-title">Add Tutor</h3>
+                        <button type="button" class="btn-icon" id="close-form-btn">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="inline-form-body">
+                        <input type="hidden" id="edit-tutor-id">
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name <span class="required">*</span></label>
+                                <input type="text" id="tutor-name" placeholder="Full name">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone <span class="required">*</span></label>
+                                <input type="tel" id="tutor-phone" maxlength="10" placeholder="10-digit">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="tutor-email" placeholder="Email">
+                            </div>
+                            <div class="form-group">
+                                <label>Specialization</label>
+                                <input type="text" id="tutor-specialization" placeholder="e.g., Frontend, Backend">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Courses <span class="required">*</span></label>
+                            <div class="checkbox-list" id="tutor-courses-list">
+                                <p class="text-muted">Loading courses...</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea id="tutor-notes" rows="2" placeholder="Notes..."></textarea>
+                        </div>
+                    </div>
+                    <div class="inline-form-footer">
+                        <button type="button" class="btn btn-outline" id="cancel-form-btn">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="save-tutor-btn">
+                            <i class="fa-solid fa-check"></i> Save Tutor
+                        </button>
+                    </div>
+                </div>
+
                 <div class="section-divider"></div>
                 <div id="tutors-content">
                     <div class="loading-spinner">
@@ -55,6 +108,18 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Delete Confirmation -->
+    <div class="delete-confirm-overlay" id="delete-overlay" style="display: none;">
+        <div class="delete-confirm-box">
+            <div class="warning-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <p>Delete tutor <strong id="delete-name"></strong>?</p>
+            <div class="delete-actions">
+                <button class="btn btn-outline btn-sm" id="cancel-delete-btn">Cancel</button>
+                <button class="btn btn-danger btn-sm" id="confirm-delete-btn">Delete</button>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->

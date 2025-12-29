@@ -1,41 +1,40 @@
-// Students Module with Modal Fixes
+// Students Module - Inline Form Approach
 let allStudents = [];
 let allCoursesForStudents = [];
 let allTutorsForStudents = [];
+let deleteTargetId = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Auth Check
-    const { NavigationSecurity } = window.AdminUtils || {};
-    // NavigationSecurity.initProtectedPage();
     const session = await window.supabaseConfig.getSession();
     if (!session) {
         window.location.href = '../login.html';
         return;
     }
 
-    // Init Sidebar
     AdminSidebar.init('students');
 
-    // Render Header
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {
         headerContainer.innerHTML = AdminHeader.render('Students');
     }
 
-    // Render Account Panel
     const admin = await window.Auth.getCurrentAdmin();
     await AdminSidebar.renderAccountPanel(session, admin);
 
-    // Load Data
     await loadCoursesForStudents();
     await loadTutorsForStudents();
     await loadStudents();
 
-    // Bind Add Button & Search
-    document.getElementById('add-student-btn')?.addEventListener('click', () => openStudentModal());
+    bindFormEvents();
+    bindDeleteEvents();
+
+    document.getElementById('add-student-btn')?.addEventListener('click', () => openForm());
     document.getElementById('student-search')?.addEventListener('input', (e) => filterStudents(e.target.value));
 });
 
+// =====================
+// Data Loading
+// =====================
 async function loadCoursesForStudents() {
     const { data, error } = await window.supabaseClient
         .from('courses')
@@ -74,6 +73,9 @@ async function loadStudents() {
     }
 }
 
+// =====================
+// Rendering
+// =====================
 function getTutorName(tutorId) {
     const tutor = allTutorsForStudents.find(t => t.tutor_id === tutorId);
     return tutor ? tutor.full_name : tutorId;
@@ -115,7 +117,7 @@ function renderStudentsList(students) {
                             <td>${(s.tutors || []).map(t => getTutorName(t)).join(', ') || '-'}</td>
                             <td class="actions-cell">
                                 <button class="btn-icon btn-edit-student" data-id="${s.id}"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn-icon btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}" data-sid="${s.student_id}"><i class="fa-solid fa-trash"></i></button>
+                                <button class="btn-icon btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}"><i class="fa-solid fa-trash"></i></button>
                                 <a href="https://wa.me/91${s.phone.replace(/\D/g, '')}" target="_blank" class="btn-icon btn-whatsapp-student"><i class="fa-brands fa-whatsapp"></i></a>
                             </td>
                         </tr>
@@ -134,7 +136,7 @@ function renderStudentsList(students) {
                     </div>
                     <div class="data-card-actions">
                         <button class="btn btn-sm btn-outline btn-edit-student" data-id="${s.id}"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button class="btn btn-sm btn-outline btn-danger btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}" data-sid="${s.student_id}"><i class="fa-solid fa-trash"></i></button>
+                        <button class="btn btn-sm btn-outline btn-danger btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `).join('')}
@@ -142,9 +144,9 @@ function renderStudentsList(students) {
         <div class="table-footer"><span>${students.length} student${students.length !== 1 ? 's' : ''}</span></div>`;
 
     document.querySelectorAll('.btn-edit-student').forEach(btn =>
-        btn.addEventListener('click', () => openStudentModal(btn.dataset.id)));
+        btn.addEventListener('click', () => openForm(btn.dataset.id)));
     document.querySelectorAll('.btn-delete-student').forEach(btn =>
-        btn.addEventListener('click', () => openDeleteStudentModal(btn.dataset.id, btn.dataset.name, btn.dataset.sid)));
+        btn.addEventListener('click', () => showDeleteConfirm(btn.dataset.id, btn.dataset.name)));
 }
 
 function filterStudents(query) {
@@ -156,17 +158,97 @@ function filterStudents(query) {
     renderStudentsList(filtered);
 }
 
+// =====================
+// Inline Form
+// =====================
+function bindFormEvents() {
+    const container = document.getElementById('student-form-container');
+    const closeBtn = document.getElementById('close-form-btn');
+    const cancelBtn = document.getElementById('cancel-form-btn');
+    const saveBtn = document.getElementById('save-student-btn');
+
+    closeBtn?.addEventListener('click', closeForm);
+    cancelBtn?.addEventListener('click', closeForm);
+    saveBtn?.addEventListener('click', saveStudent);
+
+    // Fee calculation
+    document.getElementById('student-fee')?.addEventListener('input', updateFinalFee);
+    document.getElementById('student-discount')?.addEventListener('input', updateFinalFee);
+
+    // Demo toggle
+    document.querySelectorAll('input[name="demo-scheduled"]').forEach(r => {
+        r.addEventListener('change', function () {
+            document.querySelector('.demo-fields').style.display = this.value === 'yes' ? 'grid' : 'none';
+        });
+    });
+}
+
+function updateFinalFee() {
+    const fee = parseFloat(document.getElementById('student-fee').value) || 0;
+    const discount = parseFloat(document.getElementById('student-discount').value) || 0;
+    document.getElementById('student-final-fee').value = Math.max(0, fee - discount);
+}
+
+function calcFeeFromCourses() {
+    const selected = Array.from(document.querySelectorAll('input[name="student-courses"]:checked')).map(c => c.value);
+    let total = 0;
+    selected.forEach(code => {
+        const c = allCoursesForStudents.find(x => x.course_code === code);
+        if (c?.fee) total += parseFloat(c.fee);
+    });
+    document.getElementById('student-fee').value = total;
+    updateFinalFee();
+}
+
 function getFilteredTutors(selectedCourses) {
     if (!selectedCourses || selectedCourses.length === 0) return [];
     return allTutorsForStudents.filter(t => t.courses && t.courses.some(c => selectedCourses.includes(c)));
 }
 
-// Modal implementations
-async function openStudentModal(studentId = null) {
-    const { Toast } = window.AdminUtils;
-    const isEdit = !!studentId;
-    let student = null;
+function updateTutorsList(currentTutors = []) {
+    const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked')).map(c => c.value);
+    const list = document.getElementById('student-tutors-list');
+    const filtered = getFilteredTutors(selectedCourses);
 
+    if (filtered.length === 0) {
+        list.innerHTML = '<p class="text-muted">No tutors available for selected courses</p>';
+    } else {
+        list.innerHTML = filtered.map(t => `
+            <label class="checkbox-item">
+                <input type="checkbox" name="student-tutors" value="${t.tutor_id}" ${currentTutors.includes(t.tutor_id) ? 'checked' : ''}>
+                <span>${t.tutor_id} - ${t.full_name}</span>
+            </label>
+        `).join('');
+    }
+}
+
+function renderCoursesCheckboxes(selectedCourses = []) {
+    const list = document.getElementById('student-courses-list');
+    list.innerHTML = allCoursesForStudents.map(c => `
+        <label class="checkbox-item">
+            <input type="checkbox" name="student-courses" value="${c.course_code}" ${selectedCourses.includes(c.course_code) ? 'checked' : ''}>
+            <span>${c.course_code} - ${c.course_name}</span>
+        </label>
+    `).join('');
+
+    // Bind course change events
+    document.querySelectorAll('input[name="student-courses"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+            calcFeeFromCourses();
+            const currentTutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked')).map(t => t.value);
+            updateTutorsList(currentTutors);
+        });
+    });
+}
+
+async function openForm(studentId = null) {
+    const { Toast } = window.AdminUtils;
+    const container = document.getElementById('student-form-container');
+    const formTitle = document.getElementById('form-title');
+    const saveBtn = document.getElementById('save-student-btn');
+    const isEdit = !!studentId;
+
+    // Refresh data
     await loadCoursesForStudents();
     await loadTutorsForStudents();
 
@@ -179,6 +261,24 @@ async function openStudentModal(studentId = null) {
         return;
     }
 
+    // Reset form
+    document.getElementById('edit-student-id').value = '';
+    document.getElementById('student-fname').value = '';
+    document.getElementById('student-lname').value = '';
+    document.getElementById('student-phone').value = '';
+    document.getElementById('student-email').value = '';
+    document.getElementById('student-demo-date').value = '';
+    document.getElementById('student-demo-time').value = '';
+    document.getElementById('student-joining-date').value = '';
+    document.getElementById('student-batch-time').value = '';
+    document.getElementById('student-fee').value = '0';
+    document.getElementById('student-discount').value = '0';
+    document.getElementById('student-final-fee').value = '0';
+    document.getElementById('student-notes').value = '';
+    document.querySelector('input[name="demo-scheduled"][value="no"]').checked = true;
+    document.querySelector('.demo-fields').style.display = 'none';
+
+    let student = null;
     if (isEdit) {
         const { data, error } = await window.supabaseClient.from('students').select('*').eq('id', studentId).single();
         if (error || !data) {
@@ -186,246 +286,151 @@ async function openStudentModal(studentId = null) {
             return;
         }
         student = data;
+
+        document.getElementById('edit-student-id').value = student.id;
+        document.getElementById('student-fname').value = student.first_name || '';
+        document.getElementById('student-lname').value = student.last_name || '';
+        document.getElementById('student-phone').value = student.phone || '';
+        document.getElementById('student-email').value = student.email || '';
+        document.getElementById('student-demo-date').value = student.demo_date || '';
+        document.getElementById('student-demo-time').value = student.demo_time || '';
+        document.getElementById('student-joining-date').value = student.joining_date || '';
+        document.getElementById('student-batch-time').value = student.batch_time || '';
+        document.getElementById('student-fee').value = student.fee || 0;
+        document.getElementById('student-discount').value = student.discount || 0;
+        document.getElementById('student-final-fee').value = student.final_fee || 0;
+        document.getElementById('student-notes').value = student.notes || '';
+
+        if (student.demo_scheduled) {
+            document.querySelector('input[name="demo-scheduled"][value="yes"]').checked = true;
+            document.querySelector('.demo-fields').style.display = 'grid';
+        }
     }
 
-    const coursesCheckboxes = allCoursesForStudents.map(c => `
-        <label class="checkbox-item">
-            <input type="checkbox" name="student-courses" value="${c.course_code}" ${student?.courses?.includes(c.course_code) ? 'checked' : ''}>
-            <span>${c.course_code} - ${c.course_name}</span>
-        </label>
-    `).join('');
+    // Render courses checkboxes
+    renderCoursesCheckboxes(student?.courses || []);
 
-    const modalHTML = `
-        <div class="modal-overlay active" id="student-modal">
-            <div class="modal-container modal-lg">
-                <div class="modal-header">
-                    <h3>${isEdit ? 'Edit Student' : 'Add Student'}</h3>
-                    <button type="button" class="modal-close" id="close-student-modal"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div class="modal-body">
-                    ${isEdit ? `<div class="form-group"><label>Student ID</label><input type="text" value="${student.student_id}" disabled class="input-locked"></div>` : ''}
-                    <div class="form-row">
-                        <div class="form-group"><label>First Name <span class="required">*</span></label><input type="text" id="student-fname" value="${student?.first_name || ''}" placeholder="First name"></div>
-                        <div class="form-group"><label>Last Name <span class="required">*</span></label><input type="text" id="student-lname" value="${student?.last_name || ''}" placeholder="Last name"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Phone <span class="required">*</span></label><input type="tel" id="student-phone" maxlength="10" value="${student?.phone || ''}" placeholder="10-digit"></div>
-                        <div class="form-group"><label>Email</label><input type="email" id="student-email" value="${student?.email || ''}" placeholder="Email"></div>
-                    </div>
-                    <div class="form-group"><label>Courses <span class="required">*</span></label><div class="checkbox-list" id="student-courses-list">${coursesCheckboxes}</div></div>
-                    <div class="form-group"><label>Assigned Tutors <span class="required">*</span></label><div class="checkbox-list" id="student-tutors-list"><p class="text-muted">Select courses first</p></div></div>
-                    
-                    <div class="form-group">
-                        <label>Demo Scheduled?</label>
-                        <div class="radio-group">
-                            <label class="radio-item"><input type="radio" name="demo-scheduled" value="yes" ${student?.demo_scheduled ? 'checked' : ''}><span>Yes</span></label>
-                            <label class="radio-item"><input type="radio" name="demo-scheduled" value="no" ${!student?.demo_scheduled ? 'checked' : ''}><span>No</span></label>
-                        </div>
-                    </div>
-                    <div class="form-row demo-fields" style="${student?.demo_scheduled ? '' : 'display:none;'}">
-                        <div class="form-group"><label>Demo Date</label><input type="date" id="student-demo-date" value="${student?.demo_date || ''}"></div>
-                        <div class="form-group"><label>Demo Time</label><input type="text" id="student-demo-time" value="${student?.demo_time || ''}" placeholder="e.g., 6:00 PM"></div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group"><label>Joining Date</label><input type="date" id="student-joining-date" value="${student?.joining_date || ''}"></div>
-                        <div class="form-group"><label>Batch Time</label><input type="text" id="student-batch-time" value="${student?.batch_time || ''}" placeholder="e.g., 7:00-8:30 PM"></div>
-                    </div>
-                    
-                    <div class="form-row form-row-3">
-                        <div class="form-group"><label>Fee (₹)</label><input type="number" id="student-fee" value="${student?.fee || 0}" min="0"></div>
-                        <div class="form-group"><label>Discount (₹)</label><input type="number" id="student-discount" value="${student?.discount || 0}" min="0"></div>
-                        <div class="form-group"><label>Final Fee (₹)</label><input type="number" id="student-final-fee" value="${student?.final_fee || 0}" disabled class="input-locked"></div>
-                    </div>
-                    <div class="form-group"><label>Notes</label><textarea id="student-notes" rows="2" placeholder="Notes...">${student?.notes || ''}</textarea></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline" id="cancel-student-btn">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="save-student-btn"><i class="fa-solid fa-check"></i> ${isEdit ? 'Update' : 'Save'} Student</button>
-                </div>
-            </div>
-        </div>`;
+    // Render tutors
+    updateTutorsList(student?.tutors || []);
 
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    document.body.style.overflow = 'hidden';
+    formTitle.textContent = isEdit ? 'Edit Student' : 'Add Student';
+    saveBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isEdit ? 'Update' : 'Save'} Student`;
 
-    // SetTimeout to ensure interactions work
-    setTimeout(() => {
-        const modal = document.getElementById('student-modal');
-        if (!modal) return;
-        const closeBtn = modal.querySelector('#close-student-modal');
-        const cancelBtn = modal.querySelector('#cancel-student-btn');
-        const saveBtn = modal.querySelector('#save-student-btn');
-
-        // Fee Helper
-        const updateFees = () => {
-            const fee = parseFloat(modal.querySelector('#student-fee').value) || 0;
-            const discount = parseFloat(modal.querySelector('#student-discount').value) || 0;
-            modal.querySelector('#student-final-fee').value = Math.max(0, fee - discount);
-        };
-        modal.querySelector('#student-fee').addEventListener('input', updateFees);
-        modal.querySelector('#student-discount').addEventListener('input', updateFees);
-
-        // Calculate fee from courses
-        const calcFeeFromCourses = () => {
-            const selected = Array.from(modal.querySelectorAll('input[name="student-courses"]:checked')).map(c => c.value);
-            let total = 0;
-            selected.forEach(code => {
-                const c = allCoursesForStudents.find(x => x.course_code === code);
-                if (c?.fee) total += parseFloat(c.fee);
-            });
-            modal.querySelector('#student-fee').value = total;
-            updateFees();
-        };
-
-        // Course/Tutor Logic
-        const updateTutors = () => {
-            const selectedCourses = Array.from(modal.querySelectorAll('input[name="student-courses"]:checked')).map(c => c.value);
-            const list = modal.querySelector('#student-tutors-list');
-            const filtered = getFilteredTutors(selectedCourses);
-
-            // Should preserve checked state of existing tutors if they are still valid
-            // But for simplicity, we re-render. Ideally re-check if id exists.
-            const currentChecked = Array.from(modal.querySelectorAll('input[name="student-tutors"]:checked')).map(t => t.value);
-
-            if (filtered.length === 0) list.innerHTML = '<p class="text-muted">No tutors available</p>';
-            else {
-                list.innerHTML = filtered.map(t => `
-                    <label class="checkbox-item"><input type="checkbox" name="student-tutors" value="${t.tutor_id}" ${currentChecked.includes(t.tutor_id) ? 'checked' : ''}><span>${t.tutor_id} - ${t.full_name}</span></label>
-                `).join('');
-            }
-        };
-
-        modal.querySelectorAll('input[name="student-courses"]').forEach(cb => {
-            cb.addEventListener('change', () => {
-                calcFeeFromCourses();
-                updateTutors();
-            });
-        });
-
-        // Init state
-        if (student?.courses) {
-            // Need to manually trigger updateTutors for initial load...
-            // Or simpler: define updateTutors to accept args.
-            // But we can just use the updateTutorCheckboxes helper I didn't include inside the timeout scope?
-            // Re-implementing simplified version above.
-            updateTutors(); // this renders based on currently checked courses
-            // Need to re-check tutors that were on the student object!
-            if (student.tutors) {
-                student.tutors.forEach(tid => {
-                    const cb = modal.querySelector(`input[name="student-tutors"][value="${tid}"]`);
-                    if (cb) cb.checked = true;
-                });
-            }
-        }
-
-        // Demo logic
-        modal.querySelectorAll('input[name="demo-scheduled"]').forEach(r => {
-            r.addEventListener('change', function () {
-                modal.querySelector('.demo-fields').style.display = this.value === 'yes' ? 'grid' : 'none';
-            });
-        });
-
-        const closeModal = () => { modal.remove(); document.body.style.overflow = ''; };
-        closeBtn.onclick = closeModal;
-        cancelBtn.onclick = closeModal;
-        modal.onclick = (e) => { if (e.target === modal) closeModal(); };
-
-        saveBtn.onclick = async () => {
-            // ... save logic ...
-            const fname = modal.querySelector('#student-fname').value.trim();
-            const lname = modal.querySelector('#student-lname').value.trim();
-            const phone = modal.querySelector('#student-phone').value.trim();
-            const email = modal.querySelector('#student-email').value.trim();
-            const courses = Array.from(modal.querySelectorAll('input[name="student-courses"]:checked')).map(c => c.value);
-            const tutors = Array.from(modal.querySelectorAll('input[name="student-tutors"]:checked')).map(t => t.value);
-            const demoScheduled = modal.querySelector('input[name="demo-scheduled"]:checked')?.value === 'yes';
-            const demoDate = modal.querySelector('#student-demo-date').value || null;
-            const demoTime = modal.querySelector('#student-demo-time').value.trim() || null;
-            const joiningDate = modal.querySelector('#student-joining-date').value || null;
-            const batchTime = modal.querySelector('#student-batch-time').value.trim() || null;
-            const fee = parseFloat(modal.querySelector('#student-fee').value) || 0;
-            const discount = parseFloat(modal.querySelector('#student-discount').value) || 0;
-            const finalFee = parseFloat(modal.querySelector('#student-final-fee').value) || 0; // or recalc
-            const notes = modal.querySelector('#student-notes').value.trim();
-
-            if (!fname || !lname) { Toast.error('Required', 'Name required'); return; }
-            if (!phone || phone.length !== 10) { Toast.error('Required', 'Valid phone required'); return; }
-            if (courses.length === 0) { Toast.error('Required', 'Select course'); return; }
-            if (tutors.length === 0) { Toast.error('Required', 'Select tutor'); return; }
-
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = 'Saving...';
-
-            try {
-                if (isEdit) {
-                    const { error } = await window.supabaseClient.from('students').update({
-                        first_name: fname, last_name: lname, phone, email: email || null,
-                        courses, tutors, demo_scheduled: demoScheduled, demo_date: demoDate,
-                        demo_time: demoTime, joining_date: joiningDate, batch_time: batchTime,
-                        fee, discount, final_fee: finalFee, notes
-                    }).eq('id', studentId);
-                    if (error) throw error;
-                    Toast.success('Updated', 'Student updated');
-                } else {
-                    const { data: maxData } = await window.supabaseClient.from('students').select('student_id').order('student_id', { ascending: false }).limit(1);
-                    let nextNum = 1;
-                    if (maxData?.length > 0) {
-                        const m = maxData[0].student_id.match(/St-ACS-(\d+)/);
-                        if (m) nextNum = parseInt(m[1]) + 1;
-                    }
-                    const newId = `St-ACS-${String(nextNum).padStart(3, '0')}`;
-                    const { error } = await window.supabaseClient.from('students').insert({
-                        student_id: newId, first_name: fname, last_name: lname, phone, email: email || null,
-                        courses, tutors, demo_scheduled: demoScheduled, demo_date: demoDate,
-                        demo_time: demoTime, joining_date: joiningDate, batch_time: batchTime,
-                        fee, discount, final_fee: finalFee, notes, status: 'ACTIVE'
-                    });
-                    if (error) throw error;
-                    Toast.success('Added', 'Student enrolled');
-                }
-                closeModal();
-                await loadStudents();
-            } catch (err) {
-                console.error(err);
-                Toast.error('Error', err.message);
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = isEdit ? 'Update' : 'Save';
-            }
-        };
-
-    }, 0);
+    container.style.display = 'block';
+    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function openDeleteStudentModal(studentId, studentName, studentIdCode) {
+function closeForm() {
+    document.getElementById('student-form-container').style.display = 'none';
+}
+
+async function saveStudent() {
     const { Toast } = window.AdminUtils;
-    const modalHTML = `
-        <div class="modal-overlay active" id="delete-student-modal">
-            <div class="modal-container modal-sm">
-                <div class="modal-header"><h3>Delete Student</h3><button class="modal-close" id="close-del"><i class="fa-solid fa-xmark"></i></button></div>
-                <div class="modal-body text-center">
-                    <div class="warning-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                    <p>Delete student <strong>${studentName}</strong>?</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-outline" id="cancel-del">Cancel</button>
-                    <button class="btn btn-danger" id="confirm-del">Delete</button>
-                </div>
-            </div>
-        </div>`;
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    setTimeout(() => {
-        const modal = document.getElementById('delete-student-modal');
-        const close = () => modal.remove();
-        document.getElementById('close-del').onclick = close;
-        document.getElementById('cancel-del').onclick = close;
-        document.getElementById('confirm-del').onclick = async () => {
-            try {
-                await window.supabaseClient.from('students').delete().eq('id', studentId);
-                Toast.success('Deleted', 'Student deleted');
-                close();
-                await loadStudents();
-            } catch (e) { Toast.error('Error', e.message); }
-        };
-    }, 0);
+    const saveBtn = document.getElementById('save-student-btn');
+    const editId = document.getElementById('edit-student-id').value;
+    const isEdit = !!editId;
+
+    const fname = document.getElementById('student-fname').value.trim();
+    const lname = document.getElementById('student-lname').value.trim();
+    const phone = document.getElementById('student-phone').value.trim();
+    const email = document.getElementById('student-email').value.trim();
+    const courses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked')).map(c => c.value);
+    const tutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked')).map(t => t.value);
+    const demoScheduled = document.querySelector('input[name="demo-scheduled"]:checked')?.value === 'yes';
+    const demoDate = document.getElementById('student-demo-date').value || null;
+    const demoTime = document.getElementById('student-demo-time').value.trim() || null;
+    const joiningDate = document.getElementById('student-joining-date').value || null;
+    const batchTime = document.getElementById('student-batch-time').value.trim() || null;
+    const fee = parseFloat(document.getElementById('student-fee').value) || 0;
+    const discount = parseFloat(document.getElementById('student-discount').value) || 0;
+    const finalFee = parseFloat(document.getElementById('student-final-fee').value) || 0;
+    const notes = document.getElementById('student-notes').value.trim();
+
+    // Validation
+    if (!fname || !lname) { Toast.error('Required', 'Name required'); return; }
+    if (!phone || phone.length !== 10) { Toast.error('Required', 'Valid 10-digit phone required'); return; }
+    if (courses.length === 0) { Toast.error('Required', 'Select at least one course'); return; }
+    if (tutors.length === 0) { Toast.error('Required', 'Select at least one tutor'); return; }
+
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+    try {
+        if (isEdit) {
+            const { error } = await window.supabaseClient.from('students').update({
+                first_name: fname, last_name: lname, phone, email: email || null,
+                courses, tutors, demo_scheduled: demoScheduled, demo_date: demoDate,
+                demo_time: demoTime, joining_date: joiningDate, batch_time: batchTime,
+                fee, discount, final_fee: finalFee, notes
+            }).eq('id', editId);
+            if (error) throw error;
+            Toast.success('Updated', 'Student updated successfully');
+        } else {
+            // Generate new ID
+            const { data: maxData } = await window.supabaseClient.from('students').select('student_id').order('student_id', { ascending: false }).limit(1);
+            let nextNum = 1;
+            if (maxData?.length > 0) {
+                const m = maxData[0].student_id.match(/St-ACS-(\d+)/);
+                if (m) nextNum = parseInt(m[1]) + 1;
+            }
+            const newId = `St-ACS-${String(nextNum).padStart(3, '0')}`;
+
+            const { error } = await window.supabaseClient.from('students').insert({
+                student_id: newId, first_name: fname, last_name: lname, phone, email: email || null,
+                courses, tutors, demo_scheduled: demoScheduled, demo_date: demoDate,
+                demo_time: demoTime, joining_date: joiningDate, batch_time: batchTime,
+                fee, discount, final_fee: finalFee, notes, status: 'ACTIVE'
+            });
+            if (error) throw error;
+            Toast.success('Added', 'Student enrolled successfully');
+        }
+        closeForm();
+        await loadStudents();
+    } catch (err) {
+        console.error(err);
+        Toast.error('Error', err.message);
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isEdit ? 'Update' : 'Save'} Student`;
+    }
+}
+
+// =====================
+// Delete Confirmation
+// =====================
+function bindDeleteEvents() {
+    document.getElementById('cancel-delete-btn')?.addEventListener('click', hideDeleteConfirm);
+    document.getElementById('confirm-delete-btn')?.addEventListener('click', confirmDelete);
+}
+
+function showDeleteConfirm(id, name) {
+    deleteTargetId = id;
+    document.getElementById('delete-name').textContent = name;
+    document.getElementById('delete-overlay').style.display = 'flex';
+}
+
+function hideDeleteConfirm() {
+    deleteTargetId = null;
+    document.getElementById('delete-overlay').style.display = 'none';
+}
+
+async function confirmDelete() {
+    if (!deleteTargetId) return;
+    const { Toast } = window.AdminUtils;
+    const btn = document.getElementById('confirm-delete-btn');
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+    try {
+        await window.supabaseClient.from('students').delete().eq('id', deleteTargetId);
+        Toast.success('Deleted', 'Student deleted successfully');
+        hideDeleteConfirm();
+        await loadStudents();
+    } catch (e) {
+        Toast.error('Error', e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Delete';
+    }
 }

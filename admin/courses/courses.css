@@ -1,5 +1,77 @@
-/* Courses Specific Styles */
+/* Courses Module Styles */
+
 .fee-cell {
-    font-family: monospace;
-    font-weight: 500;
+    font-weight: 600;
+    color: var(--primary, #8b5cf6);
+}
+
+/* Inline Form Container */
+.inline-form-container {
+    background: var(--surface-elevated, #1a1a2e);
+    border: 1px solid var(--border-color, #2a2a4a);
+    border-radius: 12px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.inline-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--surface-hover, #252542);
+    border-bottom: 1px solid var(--border-color, #2a2a4a);
+}
+
+.inline-form-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+}
+
+.inline-form-body {
+    padding: 1.5rem;
+}
+
+.inline-form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: var(--surface-hover, #252542);
+    border-top: 1px solid var(--border-color, #2a2a4a);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .inline-form-body {
+        padding: 1rem;
+    }
+
+    .inline-form-header,
+    .inline-form-footer {
+        padding: 0.75rem 1rem;
+    }
+
+    .inline-form-footer {
+        flex-direction: column;
+    }
+
+    .inline-form-footer .btn {
+        width: 100%;
+    }
 }

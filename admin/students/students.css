@@ -1,2 +1,138 @@
-/* Students Specific Styles */
-/* Reuse most admin.css styles */
+/* Students Module - Inline Form Styles */
+
+/* Inline Form Container */
+.inline-form-container {
+    background: var(--surface-elevated, #1a1a2e);
+    border: 1px solid var(--border-color, #2a2a4a);
+    border-radius: 12px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.inline-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--surface-hover, #252542);
+    border-bottom: 1px solid var(--border-color, #2a2a4a);
+}
+
+.inline-form-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+}
+
+.inline-form-body {
+    padding: 1.5rem;
+}
+
+.inline-form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: var(--surface-hover, #252542);
+    border-top: 1px solid var(--border-color, #2a2a4a);
+}
+
+/* Delete Confirmation Overlay */
+.delete-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.delete-confirm-box {
+    background: var(--surface-elevated, #1a1a2e);
+    border: 1px solid var(--border-color, #2a2a4a);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    max-width: 320px;
+    width: 90%;
+    animation: scaleIn 0.2s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.delete-confirm-box .warning-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.delete-confirm-box .warning-icon i {
+    font-size: 1.5rem;
+    color: #ef4444;
+}
+
+.delete-confirm-box p {
+    margin: 0 0 1.5rem;
+    color: var(--text-secondary, #a0a0c0);
+}
+
+.delete-confirm-box p strong {
+    color: var(--text-primary, #fff);
+}
+
+.delete-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .inline-form-body {
+        padding: 1rem;
+    }
+
+    .inline-form-header,
+    .inline-form-footer {
+        padding: 0.75rem 1rem;
+    }
+
+    .inline-form-footer {
+        flex-direction: column;
+    }
+
+    .inline-form-footer .btn {
+        width: 100%;
+    }
+}

@@ -1,58 +1,50 @@
-// Tutors Module
+// Tutors Module - Inline Form Approach
 let allTutors = [];
 let allCoursesForTutors = [];
+let deleteTargetId = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Check Auth
-    const { NavigationSecurity } = window.AdminUtils || {};
-    // NavigationSecurity.initProtectedPage();
     const session = await window.supabaseConfig.getSession();
     if (!session) {
         window.location.href = '../login.html';
         return;
     }
 
-    // Init Sidebar
     AdminSidebar.init('tutors');
 
-    // Render Header
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {
         headerContainer.innerHTML = AdminHeader.render('Tutors');
     }
 
-    // Render Account Panel
     const admin = await window.Auth.getCurrentAdmin();
     await AdminSidebar.renderAccountPanel(session, admin);
 
-    // Load Data
     await loadCoursesForTutors();
     await loadTutors();
 
-    // Bind Add Button (in content area)
-    document.getElementById('add-tutor-btn')?.addEventListener('click', () => openTutorModal());
+    bindFormEvents();
+    bindDeleteEvents();
 
-    // Bind Search
-    document.getElementById('tutor-search')?.addEventListener('input', (e) => {
-        filterTutors(e.target.value);
-    });
+    document.getElementById('add-tutor-btn')?.addEventListener('click', () => openForm());
+    document.getElementById('tutor-search')?.addEventListener('input', (e) => filterTutors(e.target.value));
 });
 
+// =====================
+// Data Loading
+// =====================
 async function loadCoursesForTutors() {
     const { data, error } = await window.supabaseClient
         .from('courses')
         .select('course_code, course_name')
         .eq('status', 'ACTIVE')
         .order('course_code');
-
-    if (!error && data) {
-        allCoursesForTutors = data;
-    }
+    if (!error && data) allCoursesForTutors = data;
 }
 
 async function loadTutors() {
     const { Toast } = window.AdminUtils;
-    const tutorsContent = document.getElementById('tutors-content');
+    const content = document.getElementById('tutors-content');
 
     try {
         const { data: tutors, error } = await window.supabaseClient
@@ -62,43 +54,36 @@ async function loadTutors() {
             .order('tutor_id', { ascending: true });
 
         if (error) throw error;
-
         allTutors = tutors || [];
         renderTutorsList(allTutors);
-
     } catch (error) {
         console.error('Load tutors error:', error);
-        tutorsContent.innerHTML = `
-            <div class="error-state">
-                <i class="fa-solid fa-exclamation-triangle"></i>
-                <p>Failed to load tutors. Please try again.</p>
-            </div>
-        `;
+        content.innerHTML = '<div class="error-state"><i class="fa-solid fa-exclamation-triangle"></i><p>Failed to load tutors.</p></div>';
     }
 }
 
+// =====================
+// Rendering
+// =====================
 function renderTutorsList(tutors) {
-    const tutorsContent = document.getElementById('tutors-content');
+    const content = document.getElementById('tutors-content');
 
     if (!tutors || tutors.length === 0) {
-        tutorsContent.innerHTML = `
+        content.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state-icon">
-                    <i class="fa-solid fa-chalkboard-user"></i>
-                </div>
+                <div class="empty-state-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
                 <h3>No tutors yet</h3>
                 <p>Click "Add Tutor" to add your first tutor</p>
-            </div>
-        `;
+            </div>`;
         return;
     }
 
-    tutorsContent.innerHTML = `
+    content.innerHTML = `
         <div class="data-table-wrapper">
-            <table class="data-table" id="tutors-table">
+            <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Tutor ID</th>
+                        <th>ID</th>
                         <th>Name</th>
                         <th>Phone</th>
                         <th>Courses</th>
@@ -106,69 +91,44 @@ function renderTutorsList(tutors) {
                     </tr>
                 </thead>
                 <tbody>
-                    ${tutors.map(tutor => `
-                        <tr data-id="${tutor.id}">
-                            <td><span class="badge badge-primary">${tutor.tutor_id}</span></td>
-                            <td><strong>${tutor.full_name}</strong></td>
-                            <td>${tutor.phone}</td>
-                            <td>${(tutor.courses || []).join(', ') || '-'}</td>
+                    ${tutors.map(t => `
+                        <tr>
+                            <td><span class="badge badge-primary">${t.tutor_id}</span></td>
+                            <td><strong>${t.full_name}</strong></td>
+                            <td>${t.phone}</td>
+                            <td>${(t.courses || []).join(', ') || '-'}</td>
                             <td class="actions-cell">
-                                <button class="btn-icon btn-edit-tutor" data-id="${tutor.id}" title="Edit">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button class="btn-icon btn-delete-tutor" data-id="${tutor.id}" data-name="${tutor.full_name}" data-tutor-id="${tutor.tutor_id}" title="Delete">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                                <a href="https://wa.me/91${tutor.phone.replace(/\D/g, '')}" target="_blank" class="btn-icon btn-whatsapp-tutor" title="WhatsApp">
-                                    <i class="fa-brands fa-whatsapp"></i>
-                                </a>
+                                <button class="btn-icon btn-edit-tutor" data-id="${t.id}"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn-icon btn-delete-tutor" data-id="${t.id}" data-name="${t.full_name}"><i class="fa-solid fa-trash"></i></button>
+                                <a href="https://wa.me/91${t.phone.replace(/\D/g, '')}" target="_blank" class="btn-icon btn-whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
                             </td>
                         </tr>
                     `).join('')}
                 </tbody>
             </table>
         </div>
-        
-        <!-- Mobile Cards -->
-        <div class="data-cards" id="tutors-cards">
-            ${tutors.map(tutor => `
-                <div class="data-card" data-id="${tutor.id}">
-                    <div class="data-card-header">
-                        <span class="badge badge-primary">${tutor.tutor_id}</span>
-                    </div>
+        <div class="data-cards">
+            ${tutors.map(t => `
+                <div class="data-card">
+                    <div class="data-card-header"><span class="badge badge-primary">${t.tutor_id}</span></div>
                     <div class="data-card-body">
-                        <h4>${tutor.full_name}</h4>
-                        <p class="data-card-meta"><i class="fa-solid fa-phone"></i> ${tutor.phone}</p>
-                        <p class="data-card-meta"><i class="fa-solid fa-book"></i> ${(tutor.courses || []).join(', ') || 'No courses'}</p>
+                        <h4>${t.full_name}</h4>
+                        <p class="data-card-meta"><i class="fa-solid fa-phone"></i> ${t.phone}</p>
+                        <p class="data-card-meta"><i class="fa-solid fa-book"></i> ${(t.courses || []).join(', ') || 'No courses'}</p>
                     </div>
                     <div class="data-card-actions">
-                        <button class="btn btn-sm btn-outline btn-edit-tutor" data-id="${tutor.id}">
-                            <i class="fa-solid fa-pen"></i> Edit
-                        </button>
-                        <button class="btn btn-sm btn-outline btn-danger btn-delete-tutor" data-id="${tutor.id}" data-name="${tutor.full_name}" data-tutor-id="${tutor.tutor_id}">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                        <a href="https://wa.me/91${tutor.phone.replace(/\D/g, '')}" target="_blank" class="btn btn-sm btn-whatsapp">
-                            <i class="fa-brands fa-whatsapp"></i>
-                        </a>
+                        <button class="btn btn-sm btn-outline btn-edit-tutor" data-id="${t.id}"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button class="btn btn-sm btn-outline btn-danger btn-delete-tutor" data-id="${t.id}" data-name="${t.full_name}"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `).join('')}
         </div>
-        
-        <div class="table-footer">
-            <span>${tutors.length} tutor${tutors.length !== 1 ? 's' : ''}</span>
-        </div>
-    `;
+        <div class="table-footer"><span>${tutors.length} tutor${tutors.length !== 1 ? 's' : ''}</span></div>`;
 
-    // Bind action buttons
-    document.querySelectorAll('.btn-edit-tutor').forEach(btn => {
-        btn.addEventListener('click', () => openTutorModal(btn.dataset.id));
-    });
-
-    document.querySelectorAll('.btn-delete-tutor').forEach(btn => {
-        btn.addEventListener('click', () => openDeleteTutorModal(btn.dataset.id, btn.dataset.name, btn.dataset.tutorId));
-    });
+    document.querySelectorAll('.btn-edit-tutor').forEach(btn =>
+        btn.addEventListener('click', () => openForm(btn.dataset.id)));
+    document.querySelectorAll('.btn-delete-tutor').forEach(btn =>
+        btn.addEventListener('click', () => showDeleteConfirm(btn.dataset.id, btn.dataset.name)));
 }
 
 function filterTutors(query) {
@@ -180,280 +140,174 @@ function filterTutors(query) {
     renderTutorsList(filtered);
 }
 
-// Open add/edit tutor modal (with FIX for z-index/display issues via dynamic creation and setTimeout)
-async function openTutorModal(tutorId = null) {
-    const { Toast } = window.AdminUtils;
-    const isEdit = !!tutorId;
-    let tutor = null;
+// =====================
+// Inline Form
+// =====================
+function bindFormEvents() {
+    const closeBtn = document.getElementById('close-form-btn');
+    const cancelBtn = document.getElementById('cancel-form-btn');
+    const saveBtn = document.getElementById('save-tutor-btn');
 
-    // Reload courses for the select
+    closeBtn?.addEventListener('click', closeForm);
+    cancelBtn?.addEventListener('click', closeForm);
+    saveBtn?.addEventListener('click', saveTutor);
+}
+
+function renderCoursesCheckboxes(selectedCourses = []) {
+    const list = document.getElementById('tutor-courses-list');
+    list.innerHTML = allCoursesForTutors.map(c => `
+        <label class="checkbox-item">
+            <input type="checkbox" name="tutor-courses" value="${c.course_code}" ${selectedCourses.includes(c.course_code) ? 'checked' : ''}>
+            <span>${c.course_code} - ${c.course_name}</span>
+        </label>
+    `).join('');
+}
+
+async function openForm(tutorId = null) {
+    const { Toast } = window.AdminUtils;
+    const container = document.getElementById('tutor-form-container');
+    const formTitle = document.getElementById('form-title');
+    const saveBtn = document.getElementById('save-tutor-btn');
+    const isEdit = !!tutorId;
+
     await loadCoursesForTutors();
 
     if (allCoursesForTutors.length === 0) {
-        Toast.error('No Courses', 'Please sync courses first before adding tutors');
+        Toast.error('No Courses', 'Please sync courses first');
         return;
     }
 
-    if (isEdit) {
-        const { data, error } = await window.supabaseClient
-            .from('tutors')
-            .select('*')
-            .eq('id', tutorId)
-            .single();
+    // Reset form
+    document.getElementById('edit-tutor-id').value = '';
+    document.getElementById('tutor-name').value = '';
+    document.getElementById('tutor-phone').value = '';
+    document.getElementById('tutor-email').value = '';
+    document.getElementById('tutor-specialization').value = '';
+    document.getElementById('tutor-notes').value = '';
 
+    let tutor = null;
+    if (isEdit) {
+        const { data, error } = await window.supabaseClient.from('tutors').select('*').eq('id', tutorId).single();
         if (error || !data) {
             Toast.error('Error', 'Could not load tutor data');
             return;
         }
         tutor = data;
+
+        document.getElementById('edit-tutor-id').value = tutor.id;
+        document.getElementById('tutor-name').value = tutor.full_name || '';
+        document.getElementById('tutor-phone').value = tutor.phone || '';
+        document.getElementById('tutor-email').value = tutor.email || '';
+        document.getElementById('tutor-specialization').value = tutor.specialization || '';
+        document.getElementById('tutor-notes').value = tutor.notes || '';
     }
 
-    const coursesCheckboxes = allCoursesForTutors.map(c => `
-        <label class="checkbox-item">
-            <input type="checkbox" name="tutor-courses" value="${c.course_code}" 
-                ${tutor && tutor.courses?.includes(c.course_code) ? 'checked' : ''}>
-            <span>${c.course_code} - ${c.course_name}</span>
-        </label>
-    `).join('');
+    renderCoursesCheckboxes(tutor?.courses || []);
 
-    const modalHTML = `
-        <div class="modal-overlay active" id="tutor-modal">
-            <div class="modal-container">
-                <div class="modal-header">
-                    <h3>${isEdit ? 'Edit Tutor' : 'Add Tutor'}</h3>
-                    <button type="button" class="modal-close" id="close-tutor-modal">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    ${isEdit ? `
-                        <div class="form-group">
-                            <label>Tutor ID</label>
-                            <input type="text" value="${tutor.tutor_id}" disabled class="input-locked">
-                        </div>
-                    ` : ''}
-                    <div class="form-group">
-                        <label>Name <span class="required">*</span></label>
-                        <input type="text" id="tutor-name" value="${tutor?.full_name || ''}" placeholder="Enter full name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Phone <span class="required">*</span></label>
-                        <input type="tel" id="tutor-phone" value="${tutor?.phone || ''}" placeholder="10-digit mobile number" maxlength="10" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="tutor-email" value="${tutor?.email || ''}" placeholder="email@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label>LinkedIn URL</label>
-                        <input type="url" id="tutor-linkedin" value="${tutor?.linkedin_url || ''}" placeholder="https://linkedin.com/in/...">
-                    </div>
-                    <div class="form-group">
-                        <label>Courses <span class="required">*</span></label>
-                        <div class="checkbox-list" id="tutor-courses-list">
-                            ${coursesCheckboxes || '<p class="text-muted">No courses available. Sync courses first.</p>'}
-                        </div>
-                        <span class="input-hint">Select courses this tutor can teach</span>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline" id="cancel-tutor-btn">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="save-tutor-btn">
-                        <i class="fa-solid fa-check"></i> ${isEdit ? 'Update Tutor' : 'Save Tutor'}
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
+    formTitle.textContent = isEdit ? 'Edit Tutor' : 'Add Tutor';
+    saveBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isEdit ? 'Update' : 'Save'} Tutor`;
 
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    document.body.style.overflow = 'hidden';
-
-    // Use setTimeout to ensure DOM is fully ready
-    setTimeout(() => {
-        const modal = document.getElementById('tutor-modal');
-        if (!modal) return;
-
-        const closeBtn = modal.querySelector('#close-tutor-modal');
-        const cancelBtn = modal.querySelector('#cancel-tutor-btn');
-        const saveBtn = modal.querySelector('#save-tutor-btn');
-
-        const closeModal = () => {
-            modal.remove();
-            document.body.style.overflow = '';
-        };
-
-        closeBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeModal();
-        });
-        cancelBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeModal();
-        });
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
-
-        saveBtn.addEventListener('click', async () => {
-            const name = document.getElementById('tutor-name').value.trim();
-            const phone = document.getElementById('tutor-phone').value.trim();
-            const email = document.getElementById('tutor-email').value.trim();
-            const linkedin = document.getElementById('tutor-linkedin').value.trim();
-            const selectedCourses = Array.from(document.querySelectorAll('input[name="tutor-courses"]:checked'))
-                .map(cb => cb.value);
-
-            // Validation
-            if (!name) {
-                Toast.error('Required', 'Please enter tutor name');
-                return;
-            }
-            if (!phone || phone.length !== 10) {
-                Toast.error('Required', 'Please enter valid 10-digit phone');
-                return;
-            }
-            if (selectedCourses.length === 0) {
-                Toast.error('Required', 'Please select at least one course');
-                return;
-            }
-
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
-
-            try {
-                if (isEdit) {
-                    // Update
-                    const { error } = await window.supabaseClient
-                        .from('tutors')
-                        .update({
-                            full_name: name,
-                            phone: phone,
-                            email: email || null,
-                            linkedin_url: linkedin || null,
-                            courses: selectedCourses
-                        })
-                        .eq('id', tutorId);
-
-                    if (error) throw error;
-                    Toast.success('Updated', 'Tutor updated successfully');
-                } else {
-                    // Generate new tutor ID
-                    const { data: maxData } = await window.supabaseClient
-                        .from('tutors')
-                        .select('tutor_id')
-                        .order('tutor_id', { ascending: false })
-                        .limit(1);
-
-                    let nextNum = 1;
-                    if (maxData && maxData.length > 0) {
-                        const match = maxData[0].tutor_id.match(/T-ACS-(\d+)/);
-                        if (match) nextNum = parseInt(match[1]) + 1;
-                    }
-                    const newTutorId = `T-ACS-${String(nextNum).padStart(3, '0')}`;
-
-                    // Insert
-                    const { error } = await window.supabaseClient
-                        .from('tutors')
-                        .insert({
-                            tutor_id: newTutorId,
-                            full_name: name,
-                            phone: phone,
-                            email: email || null,
-                            linkedin_url: linkedin || null,
-                            courses: selectedCourses,
-                            status: 'ACTIVE'
-                        });
-
-                    if (error) throw error;
-                    Toast.success('Added', 'Tutor added successfully');
-                }
-
-                closeModal();
-                await loadTutors();
-
-            } catch (error) {
-                console.error('Save tutor error:', error);
-                Toast.error('Error', error.message || 'Failed to save tutor');
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isEdit ? 'Update Tutor' : 'Save Tutor'}`;
-            }
-        });
-    }, 0);
+    container.style.display = 'block';
+    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function openDeleteTutorModal(tutorId, tutorName, tutorIdCode) {
+function closeForm() {
+    document.getElementById('tutor-form-container').style.display = 'none';
+}
+
+async function saveTutor() {
     const { Toast } = window.AdminUtils;
+    const saveBtn = document.getElementById('save-tutor-btn');
+    const editId = document.getElementById('edit-tutor-id').value;
+    const isEdit = !!editId;
 
-    const modalHTML = `
-        <div class="modal-overlay active" id="delete-tutor-modal">
-            <div class="modal-container modal-sm">
-                <div class="modal-header">
-                    <h3>Delete Tutor</h3>
-                    <button type="button" class="modal-close" id="close-delete-modal">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="warning-icon">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                    </div>
-                    <p>Are you sure you want to delete this tutor?</p>
-                    <p class="text-strong">${tutorName} (${tutorIdCode})</p>
-                    <p class="text-muted">This action cannot be undone.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline" id="cancel-delete-btn">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirm-delete-btn">
-                        <i class="fa-solid fa-trash"></i> Delete Tutor
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
+    const name = document.getElementById('tutor-name').value.trim();
+    const phone = document.getElementById('tutor-phone').value.trim();
+    const email = document.getElementById('tutor-email').value.trim();
+    const specialization = document.getElementById('tutor-specialization').value.trim();
+    const courses = Array.from(document.querySelectorAll('input[name="tutor-courses"]:checked')).map(c => c.value);
+    const notes = document.getElementById('tutor-notes').value.trim();
 
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    document.body.style.overflow = 'hidden';
+    // Validation
+    if (!name) { Toast.error('Required', 'Name required'); return; }
+    if (!phone || phone.length !== 10) { Toast.error('Required', 'Valid 10-digit phone required'); return; }
+    if (courses.length === 0) { Toast.error('Required', 'Select at least one course'); return; }
 
-    // Timeout for safety
-    setTimeout(() => {
-        const modal = document.getElementById('delete-tutor-modal');
-        const closeBtn = document.getElementById('close-delete-modal');
-        const cancelBtn = document.getElementById('cancel-delete-btn');
-        const confirmBtn = document.getElementById('confirm-delete-btn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
-        const closeModal = () => {
-            modal.remove();
-            document.body.style.overflow = '';
-        };
-
-        closeBtn.addEventListener('click', (e) => { e.preventDefault(); closeModal(); });
-        cancelBtn.addEventListener('click', (e) => { e.preventDefault(); closeModal(); });
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
-
-        confirmBtn.addEventListener('click', async () => {
-            confirmBtn.disabled = true;
-            confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
-
-            try {
-                const { error } = await window.supabaseClient
-                    .from('tutors')
-                    .delete()
-                    .eq('id', tutorId);
-
-                if (error) throw error;
-
-                Toast.success('Deleted', 'Tutor deleted successfully');
-                closeModal();
-                await loadTutors();
-
-            } catch (error) {
-                console.error('Delete tutor error:', error);
-                Toast.error('Error', 'Failed to delete tutor');
-                confirmBtn.disabled = false;
-                confirmBtn.innerHTML = '<i class="fa-solid fa-trash"></i> Delete Tutor';
+    try {
+        if (isEdit) {
+            const { error } = await window.supabaseClient.from('tutors').update({
+                full_name: name, phone, email: email || null,
+                specialization: specialization || null, courses, notes
+            }).eq('id', editId);
+            if (error) throw error;
+            Toast.success('Updated', 'Tutor updated successfully');
+        } else {
+            // Generate new ID
+            const { data: maxData } = await window.supabaseClient.from('tutors').select('tutor_id').order('tutor_id', { ascending: false }).limit(1);
+            let nextNum = 1;
+            if (maxData?.length > 0) {
+                const m = maxData[0].tutor_id.match(/Tr-ACS-(\d+)/);
+                if (m) nextNum = parseInt(m[1]) + 1;
             }
-        });
-    }, 0);
+            const newId = `Tr-ACS-${String(nextNum).padStart(3, '0')}`;
+
+            const { error } = await window.supabaseClient.from('tutors').insert({
+                tutor_id: newId, full_name: name, phone, email: email || null,
+                specialization: specialization || null, courses, notes, status: 'ACTIVE'
+            });
+            if (error) throw error;
+            Toast.success('Added', 'Tutor added successfully');
+        }
+        closeForm();
+        await loadTutors();
+    } catch (err) {
+        console.error(err);
+        Toast.error('Error', err.message);
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isEdit ? 'Update' : 'Save'} Tutor`;
+    }
+}
+
+// =====================
+// Delete Confirmation
+// =====================
+function bindDeleteEvents() {
+    document.getElementById('cancel-delete-btn')?.addEventListener('click', hideDeleteConfirm);
+    document.getElementById('confirm-delete-btn')?.addEventListener('click', confirmDelete);
+}
+
+function showDeleteConfirm(id, name) {
+    deleteTargetId = id;
+    document.getElementById('delete-name').textContent = name;
+    document.getElementById('delete-overlay').style.display = 'flex';
+}
+
+function hideDeleteConfirm() {
+    deleteTargetId = null;
+    document.getElementById('delete-overlay').style.display = 'none';
+}
+
+async function confirmDelete() {
+    if (!deleteTargetId) return;
+    const { Toast } = window.AdminUtils;
+    const btn = document.getElementById('confirm-delete-btn');
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+    try {
+        await window.supabaseClient.from('tutors').delete().eq('id', deleteTargetId);
+        Toast.success('Deleted', 'Tutor deleted successfully');
+        hideDeleteConfirm();
+        await loadTutors();
+    } catch (e) {
+        Toast.error('Error', e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Delete';
+    }
 }

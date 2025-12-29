@@ -1,4 +1,4 @@
-// Courses Module
+// Courses Module - Inline Form Approach
 const websiteCourses = [
     { code: 'GD', name: 'Graphic Design' },
     { code: 'UX', name: 'UI/UX Design' },
@@ -23,7 +23,6 @@ const websiteCourses = [
 ];
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const { NavigationSecurity } = window.AdminUtils || {};
     const session = await window.supabaseConfig.getSession();
     if (!session) {
         window.location.href = '../login.html';
@@ -32,7 +31,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     AdminSidebar.init('courses');
 
-    // Header without Add button (Sync is in content)
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) headerContainer.innerHTML = AdminHeader.render('Courses');
 
@@ -41,9 +39,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await loadCourses();
 
+    bindFormEvents();
     document.getElementById('sync-courses-btn')?.addEventListener('click', syncCourses);
 });
 
+// =====================
+// Data Loading
+// =====================
 async function loadCourses() {
     const { Toast } = window.AdminUtils;
     const content = document.getElementById('courses-content');
@@ -83,7 +85,7 @@ async function loadCourses() {
                                 <td>${c.course_name}</td>
                                 <td class="fee-cell">₹${formatNumber(c.fee || 0)}</td>
                                 <td>
-                                    <button class="btn-icon btn-edit-fee" data-id="${c.id}" title="Edit Fee">
+                                    <button class="btn-icon btn-edit-fee" data-id="${c.id}" data-code="${c.course_code}" data-name="${c.course_name}" data-fee="${c.fee || 0}" title="Edit Fee">
                                         <i class="fa-solid fa-pen"></i>
                                     </button>
                                 </td>
@@ -92,7 +94,6 @@ async function loadCourses() {
                     </tbody>
                 </table>
             </div>
-            <!-- Mobile Cards -->
             <div class="data-cards">
                 ${courses.map(c => `
                     <div class="data-card">
@@ -105,7 +106,7 @@ async function loadCourses() {
                             <p class="data-card-fee">₹${formatNumber(c.fee || 0)}</p>
                         </div>
                         <div class="data-card-actions">
-                            <button class="btn btn-sm btn-outline btn-edit-fee" data-id="${c.id}"><i class="fa-solid fa-pen"></i> Edit Fee</button>
+                            <button class="btn btn-sm btn-outline btn-edit-fee" data-id="${c.id}" data-code="${c.course_code}" data-name="${c.course_name}" data-fee="${c.fee || 0}"><i class="fa-solid fa-pen"></i> Edit Fee</button>
                         </div>
                     </div>
                 `).join('')}
@@ -114,7 +115,7 @@ async function loadCourses() {
         `;
 
         document.querySelectorAll('.btn-edit-fee').forEach(btn =>
-            btn.addEventListener('click', () => openEditFeeModal(btn.dataset.id)));
+            btn.addEventListener('click', () => openFeeForm(btn.dataset.id, btn.dataset.code, btn.dataset.name, btn.dataset.fee)));
 
     } catch (error) {
         console.error(error);
@@ -126,6 +127,9 @@ function formatNumber(num) {
     return num.toLocaleString('en-IN');
 }
 
+// =====================
+// Sync Courses
+// =====================
 async function syncCourses() {
     const { Toast } = window.AdminUtils;
     const btn = document.getElementById('sync-courses-btn');
@@ -166,42 +170,49 @@ async function syncCourses() {
     }
 }
 
-async function openEditFeeModal(courseId) {
+// =====================
+// Inline Fee Form
+// =====================
+function bindFormEvents() {
+    document.getElementById('close-fee-form-btn')?.addEventListener('click', closeFeeForm);
+    document.getElementById('cancel-fee-btn')?.addEventListener('click', closeFeeForm);
+    document.getElementById('save-fee-btn')?.addEventListener('click', saveFee);
+}
+
+function openFeeForm(courseId, code, name, fee) {
+    const container = document.getElementById('fee-form-container');
+    document.getElementById('edit-course-id').value = courseId;
+    document.getElementById('fee-course-name').value = `${code} - ${name}`;
+    document.getElementById('fee-input').value = fee;
+
+    container.style.display = 'block';
+    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('fee-input').focus();
+}
+
+function closeFeeForm() {
+    document.getElementById('fee-form-container').style.display = 'none';
+}
+
+async function saveFee() {
     const { Toast } = window.AdminUtils;
-    const { data: course, error } = await window.supabaseClient.from('courses').select('*').eq('id', courseId).single();
+    const saveBtn = document.getElementById('save-fee-btn');
+    const courseId = document.getElementById('edit-course-id').value;
+    const fee = parseFloat(document.getElementById('fee-input').value) || 0;
 
-    if (error || !course) { Toast.error('Error', 'Could not load course'); return; }
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
-    const modalHTML = `
-        <div class="modal-overlay active" id="fee-modal">
-            <div class="modal-container">
-                <div class="modal-header"><h3>Edit Course Fee</h3><button class="modal-close" id="close-fee"><i class="fa-solid fa-xmark"></i></button></div>
-                <div class="modal-body">
-                    <div class="form-group"><label>Course</label><input type="text" value="${course.course_code} - ${course.course_name}" disabled class="input-locked"></div>
-                    <div class="form-group"><label>Fee (₹)</label><input type="number" id="edit-fee-input" value="${course.fee || 0}" min="0" step="100"></div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-outline" id="cancel-fee">Cancel</button>
-                    <button class="btn btn-primary" id="save-fee"><i class="fa-solid fa-check"></i> Update Fee</button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    setTimeout(() => {
-        const modal = document.getElementById('fee-modal');
-        const close = () => modal.remove();
-        document.getElementById('close-fee').onclick = close;
-        document.getElementById('cancel-fee').onclick = close;
-        document.getElementById('save-fee').onclick = async () => {
-            const btn = document.getElementById('save-fee');
-            const fee = parseFloat(document.getElementById('edit-fee-input').value) || 0;
-            btn.disabled = true; btn.innerHTML = 'Saving...';
-
-            const { error } = await window.supabaseClient.from('courses').update({ fee }).eq('id', courseId);
-            if (error) { Toast.error('Error', 'Failed'); btn.disabled = false; btn.innerHTML = 'Update Fee'; }
-            else { Toast.success('Saved', 'Fee updated'); close(); await loadCourses(); }
-        };
-    }, 0);
+    try {
+        const { error } = await window.supabaseClient.from('courses').update({ fee }).eq('id', courseId);
+        if (error) throw error;
+        Toast.success('Saved', 'Fee updated successfully');
+        closeFeeForm();
+        await loadCourses();
+    } catch (e) {
+        Toast.error('Error', e.message);
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-check"></i> Update Fee';
+    }
 }

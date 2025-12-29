@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courses - CraftSoft Admin</title>
-    <link rel="icon" href="../../assets/images/logo-main.webp" type="image/webp">
+    <link rel="icon" href="../../favicon.ico" type="image/x-icon">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,8 +41,37 @@
                         <i class="fa-solid fa-rotate"></i>
                         Sync from Website
                     </button>
-                    <!-- No search needed for small list -->
                 </div>
+
+                <!-- Inline Fee Edit Form (hidden by default) -->
+                <div class="inline-form-container" id="fee-form-container" style="display: none;">
+                    <div class="inline-form-header">
+                        <h3>Edit Course Fee</h3>
+                        <button type="button" class="btn-icon" id="close-fee-form-btn">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="inline-form-body">
+                        <input type="hidden" id="edit-course-id">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Course</label>
+                                <input type="text" id="fee-course-name" disabled class="input-locked">
+                            </div>
+                            <div class="form-group">
+                                <label>Fee (₹)</label>
+                                <input type="number" id="fee-input" value="0" min="0" step="100">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="inline-form-footer">
+                        <button type="button" class="btn btn-outline" id="cancel-fee-btn">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="save-fee-btn">
+                            <i class="fa-solid fa-check"></i> Update Fee
+                        </button>
+                    </div>
+                </div>
+
                 <div class="section-divider"></div>
                 <div id="courses-content">
                     <div class="loading-spinner">
