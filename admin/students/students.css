@@ -294,6 +294,78 @@
     color: var(--primary-600, #1a7eb0);
 }
 
+/* ============================================
+   Input with Icon
+   ============================================ */
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon .input-icon {
+    position: absolute;
+    left: 1rem;
+    color: var(--admin-text-muted, #94a3b8);
+    font-size: 1rem;
+    z-index: 1;
+    pointer-events: none;
+    transition: color 0.2s;
+}
+
+.input-with-icon input,
+.input-with-icon select,
+.input-with-icon textarea {
+    padding-left: 2.75rem !important;
+}
+
+.input-with-icon:focus-within .input-icon {
+    color: var(--primary-500, #2896cd);
+}
+
+/* Textarea with icon */
+.input-with-icon.textarea-icon {
+    align-items: flex-start;
+}
+
+.input-with-icon.textarea-icon .input-icon {
+    top: 0.95rem;
+}
+
+/* Icon Colors */
+.input-with-icon .fa-user {
+    color: var(--primary-500, #2896cd);
+}
+
+.input-with-icon .fa-phone {
+    color: #10b981;
+}
+
+.input-with-icon .fa-envelope {
+    color: #f59e0b;
+}
+
+.input-with-icon .fa-calendar,
+.input-with-icon .fa-calendar-check {
+    color: #ec4899;
+}
+
+.input-with-icon .fa-clock {
+    color: #6366f1;
+}
+
+.input-with-icon .fa-sticky-note {
+    color: #8b5cf6;
+}
+
+.input-with-icon .fa-location-dot {
+    color: #14b8a6;
+}
+
+.input-with-icon .fa-flag {
+    color: #f97316;
+}
+
 /* Text Muted */
 .text-muted {
     color: var(--admin-text-muted, #94a3b8);
