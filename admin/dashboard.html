@@ -1482,7 +1482,26 @@
                 updateTutorCheckboxes(student.courses, student.tutors || []);
             }
 
-            // Handle course checkbox changes - update tutors (fee is per course, not sum)
+            // Calculate fee from selected courses (sum of course fees)
+            const calculateFeeFromCourses = () => {
+                const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
+                    .map(cb => cb.value);
+                let totalFee = 0;
+                selectedCourses.forEach(code => {
+                    const course = allCoursesForStudents.find(c => c.course_code === code);
+                    if (course && course.fee) {
+                        totalFee += parseFloat(course.fee);
+                    }
+                });
+                const feeInput = document.getElementById('student-fee');
+                const discountInput = document.getElementById('student-discount');
+                const finalFeeInput = document.getElementById('student-final-fee');
+                feeInput.value = totalFee;
+                const discount = parseFloat(discountInput.value) || 0;
+                finalFeeInput.value = Math.max(0, totalFee - discount);
+            };
+
+            // Handle course checkbox changes - update tutors AND fee
             document.querySelectorAll('input[name="student-courses"]').forEach(cb => {
                 cb.addEventListener('change', () => {
                     const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
@@ -1490,6 +1509,7 @@
                     const currentTutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked'))
                         .map(t => t.value);
                     updateTutorCheckboxes(selectedCourses, currentTutors);
+                    calculateFeeFromCourses();
                 });
             });
 
