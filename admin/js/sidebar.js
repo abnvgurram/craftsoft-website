@@ -10,8 +10,6 @@ const AdminSidebar = {
 
         this.render();
         this.bindEvents();
-
-        // Session timeout only (AccountManager has no init)
         this.initSessionTimeout();
     },
 
@@ -20,16 +18,14 @@ const AdminSidebar = {
             <aside class="admin-sidebar" id="admin-sidebar">
                 <div class="sidebar-header">
                     <span class="sidebar-logo-text">CraftSoft</span>
-                    <button class="sidebar-close-btn" id="sidebar-close-btn">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
+                    <span class="sidebar-logo-short">CS</span>
                 </div>
 
                 <nav class="sidebar-nav">
                     ${this.navItem('dashboard', 'Dashboard', 'fa-chart-pie')}
                     ${this.navItem('students', 'Students', 'fa-user-graduate')}
                     ${this.navItem('tutors', 'Tutors', 'fa-chalkboard-user')}
-                    ${this.navItem('inquiries', 'Inquiries', 'fa-envelope-open-text')}
+                    ${this.navItem('inquiries', 'Inquiries', 'fa-phone-volume')}
                     ${this.navItem('courses', 'Courses', 'fa-book-bookmark')}
 
                     <!-- Payments -->
@@ -50,33 +46,14 @@ const AdminSidebar = {
 
                     ${this.navItem('settings', 'Settings', 'fa-gear')}
                 </nav>
+
+                <!-- Sidebar Toggle Button (for mobile) -->
+                <button class="sidebar-toggle-btn" id="sidebar-toggle-btn">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
             </aside>
 
             <div class="sidebar-overlay" id="sidebar-overlay"></div>
-
-            <!-- Mobile Bottom Navigation -->
-            <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
-                <a href="${this.rootPath}dashboard/" class="mobile-nav-btn ${this.currentPage === 'dashboard' ? 'active' : ''}">
-                    <i class="fa-solid fa-chart-pie"></i>
-                    <span>Home</span>
-                </a>
-                <a href="${this.rootPath}students/" class="mobile-nav-btn ${this.currentPage === 'students' ? 'active' : ''}">
-                    <i class="fa-solid fa-user-graduate"></i>
-                    <span>Students</span>
-                </a>
-                <button class="mobile-nav-btn menu-btn" id="mobile-menu-btn">
-                    <i class="fa-solid fa-bars"></i>
-                    <span>Menu</span>
-                </button>
-                <a href="${this.rootPath}tutors/" class="mobile-nav-btn ${this.currentPage === 'tutors' ? 'active' : ''}">
-                    <i class="fa-solid fa-chalkboard-user"></i>
-                    <span>Tutors</span>
-                </a>
-                <a href="${this.rootPath}inquiries/" class="mobile-nav-btn ${this.currentPage === 'inquiries' ? 'active' : ''}">
-                    <i class="fa-solid fa-phone-volume"></i>
-                    <span>Inquiries</span>
-                </a>
-            </nav>
         `;
 
         const layout = document.querySelector('.admin-layout');
@@ -88,50 +65,43 @@ const AdminSidebar = {
     navItem(page, label, icon) {
         return `
             <a href="${this.rootPath}${page}/"
-               class="sidebar-item ${this.currentPage === page ? 'active' : ''}">
+               class="sidebar-item ${this.currentPage === page ? 'active' : ''}"
+               title="${label}">
                 <i class="fa-solid ${icon}"></i>
                 <span>${label}</span>
             </a>
         `;
     },
 
+    toggleSidebar() {
+        const sidebar = document.getElementById('admin-sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        sidebar?.classList.toggle('expanded');
+        overlay?.classList.toggle('active');
+    },
+
     closeSidebar() {
         const sidebar = document.getElementById('admin-sidebar');
         const overlay = document.getElementById('sidebar-overlay');
-        sidebar?.classList.remove('open');
+        sidebar?.classList.remove('expanded');
         overlay?.classList.remove('active');
     },
 
     closeAccountDropdowns() {
-        // Close any open account dropdowns
         document.querySelectorAll('.account-dropdown.open, .logout-dropdown.open').forEach(el => {
             el.classList.remove('open');
         });
     },
 
     bindEvents() {
-        const sidebar = document.getElementById('admin-sidebar');
         const overlay = document.getElementById('sidebar-overlay');
 
-        // Mobile menu button - close account panels first
+        // Sidebar toggle button
         document.addEventListener('click', (e) => {
-            if (e.target.closest('#mobile-menu-btn')) {
+            if (e.target.closest('#sidebar-toggle-btn')) {
                 e.stopPropagation();
                 this.closeAccountDropdowns();
-                sidebar?.classList.toggle('open');
-                overlay?.classList.toggle('active');
-            }
-
-            // Close sidebar when clicking sidebar close button
-            if (e.target.closest('#sidebar-close-btn')) {
-                this.closeSidebar();
-            }
-
-            // Close sidebar when clicking on account panel (on mobile)
-            if (e.target.closest('.account-trigger, .logout-dropdown')) {
-                if (window.innerWidth <= 768) {
-                    this.closeSidebar();
-                }
+                this.toggleSidebar();
             }
         });
 
@@ -139,6 +109,7 @@ const AdminSidebar = {
             this.closeSidebar();
         });
 
+        // Payments submenu toggle
         const paymentsItem = document.querySelector('.sidebar-item.has-submenu');
         paymentsItem?.addEventListener('click', (e) => {
             e.preventDefault();
@@ -180,9 +151,6 @@ const AdminHeader = {
         return `
             <header class="admin-header">
                 <div class="admin-header-left">
-                    <button class="mobile-menu-btn" id="mobile-menu-btn">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
                     <span class="header-logo">CraftSoft</span>
                     <span class="header-divider"></span>
                     <h1 class="page-title">${title}</h1>
