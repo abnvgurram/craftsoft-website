@@ -166,7 +166,17 @@ function renderStudentsList(students) {
                             <td><span class="badge badge-primary">${s.student_id}</span></td>
                             <td><strong>${s.first_name} ${s.last_name}</strong></td>
                             <td>${s.phone}</td>
-                            <td>${(s.courses || []).join(', ') || '-'}</td>
+                            <td>
+                                <div class="student-courses-list">
+                                    ${(s.courses || []).map(code => {
+        const tutorId = s.course_tutors?.[code];
+        const tutor = allTutorsForStudents.find(t => t.tutor_id === tutorId);
+        return `<div class="course-tag-item" title="${tutor ? `Tutor: ${tutor.full_name}` : 'No tutor assigned'}">
+                                            ${code}${tutor ? ` <span>(${tutor.full_name})</span>` : ''}
+                                        </div>`;
+    }).join('')}
+                                </div>
+                            </td>
                             <td class="fee-cell">₹${formatNumber(s.final_fee || 0)}</td>
                             <td class="actions-cell">
                                 <button class="btn-icon btn-edit-student" data-id="${s.id}"><i class="fa-solid fa-pen"></i></button>
@@ -185,7 +195,16 @@ function renderStudentsList(students) {
                     <div class="data-card-body">
                         <h4>${s.first_name} ${s.last_name}</h4>
                         <p class="data-card-meta"><i class="fa-solid fa-phone"></i> ${s.phone}</p>
-                        <p class="data-card-meta"><i class="fa-solid fa-book"></i> ${(s.courses || []).join(', ') || 'No courses'}</p>
+                        <div class="data-card-meta">
+                            <i class="fa-solid fa-book"></i> 
+                            <div class="course-tag-container">
+                                ${(s.courses || []).map(code => {
+        const tutorId = s.course_tutors?.[code];
+        const tutor = allTutorsForStudents.find(t => t.tutor_id === tutorId);
+        return `<span class="course-tag-item">${code}${tutor ? ` (${tutor.full_name})` : ''}</span>`;
+    }).join('')}
+                            </div>
+                        </div>
                         <p class="data-card-meta"><i class="fa-solid fa-indian-rupee-sign"></i> ${formatNumber(s.final_fee || 0)}</p>
                     </div>
                     <div class="data-card-actions">
@@ -237,39 +256,74 @@ function getFilteredTutors(selectedCourses) {
     return allTutorsForStudents.filter(t => t.courses && t.courses.some(c => selectedCourses.includes(c)));
 }
 
-function updateTutorsList(currentTutors = []) {
-    const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked')).map(c => c.value);
-    const list = document.getElementById('student-tutors-list');
-    const filtered = getFilteredTutors(selectedCourses);
+// Get tutors for a specific course
+function getTutorsForCourse(courseCode) {
+    return allTutorsForStudents.filter(t => t.courses && t.courses.includes(courseCode));
+}
 
-    if (filtered.length === 0) {
-        list.innerHTML = '<p class="text-muted">No tutors available for selected courses</p>';
-    } else {
-        list.innerHTML = filtered.map(t => `
-            <label class="checkbox-item">
-                <input type="checkbox" name="student-tutors" value="${t.tutor_id}" ${currentTutors.includes(t.tutor_id) ? 'checked' : ''}>
-                <span>${t.tutor_id} - ${t.full_name}</span>
-            </label>
-        `).join('');
+// Render per-course tutor assignment
+function updateCourseTutorAssignment(currentCourseTutors = {}) {
+    const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked')).map(c => c.value);
+    const section = document.getElementById('course-tutor-section');
+    const list = document.getElementById('course-tutor-list');
+
+    if (selectedCourses.length === 0) {
+        section.style.display = 'none';
+        list.innerHTML = '<p class="text-muted">Select courses first</p>';
+        return;
     }
+
+    section.style.display = 'block';
+
+    list.innerHTML = selectedCourses.map(courseCode => {
+        const course = allCoursesForStudents.find(c => c.course_code === courseCode);
+        const tutorsForCourse = getTutorsForCourse(courseCode);
+        const selectedTutor = currentCourseTutors[courseCode] || '';
+
+        return `
+            <div class="course-tutor-item">
+                <div class="course-tutor-course">
+                    <i class="fa-solid fa-book"></i>
+                    <span>${courseCode} - ${course?.course_name || courseCode}</span>
+                </div>
+                <div class="course-tutor-select">
+                    <select name="course-tutor" data-course="${courseCode}">
+                        <option value="">Select Tutor</option>
+                        ${tutorsForCourse.map(t => `
+                            <option value="${t.tutor_id}" ${selectedTutor === t.tutor_id ? 'selected' : ''}>
+                                ${t.full_name} (${t.tutor_id})
+                            </option>
+                        `).join('')}
+                    </select>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
 function renderCoursesCheckboxes(selectedCourses = [], discounts = {}) {
     const list = document.getElementById('student-courses-list');
     courseDiscounts = discounts; // Initialize
 
+    // Remove fee from display - just show course code and name
     list.innerHTML = allCoursesForStudents.map(c => `
         <label class="checkbox-item">
             <input type="checkbox" name="student-courses" value="${c.course_code}" data-fee="${c.fee || 0}" ${selectedCourses.includes(c.course_code) ? 'checked' : ''}>
-            <span>${c.course_code} - ${c.course_name} (₹${formatNumber(c.fee || 0)})</span>
+            <span>${c.course_code} - ${c.course_name}</span>
         </label>
     `).join('');
 
     // Bind course change events
     document.querySelectorAll('input[name="student-courses"]').forEach(cb => {
         cb.addEventListener('change', () => {
-            const currentTutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked')).map(t => t.value);
-            updateTutorsList(currentTutors);
+            // Get current course-tutor assignments
+            const currentCourseTutors = {};
+            document.querySelectorAll('select[name="course-tutor"]').forEach(sel => {
+                if (sel.value) {
+                    currentCourseTutors[sel.dataset.course] = sel.value;
+                }
+            });
+            updateCourseTutorAssignment(currentCourseTutors);
             updateFeeBreakdown();
         });
     });
@@ -416,8 +470,8 @@ async function openForm(studentId = null) {
     // Render courses checkboxes
     renderCoursesCheckboxes(student?.courses || [], courseDiscounts);
 
-    // Render tutors
-    updateTutorsList(student?.tutors || []);
+    // Render per-course tutor assignment
+    updateCourseTutorAssignment(student?.course_tutors || {});
 
     // Update fee breakdown
     updateFeeBreakdown();
@@ -444,7 +498,17 @@ async function saveStudent() {
     const phone = document.getElementById('student-phone').value.trim();
     const email = document.getElementById('student-email').value.trim();
     const courses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked')).map(c => c.value);
-    const tutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked')).map(t => t.value);
+
+    // Collect per-course tutor assignments
+    const course_tutors = {};
+    const tutors = []; // Keeping array for backward compatibility
+    document.querySelectorAll('select[name="course-tutor"]').forEach(sel => {
+        if (sel.value) {
+            course_tutors[sel.dataset.course] = sel.value;
+            if (!tutors.includes(sel.value)) tutors.push(sel.value);
+        }
+    });
+
     const demoScheduled = document.querySelector('input[name="demo-scheduled"]:checked')?.value === 'yes';
     const demoDate = document.getElementById('student-demo-date').value || null;
     const demoTime = document.getElementById('student-demo-time').value || null;
@@ -468,7 +532,13 @@ async function saveStudent() {
     if (!fname || !lname) { Toast.error('Required', 'Name required'); return; }
     if (!phone || phone.length !== 10) { Toast.error('Required', 'Valid 10-digit phone required'); return; }
     if (courses.length === 0) { Toast.error('Required', 'Select at least one course'); return; }
-    if (tutors.length === 0) { Toast.error('Required', 'Select at least one tutor'); return; }
+
+    // Ensure every selected course has a tutor assigned
+    const missingTutor = courses.some(code => !course_tutors[code]);
+    if (missingTutor) {
+        Toast.error('Required', 'Assign a tutor for all selected courses');
+        return;
+    }
 
     saveBtn.disabled = true;
     saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
@@ -481,6 +551,8 @@ async function saveStudent() {
             email: email || null,
             courses,
             tutors,
+            course_tutors,
+            course_discounts: courseDiscounts,
             demo_scheduled: demoScheduled,
             demo_date: demoDate,
             demo_time: demoTime,

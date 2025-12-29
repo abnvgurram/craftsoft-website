@@ -137,6 +137,8 @@ CREATE TABLE IF NOT EXISTS students (
     discount DECIMAL(10,2) DEFAULT 0,
     final_fee DECIMAL(10,2) DEFAULT 0,
     notes TEXT,
+    course_tutors JSONB DEFAULT '{}',
+    course_discounts JSONB DEFAULT '{}',
     status TEXT DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE')),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
