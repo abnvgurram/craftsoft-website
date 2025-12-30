@@ -23,23 +23,7 @@ const AdminSidebar = {
                     ${this.navItem('tutors', 'Tutors', 'fa-chalkboard-user')}
                     ${this.navItem('inquiries', 'Inquiries', 'fa-phone-volume')}
                     ${this.navItem('courses', 'Courses', 'fa-book-bookmark')}
-
-                    <!-- Payments -->
-                    <div class="sidebar-group ${['payments', 'receipts'].includes(this.currentPage) ? 'expanded' : ''}">
-                        <div class="sidebar-item has-submenu">
-                            <i class="fa-solid fa-money-bill-transfer"></i>
-                            <span>Payments</span>
-                            <i class="fa-solid fa-chevron-down submenu-arrow"></i>
-                        </div>
-                        <div class="sidebar-submenu">
-                            <a href="${this.rootPath}payments/receipts/" 
-                               class="sidebar-subitem ${this.currentPage === 'receipts' ? 'active' : ''}">
-                                <i class="fa-solid fa-file-invoice"></i>
-                                <span>Receipts</span>
-                            </a>
-                        </div>
-                    </div>
-
+                    ${this.navItem('receipts', 'Receipts', 'fa-file-invoice', 'payments/receipts')}
                     ${this.navItem('settings', 'Settings', 'fa-gear')}
                 </nav>
             </aside>
@@ -74,9 +58,10 @@ const AdminSidebar = {
         }
     },
 
-    navItem(page, label, icon) {
+    navItem(page, label, icon, path = null) {
+        const href = path ? `${this.rootPath}${path}/` : `${this.rootPath}${page}/`;
         return `
-            <a href="${this.rootPath}${page}/"
+            <a href="${href}"
                class="sidebar-item ${this.currentPage === page ? 'active' : ''}"
                title="${label}">
                 <i class="fa-solid ${icon}"></i>

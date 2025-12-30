@@ -362,9 +362,12 @@ function renderSessionsList() {
                             ${getBrowserName()} – ${getOSName()}
                             <span class="session-badge">This Device</span>
                         </span>
-                        <span class="session-meta">Current session</span>
+                        <span class="session-meta">Session not tracked yet</span>
                     </div>
                 </div>
+                <button class="btn btn-sm btn-primary" id="register-session-btn">
+                    <i class="fa-solid fa-plus"></i> Register
+                </button>
             </div>
         `;
     }
@@ -499,6 +502,9 @@ function bindEvents() {
     document.querySelectorAll('.session-logout-btn').forEach(btn => {
         btn.addEventListener('click', () => logoutSession(btn.dataset.sessionId));
     });
+
+    // Register session button
+    document.getElementById('register-session-btn')?.addEventListener('click', registerCurrentSession);
 }
 
 // =====================
@@ -738,5 +744,41 @@ async function logoutSession(sessionId) {
     } catch (err) {
         console.error(err);
         Toast.error('Error', err.message);
+    }
+}
+
+// =====================
+// Register Current Session
+// =====================
+async function registerCurrentSession() {
+    const { Toast } = window.AdminUtils;
+    const btn = document.getElementById('register-session-btn');
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    }
+
+    try {
+        // Create session for current device
+        const session = await window.supabaseConfig.getSession();
+        if (session) {
+            await window.Auth.createSession(currentAdmin.id, session.access_token);
+            currentSessionToken = localStorage.getItem('session_token');
+        }
+
+        Toast.success('Registered', 'Session is now being tracked');
+
+        // Refresh sessions list
+        await loadSessions();
+        renderSettings();
+        bindEvents();
+    } catch (err) {
+        console.error(err);
+        Toast.error('Error', err.message);
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-plus"></i> Register';
+        }
     }
 }
