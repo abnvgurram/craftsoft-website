@@ -5,11 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSS Debug</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/admin.css">
     <style>
         body {
             padding: 20px;
             font-family: sans-serif;
+            margin-top: 80px;
         }
 
         .debug-info {
@@ -22,18 +24,25 @@
         .debug-info h3 {
             margin: 0 0 10px 0;
         }
-
-        .test-btn {
-            padding: 10px 20px;
-            background: #2896cd;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-        }
     </style>
 </head>
 
 <body>
+    <!-- Simulated Admin Header -->
+    <header class="admin-header">
+        <div class="admin-header-left">
+            <button class="mobile-menu-btn" aria-label="Menu" onclick="alert('Hamburger clicked!')">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <span class="header-logo">CraftSoft</span>
+            <span class="header-divider"></span>
+            <h1 class="page-title">Debug Page</h1>
+        </div>
+        <div class="header-actions">
+            <div id="account-panel-container">Account</div>
+        </div>
+    </header>
+
     <h1>CSS Debug Page</h1>
 
     <div class="debug-info">
@@ -42,10 +51,7 @@
     </div>
 
     <div class="debug-info">
-        <h3>Mobile Menu Button Test:</h3>
-        <button class="mobile-menu-btn" id="test-btn">
-            <i class="fa-solid fa-bars">☰</i>
-        </button>
+        <h3>Mobile Menu Button Style:</h3>
         <p id="btn-style"></p>
     </div>
 
@@ -63,14 +69,20 @@
         `;
 
         // Button computed style
-        const btn = document.getElementById('test-btn');
-        const style = window.getComputedStyle(btn);
-        document.getElementById('btn-style').innerHTML = `
-            display: <strong>${style.display}</strong><br>
-            width: ${style.width}<br>
-            height: ${style.height}<br>
-            background: ${style.background}<br>
-        `;
+        const btn = document.querySelector('.mobile-menu-btn');
+        if (btn) {
+            const style = window.getComputedStyle(btn);
+            document.getElementById('btn-style').innerHTML = `
+                display: <strong>${style.display}</strong><br>
+                visibility: <strong>${style.visibility}</strong><br>
+                opacity: <strong>${style.opacity}</strong><br>
+                width: ${style.width}<br>
+                height: ${style.height}<br>
+                position: ${style.position}<br>
+            `;
+        } else {
+            document.getElementById('btn-style').innerHTML = '<strong style="color:red">Button NOT FOUND!</strong>';
+        }
 
         // List loaded stylesheets
         const cssList = document.getElementById('css-list');
