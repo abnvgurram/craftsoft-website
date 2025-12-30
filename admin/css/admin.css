@@ -1,46 +1,10 @@
 /* ============================================
    Admin Module - Main Entry Point
-   Uses website theming from variables.css
+   This file now imports the bundled CSS
    ============================================ */
 
-/* Import base variables from website */
-@import url('../../assets/css/base/variables.css');
+/* Direct file reference - no @import chain */
+/* NOTE: HTML pages should link to admin-bundled.css directly */
 
-/* ============================================
-   Base Styles
-   ============================================ */
-@import url('./base/variables.css');
-@import url('./base/reset.css');
-@import url('./base/typography.css');
-
-/* ============================================
-   Layout Styles
-   ============================================ */
-@import url('./layout/auth.css');
-@import url('./layout/dashboard.css');
-@import url('./layout/header.css');
-@import url('./layout/sidebar.css');
-
-/* ============================================
-   Component Styles
-   ============================================ */
-@import url('./components/buttons.css');
-@import url('./components/forms.css');
-@import url('./components/modals.css');
-@import url('./components/toasts.css');
-@import url('./components/tables.css');
-@import url('./components/cards.css');
-@import url('./components/badges.css');
-@import url('./components/account-panel.css');
-
-/* ============================================
-   Utility Styles
-   ============================================ */
-@import url('./utilities/skeleton.css');
-@import url('./utilities/helpers.css');
-
-/* ============================================
-   Responsive Styles
-   ============================================ */
-@import url('./responsive/tablet.css');
-@import url('./responsive/mobile.css');
+/* Fallback @import for compatibility */
+@import url('./admin-bundled.css');
