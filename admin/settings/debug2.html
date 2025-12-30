@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Debug v2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Inline Critical CSS to test -->
+    <style>
+        :root {
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --admin-text-primary: #0f172a;
+            --admin-input-border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            margin-top: 80px;
+            padding: 20px;
+        }
+
+        .admin-header {
+            background: #fff;
+            border-bottom: 1px solid var(--admin-input-border);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 64px;
+        }
+
+        .admin-header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Desktop: hide hamburger */
+        .mobile-menu-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            background: var(--gray-100);
+            border: none;
+            border-radius: 10px;
+            color: var(--admin-text-primary);
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        /* Mobile: show hamburger */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        .header-logo {
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .header-divider {
+            width: 1px;
+            height: 24px;
+            background: #e2e8f0;
+        }
+
+        .page-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .debug-info {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .debug-info h3 {
+            margin: 0 0 10px 0;
+        }
+
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header with inline CSS (not @import) -->
+    <header class="admin-header">
+        <div class="admin-header-left">
+            <button class="mobile-menu-btn" aria-label="Menu" onclick="alert('Hamburger clicked! CSS is working!')">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <span class="header-logo">CraftSoft</span>
+            <span class="header-divider"></span>
+            <h1 class="page-title">Debug v2</h1>
+        </div>
+        <div class="header-actions">
+            <span>Account</span>
+        </div>
+    </header>
+
+    <h1>CSS Debug v2 - Inline CSS</h1>
+    <p><strong>This page uses INLINE CSS, not @import</strong></p>
+
+    <div class="debug-info">
+        <h3>Screen Info:</h3>
+        <p id="screen-info"></p>
+    </div>
+
+    <div class="debug-info">
+        <h3>Mobile Menu Button:</h3>
+        <p id="btn-style"></p>
+    </div>
+
+    <div class="debug-info">
+        <h3>Test Result:</h3>
+        <p id="test-result"></p>
+    </div>
+
+    <script>
+        // Screen info
+        const isMobile = window.innerWidth < 768;
+        document.getElementById('screen-info').innerHTML = `
+            Window Width: ${window.innerWidth}px<br>
+            Is Mobile (<768px): ${isMobile ? 'YES' : 'NO'}
+        `;
+
+        // Button style
+        const btn = document.querySelector('.mobile-menu-btn');
+        const style = window.getComputedStyle(btn);
+        const isVisible = style.display !== 'none';
+
+        document.getElementById('btn-style').innerHTML = `
+            display: <strong>${style.display}</strong><br>
+            Should be visible on mobile: ${isMobile ? 'YES' : 'NO'}
+        `;
+
+        // Test result
+        if (isMobile && isVisible) {
+            document.getElementById('test-result').innerHTML = '<span class="success">✅ PASS - Hamburger IS visible on mobile with inline CSS!</span>';
+        } else if (isMobile && !isVisible) {
+            document.getElementById('test-result').innerHTML = '<span class="error">❌ FAIL - Still not showing on mobile</span>';
+        } else {
+            document.getElementById('test-result').innerHTML = 'Not on mobile - hamburger should be hidden';
+        }
+    </script>
+</body>
+
+</html>
