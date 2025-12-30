@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Load Check</title>
+</head>
+
+<body style="padding: 20px; font-family: sans-serif;">
+    <h1>Check Settings Page CSS</h1>
+    <p>Opening settings page in iframe to check its CSS...</p>
+
+    <div id="result"></div>
+
+    <script>
+        // Fetch the settings page HTML and check what CSS it loads
+        fetch('/admin/settings/')
+            .then(r => r.text())
+            .then(html => {
+                const match = html.match(/href="([^"]*admin[^"]*\.css[^"]*)"/g);
+                document.getElementById('result').innerHTML = `
+                    <h3>CSS files in settings page:</h3>
+                    <pre>${match ? match.join('\n') : 'No CSS found!'}</pre>
+                `;
+            })
+            .catch(e => {
+                document.getElementById('result').innerHTML = 'Error: ' + e.message;
+            });
+    </script>
+</body>
+
+</html>
