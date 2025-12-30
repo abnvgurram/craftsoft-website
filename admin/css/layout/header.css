@@ -193,14 +193,13 @@
 @media (max-width: 768px) {
     .admin-header {
         padding: 0.75rem 1rem;
+        left: 70px;
+        /* Account for collapsed sidebar */
     }
 
+    /* Hide hamburger - using collapsed sidebar instead */
     .mobile-menu-btn {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
+        display: none !important;
     }
 
     .page-title {

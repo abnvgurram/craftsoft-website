@@ -78,7 +78,6 @@
     --container-max: 1240px;
     --container-padding: 2.5rem;
 }
-
 /* ============================================
    CSS Variables - Admin Specific
    ============================================ */
@@ -884,14 +883,13 @@ body {
 @media (max-width: 768px) {
     .admin-header {
         padding: 0.75rem 1rem;
+        left: 70px;
+        /* Account for collapsed sidebar */
     }
 
+    /* Hide hamburger - using collapsed sidebar instead */
     .mobile-menu-btn {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
+        display: none !important;
     }
 
     .page-title {
@@ -2770,6 +2768,7 @@ body {
 }
 /* ============================================
    Mobile Responsive Styles (< 768px)
+   Simplified: Sidebar stays visible, no hamburger
    ============================================ */
 
 @media (max-width: 768px) {
@@ -2777,49 +2776,45 @@ body {
     /* Header Mobile */
     .admin-header {
         padding: 0.75rem 1rem;
+        left: 70px;
+        /* Account for collapsed sidebar */
     }
 
+    /* Hide hamburger - not needed */
     .mobile-menu-btn {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
+        display: none !important;
     }
 
-    /* Sidebar Mobile - Slide from left */
+    /* Sidebar Mobile - Collapsed icon-only */
     .admin-sidebar {
-        position: fixed;
+        width: 70px;
         top: 0;
-        left: 0;
-        bottom: 0;
-        width: 280px;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 200;
-        box-shadow: none;
     }
 
-    .admin-sidebar.expanded {
-        transform: translateX(0);
-        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    /* Hide text, show only icons */
+    .sidebar-item span,
+    .sidebar-subitem span,
+    .sidebar-item .submenu-arrow {
+        display: none;
     }
 
-    .sidebar-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(15, 23, 42, 0.5);
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-        z-index: 150;
+    .sidebar-item {
+        justify-content: center;
+        padding: 1rem;
     }
 
-    .admin-sidebar.expanded+.sidebar-overlay {
-        opacity: 1;
-        visibility: visible;
+    .sidebar-item i:not(.submenu-arrow) {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    /* Hide submenu on mobile */
+    .sidebar-submenu {
+        display: none !important;
     }
 
     .admin-main {
-        margin-left: 0;
+        margin-left: 70px;
         padding: 1rem;
     }
 
@@ -2839,29 +2834,6 @@ body {
     .header-divider {
         height: 20px;
         margin: 0 0.375rem;
-    }
-
-    .sidebar-item span,
-    .sidebar-subitem span,
-    .sidebar-item .submenu-arrow {
-        display: inline;
-    }
-
-    .sidebar-item {
-        justify-content: flex-start;
-        padding: 0.875rem 1rem;
-    }
-
-    .sidebar-group.expanded .sidebar-submenu {
-        display: block !important;
-        animation: slideDown 0.2s ease;
-    }
-
-    /* Add close button to sidebar */
-    .sidebar-nav::before {
-        content: '';
-        display: block;
-        height: 64px;
     }
 
     /* Section Styles Mobile */
@@ -2995,10 +2967,10 @@ body {
         flex-direction: column;
     }
 
-    /* Mobile Navigation Bottom Sheet */
+    /* Hide mobile nav sheet - not needed with visible sidebar */
     .mobile-nav-overlay,
     .mobile-nav-sheet {
-        display: block;
+        display: none !important;
     }
 }
 
@@ -3095,119 +3067,3 @@ body {
         width: 100%;
     }
 }
-
-/* ============================================
-   Mobile Navigation Bottom Sheet
-   ============================================ */
-.mobile-nav-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.5);
-    z-index: 250;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-.mobile-nav-overlay.open {
-    opacity: 1;
-    visibility: visible;
-}
-
-.mobile-nav-sheet {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #fff;
-    border-radius: 20px 20px 0 0;
-    z-index: 260;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-    max-height: 70vh;
-    overflow-y: auto;
-    box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.15);
-}
-
-.mobile-nav-sheet.open {
-    transform: translateY(0);
-}
-
-.mobile-nav-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--admin-input-border, #e2e8f0);
-}
-
-.mobile-nav-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--admin-text-muted, #94a3b8);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.mobile-nav-close {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--gray-100, #f1f5f9);
-    border: none;
-    border-radius: 10px;
-    color: var(--admin-text-secondary, #64748b);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.mobile-nav-close:hover {
-    background: var(--gray-200, #e2e8f0);
-    color: var(--admin-text-primary, #0f172a);
-}
-
-.mobile-nav-list {
-    padding: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.mobile-nav-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    border-radius: 12px;
-    text-decoration: none;
-    color: var(--admin-text-secondary, #64748b);
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: all 0.15s ease;
-}
-
-.mobile-nav-item i {
-    width: 24px;
-    text-align: center;
-    font-size: 1.1rem;
-}
-
-.mobile-nav-item:hover {
-    background: var(--gray-50, #f8fafc);
-    color: var(--admin-text-primary, #0f172a);
-}
-
-.mobile-nav-item.active {
-    background: linear-gradient(135deg, var(--primary-50, #edf6fb) 0%, rgba(108, 92, 231, 0.08) 100%);
-    color: var(--primary-600, #1a7eb0);
-}
-
-.mobile-nav-item.active i {
-    color: var(--primary-500, #2896cd);
-}
-
