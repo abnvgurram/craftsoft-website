@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Test v3 - Bundled</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/admin-bundled.css">
+    <style>
+        body {
+            margin-top: 80px;
+            padding: 20px;
+        }
+
+        .debug {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="admin-header">
+        <div class="admin-header-left">
+            <button class="mobile-menu-btn" aria-label="Menu" onclick="alert('WORKS!')">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <span class="header-logo">CraftSoft</span>
+            <span class="header-divider"></span>
+            <h1 class="page-title">Test v3</h1>
+        </div>
+    </header>
+
+    <h1>Bundled CSS Test</h1>
+    <p>This page loads <code>admin-bundled.css</code></p>
+
+    <div class="debug">
+        <h3>Button Style:</h3>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        const btn = document.querySelector('.mobile-menu-btn');
+        const style = window.getComputedStyle(btn);
+        const isMobile = window.innerWidth < 768;
+        document.getElementById('result').innerHTML = `
+            Width: ${window.innerWidth}px | Mobile: ${isMobile ? 'YES' : 'NO'}<br>
+            display: <strong>${style.display}</strong><br>
+            ${isMobile && style.display === 'flex' ? '✅ PASS' : '❌ FAIL'}
+        `;
+    </script>
+</body>
+
+</html>
