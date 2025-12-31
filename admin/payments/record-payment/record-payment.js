@@ -66,31 +66,46 @@ async function loadStudentCourses(studentId) {
     courseSelect.innerHTML = '<option value="">Loading...</option>';
 
     try {
-        // Get courses the student is enrolled in
-        const { data, error } = await window.supabaseClient
-            .from('student_courses')
-            .select(`
-                id,
-                fee,
-                course:course_id (
-                    id,
-                    course_name
-                )
-            `)
-            .eq('student_id', studentId);
+        // 1. Get student's enrolled course codes and discounts
+        const { data: student, error: studentError } = await window.supabaseClient
+            .from('students')
+            .select('courses, course_discounts')
+            .eq('id', studentId)
+            .single();
 
-        if (error) throw error;
-        courses = data || [];
+        if (studentError) throw studentError;
+        const enrolledCodes = student.courses || [];
+        const discounts = student.course_discounts || {};
 
-        if (courses.length === 0) {
+        if (enrolledCodes.length === 0) {
             courseSelect.innerHTML = '<option value="">No courses found</option>';
             return;
         }
 
+        // 2. Get details for these courses from the courses table
+        const { data: courseDetails, error: courseError } = await window.supabaseClient
+            .from('courses')
+            .select('id, course_code, course_name, fee')
+            .in('course_code', enrolledCodes);
+
+        if (courseError) throw courseError;
+
+        // 3. Map details and prepare the 'courses' array for UI
+        courses = courseDetails.map(c => {
+            const disc = parseFloat(discounts[c.course_code] || 0);
+            return {
+                id: c.id, // Supabase UUID
+                course_code: c.course_code,
+                course_name: c.course_name,
+                original_fee: parseFloat(c.fee) || 0,
+                discount: disc,
+                final_fee: (parseFloat(c.fee) || 0) - disc
+            };
+        });
+
         courseSelect.innerHTML = '<option value="">Select a course</option>';
-        courses.forEach(sc => {
-            const courseName = sc.course?.course_name || 'Unknown Course';
-            courseSelect.innerHTML += `<option value="${sc.id}" data-course-id="${sc.course?.id}">${courseName}</option>`;
+        courses.forEach(c => {
+            courseSelect.innerHTML += `<option value="${c.id}">${c.course_name} (${c.course_code})</option>`;
         });
 
         courseSelect.disabled = false;
@@ -103,11 +118,11 @@ async function loadStudentCourses(studentId) {
 // =====================
 // Calculate Fee Summary
 // =====================
-async function calculateFeeSummary(studentCourseId) {
-    const studentCourse = courses.find(c => c.id === studentCourseId);
-    if (!studentCourse) return;
+async function calculateFeeSummary(courseId) {
+    const course = courses.find(c => c.id === courseId);
+    if (!course) return;
 
-    totalFee = parseFloat(studentCourse.fee) || 0;
+    totalFee = course.final_fee;
 
     // Get total payments made for this student-course
     try {
@@ -115,7 +130,7 @@ async function calculateFeeSummary(studentCourseId) {
             .from('payments')
             .select('amount_paid')
             .eq('student_id', selectedStudent)
-            .eq('course_id', studentCourse.course?.id);
+            .eq('course_id', course.id);
 
         if (error) throw error;
 
@@ -191,12 +206,10 @@ function bindEvents() {
 
     // Course selection
     document.getElementById('course-select').addEventListener('change', async (e) => {
-        const studentCourseId = e.target.value;
-        const option = e.target.selectedOptions[0];
-        selectedCourse = option?.dataset.courseId || null;
+        selectedCourse = e.target.value;
 
-        if (studentCourseId) {
-            await calculateFeeSummary(studentCourseId);
+        if (selectedCourse) {
+            await calculateFeeSummary(selectedCourse);
         } else {
             document.getElementById('fee-summary').style.display = 'none';
             document.getElementById('amount-input').value = '';
