@@ -426,47 +426,28 @@ const NavigationSecurity = {
         window.location.replace(url);
     },
 
-    // Logout with full security (individual tab - uses setSession(null))
+    // Logout with full security (individual tab)
+    // Delegates to Auth.logout() - SINGLE SOURCE OF TRUTH
     async secureLogout() {
-        // Delete session from database
         if (window.Auth) {
-            await window.Auth.deleteCurrentSession();
+            await window.Auth.logout();
+        } else {
+            // Fallback if Auth not loaded
+            window.location.replace('/admin/login.html');
         }
-
-        // 🔑 Clear auth session ONLY in this tab (does NOT broadcast)
-        if (window.supabaseClient) {
-            await window.supabaseClient.auth.setSession(null);
-        }
-
-        // Clear only this tab's tab_id
-        sessionStorage.removeItem('tab_id');
-
-        // Replace history and redirect
-        history.replaceState(null, '', '/admin/login.html');
-        window.location.replace('/admin/login.html');
     },
 
-    // Logout from ALL sessions (DOES call signOut)
+    // Logout from ALL sessions (global logout)
+    // Delegates to Auth.logoutAll() - SINGLE SOURCE OF TRUTH
     async secureLogoutAll() {
-        // Get current admin first
         const admin = window.Auth ? await window.Auth.getCurrentAdmin() : null;
 
         if (admin && window.Auth) {
-            // Delete ALL sessions for this admin
-            await window.Auth.deleteAllSessions(admin.id);
+            await window.Auth.logoutAll(admin.id);
+        } else {
+            // Fallback if Auth not loaded or no admin
+            window.location.replace('/admin/login.html');
         }
-
-        if (window.supabaseClient) {
-            // Sign out globally - this invalidates tokens
-            await window.supabaseClient.auth.signOut();
-        }
-
-        // Clear tab_id
-        sessionStorage.removeItem('tab_id');
-
-        // Replace history and redirect
-        history.replaceState(null, '', '/admin/login.html');
-        window.location.replace('/admin/login.html');
     },
 
     // Initialize for login page (public page)
@@ -982,20 +963,11 @@ const AccountManager = {
                         }
                     }
 
-                    // No other accounts or switch failed - go to login
-                    if (window.Auth) {
-                        await window.Auth.deleteCurrentSession();
-                    }
-
-                    // 🔑 Clear auth session ONLY in this tab (does NOT broadcast)
-                    if (window.supabaseClient) {
-                        await window.supabaseClient.auth.setSession(null);
-                    }
-
-                    sessionStorage.removeItem('tab_id');
-                    NavigationSecurity.secureRedirect('/admin/login.html');
+                    // No other accounts or switch failed - delegate to Auth
+                    await window.Auth.logout();
                 } else {
-                    NavigationSecurity.secureLogout();
+                    // Normal logout - delegate to Auth
+                    await window.Auth.logout();
                 }
             }
         );
@@ -1425,7 +1397,7 @@ const SessionTimeout = {
     async logout() {
         this.hideWarning();
 
-        const { NavigationSecurity, Toast } = window.AdminUtils;
+        const { Toast } = window.AdminUtils;
         Toast.info('Session Expired', 'Logging out...');
 
         // Clear timers
@@ -1433,8 +1405,12 @@ const SessionTimeout = {
             clearTimeout(this.inactivityTimer);
         }
 
-        // Perform secure logout
-        await NavigationSecurity.secureLogout();
+        // Delegate to Auth - SINGLE SOURCE OF TRUTH
+        if (window.Auth) {
+            await window.Auth.logout();
+        } else {
+            window.location.replace('/admin/login.html');
+        }
     },
 
     // Stop all timers (call when leaving page)

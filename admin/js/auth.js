@@ -213,6 +213,8 @@ const Auth = {
 
     // ============================================
     // LOGOUT ALL (Hard logout - DOES call signOut)
+    // ⚠️ This is the ONLY place in the app that calls signOut()
+    // ⚠️ NEVER call signOut() from normal logout - it broadcasts to ALL tabs
     // ============================================
     async logoutAll(adminId) {
         const supabase = window.supabaseClient;
@@ -221,8 +223,12 @@ const Auth = {
             // Delete ALL sessions for this admin
             await this.deleteAllSessions(adminId);
 
-            // Call signOut to invalidate tokens globally
+            // ⚠️ GLOBAL LOGOUT — NEVER CALL FROM NORMAL LOGOUT
+            // This invalidates tokens and broadcasts to ALL tabs
             await supabase.auth.signOut();
+
+            // Redirect to login
+            window.location.replace('/admin/login.html');
 
             return { success: true };
 
