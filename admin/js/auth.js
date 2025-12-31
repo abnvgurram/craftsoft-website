@@ -3,46 +3,12 @@
    Signup, Login, Logout, Verify
    ============================================ */
 
-// ============================================
-// 🔧 DEBUG TOOLKIT - Remove after debugging
-// ============================================
-
-// Global logout tracker - shows exactly WHO triggers logout
-window.__DEBUG_LOGOUT = function (reason, extra = {}) {
-    console.group('🚨 LOGOUT TRIGGERED');
-    console.log('Reason:', reason);
-    console.log('Time:', new Date().toISOString());
-    console.log('Extra:', extra);
-    console.trace(); // 🔥 Shows call stack
-    console.groupEnd();
-};
-
 // Store TAB_ID in MEMORY once on load - do NOT read dynamically from sessionStorage
 // This prevents race conditions when realtime events arrive after logout clears sessionStorage
 let THIS_TAB_ID = sessionStorage.getItem('tab_id');
 
 // Flag to prevent reacting to our own logout
 let isSelfLogout = false;
-
-// 🧷 Boot log - sanity check
-console.log('🧷 TAB BOOT', {
-    THIS_TAB_ID,
-    fromSessionStorage: sessionStorage.getItem('tab_id'),
-    time: new Date().toISOString()
-});
-
-// ============================================
-// Auth State Change Logger
-// If you see SIGNED_OUT, someone is calling signOut()
-// ============================================
-if (window.supabaseClient) {
-    window.supabaseClient.auth.onAuthStateChange((event, session) => {
-        console.log('🔐 AUTH EVENT:', event, {
-            hasSession: !!session,
-            time: new Date().toISOString(),
-        });
-    });
-}
 
 const Auth = {
     // ============================================
@@ -582,18 +548,8 @@ const Auth = {
         // Get current admin
         const admin = await this.getCurrentAdmin();
 
-        // 🧪 DEBUG: Log session check
-        console.log('🧪 SESSION CHECK', {
-            adminId: admin?.id,
-            tabId: tabId,
-            THIS_TAB_ID: THIS_TAB_ID,
-            fromStorage: sessionStorage.getItem('tab_id'),
-            time: new Date().toISOString(),
-        });
-
         // If no tab_id, consider invalid (not properly logged in)
         if (!tabId) {
-            console.log('🧪 SESSION CHECK RESULT: INVALID (no tabId)');
             return false;
         }
 
@@ -601,7 +557,6 @@ const Auth = {
             // CRITICAL: If admin is undefined, it might be because another tab called signOut()
             // which broadcasts SIGNED_OUT to all tabs. Don't trigger logout here!
             // The tab will naturally redirect on next page load if auth is truly invalid.
-            console.log('🧪 SESSION CHECK: No admin found - assuming valid to avoid false logout');
             return true;
         }
 
@@ -613,9 +568,6 @@ const Auth = {
                 .eq('admin_id', admin.id)
                 .eq('session_token', tabId)
                 .maybeSingle();
-
-            // 🧪 DEBUG: Log result
-            console.log('🧪 SESSION ROW FOUND:', !!data, { error: error?.message });
 
             // If session not found in database, it was deleted
             if (!data) {
@@ -653,28 +605,14 @@ const Auth = {
                     filter: `session_token=eq.${THIS_TAB_ID}`
                 },
                 (payload) => {
-                    console.log('📡 REALTIME DELETE EVENT RECEIVED', {
-                        payload,
-                        isSelfLogout,
-                        THIS_TAB_ID,
-                        time: new Date().toISOString()
-                    });
-
                     // CRITICAL: Check if this is our own logout
                     if (isSelfLogout) {
-                        console.log('⏭️ Ignoring delete event - this is our own logout');
                         return;
                     }
-
-                    window.__DEBUG_LOGOUT('REALTIME_DELETE', { payload, THIS_TAB_ID });
                     this.handleRemoteLogout();
                 }
             )
-            .subscribe((status) => {
-                if (status === 'SUBSCRIBED') {
-                    console.log('✅ Realtime session monitoring active for tab:', THIS_TAB_ID);
-                }
-            });
+            .subscribe();
 
         // Store channel reference for cleanup
         this.sessionChannel = channel;
@@ -683,22 +621,13 @@ const Auth = {
         // (increased from 5s to reduce unnecessary checks)
         this.validityInterval = setInterval(async () => {
             // Skip if we're logging out ourselves
-            if (isSelfLogout) {
-                console.log('⏭️ Skipping interval check: self logout');
-                return;
-            }
+            if (isSelfLogout) return;
 
             // Skip if page is hidden (laptop locked, tab backgrounded)
-            // This prevents false logouts when waking from sleep
-            if (document.hidden) {
-                console.log('⏭️ Skipping interval check: page hidden');
-                return;
-            }
+            if (document.hidden) return;
 
-            console.log('⏱️ Interval session check fired');
             const isValid = await this.isCurrentSessionValid();
             if (!isValid) {
-                window.__DEBUG_LOGOUT('FALLBACK_INTERVAL', { THIS_TAB_ID });
                 this.handleRemoteLogout();
             }
         }, 30000); // 30 seconds
