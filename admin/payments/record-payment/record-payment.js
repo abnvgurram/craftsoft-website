@@ -329,14 +329,122 @@ async function processCashPayment(amount) {
 // =====================
 async function processOnlinePayment(amount) {
     const { Toast } = window.AdminUtils;
-
-    // TODO: Implement Razorpay integration
-    // For now, show a placeholder
-    Toast.info('Coming Soon', 'Online payment integration is in progress');
-
     const btn = document.getElementById('proceed-btn');
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Proceed';
+
+    try {
+        // Step 1: Create Razorpay order via Netlify function
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating order...';
+
+        const orderResponse = await fetch('/.netlify/functions/create-razorpay-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: amount,
+                student_id: selectedStudent,
+                course_id: selectedCourse
+            })
+        });
+
+        const orderData = await orderResponse.json();
+
+        if (!orderResponse.ok || !orderData.success) {
+            throw new Error(orderData.error || 'Failed to create order');
+        }
+
+        // Step 2: Get student info for prefill
+        const student = students.find(s => s.id === selectedStudent);
+        const course = courses.find(c => c.id === selectedCourse);
+
+        // Step 3: Open Razorpay Checkout
+        btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> Complete payment...';
+
+        const razorpayOptions = {
+            key: orderData.key_id,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            order_id: orderData.order_id,
+            name: 'Abhi\'s Craftsoft',
+            description: course ? `${course.course_name} Fee` : 'Course Fee',
+            prefill: {
+                name: student ? `${student.first_name} ${student.last_name}` : '',
+                contact: student?.phone || ''
+            },
+            theme: {
+                color: '#2896cd'
+            },
+            handler: async function (response) {
+                // Payment successful - verify on backend
+                await verifyPayment(response);
+            },
+            modal: {
+                ondismiss: function () {
+                    // User closed the modal
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Proceed';
+                    Toast.info('Cancelled', 'Payment was cancelled');
+                }
+            }
+        };
+
+        const razorpay = new Razorpay(razorpayOptions);
+        razorpay.on('payment.failed', function (response) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Proceed';
+            Toast.error('Payment Failed', response.error.description || 'Please try again');
+        });
+
+        razorpay.open();
+
+    } catch (err) {
+        console.error('Online payment error:', err);
+        Toast.error('Error', err.message || 'Failed to initiate payment');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Proceed';
+    }
+}
+
+// =====================
+// Verify Payment (Backend)
+// =====================
+async function verifyPayment(razorpayResponse) {
+    const { Toast } = window.AdminUtils;
+    const btn = document.getElementById('proceed-btn');
+
+    try {
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
+
+        const verifyResponse = await fetch('/.netlify/functions/verify-razorpay-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+                razorpay_order_id: razorpayResponse.razorpay_order_id,
+                razorpay_signature: razorpayResponse.razorpay_signature,
+                student_id: selectedStudent,
+                course_id: selectedCourse
+            })
+        });
+
+        const result = await verifyResponse.json();
+
+        if (!verifyResponse.ok || !result.success) {
+            throw new Error(result.error || 'Payment verification failed');
+        }
+
+        // Success!
+        Toast.success('Payment Successful', `Receipt: ${result.receipt_id}`);
+
+        // Redirect to receipts
+        setTimeout(() => {
+            window.location.href = '../receipts/';
+        }, 1500);
+
+    } catch (err) {
+        console.error('Verify payment error:', err);
+        Toast.error('Verification Failed', err.message || 'Please contact support');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Proceed';
+    }
 }
 
 // =====================
