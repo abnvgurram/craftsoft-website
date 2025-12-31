@@ -182,7 +182,7 @@ const Auth = {
             // Set flag to prevent this tab from reacting to its own delete event
             isSelfLogout = true;
 
-            // FIX #2: Stop watchers IMMEDIATELY to prevent ghost redirects
+            // Stop watchers IMMEDIATELY to prevent ghost redirects
             if (this.sessionChannel) {
                 window.supabaseClient.removeChannel(this.sessionChannel);
                 this.sessionChannel = null;
@@ -195,8 +195,12 @@ const Auth = {
             // Delete current session record (by admin_id + tab_id)
             await this.deleteCurrentSession();
 
-            // DO NOT call supabase.auth.signOut() here!
-            // This allows other tabs to remain logged in
+            // 🔑 CRITICAL: Clear auth session ONLY in this tab
+            // setSession(null) does NOT broadcast to other tabs (unlike signOut)
+            await window.supabaseClient.auth.setSession(null);
+
+            // Redirect to login
+            window.location.replace('/admin/login.html');
 
             return { success: true };
 

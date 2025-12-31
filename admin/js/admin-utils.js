@@ -426,15 +426,17 @@ const NavigationSecurity = {
         window.location.replace(url);
     },
 
-    // Logout with full security (individual tab - NO signOut)
+    // Logout with full security (individual tab - uses setSession(null))
     async secureLogout() {
         // Delete session from database
         if (window.Auth) {
             await window.Auth.deleteCurrentSession();
         }
 
-        // DO NOT call supabase.auth.signOut() here!
-        // This allows other tabs to remain logged in
+        // 🔑 Clear auth session ONLY in this tab (does NOT broadcast)
+        if (window.supabaseClient) {
+            await window.supabaseClient.auth.setSession(null);
+        }
 
         // Clear only this tab's tab_id
         sessionStorage.removeItem('tab_id');
@@ -981,11 +983,15 @@ const AccountManager = {
                     }
 
                     // No other accounts or switch failed - go to login
-                    // DO NOT call signOut() - it broadcasts to all tabs!
-                    // Just delete session and redirect
                     if (window.Auth) {
                         await window.Auth.deleteCurrentSession();
                     }
+
+                    // 🔑 Clear auth session ONLY in this tab (does NOT broadcast)
+                    if (window.supabaseClient) {
+                        await window.supabaseClient.auth.setSession(null);
+                    }
+
                     sessionStorage.removeItem('tab_id');
                     NavigationSecurity.secureRedirect('/admin/login.html');
                 } else {
