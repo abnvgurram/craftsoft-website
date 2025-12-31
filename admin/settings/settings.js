@@ -62,7 +62,31 @@ async function loadSessions() {
     if (!currentAdmin) return;
 
     try {
-        sessionsData = await window.Auth.getSessions(currentAdmin.id);
+        const allSessions = await window.Auth.getSessions(currentAdmin.id);
+
+        // Group sessions by device_info, keep only the most recent one per device
+        // This prevents duplicate entries when same browser has multiple tabs
+        const deviceMap = new Map();
+
+        for (const session of allSessions) {
+            const deviceKey = session.device_info || 'Unknown Device';
+
+            if (!deviceMap.has(deviceKey)) {
+                deviceMap.set(deviceKey, session);
+            } else {
+                // Keep the most recently active one
+                const existing = deviceMap.get(deviceKey);
+                const existingTime = new Date(existing.last_active || existing.created_at);
+                const currentTime = new Date(session.last_active || session.created_at);
+
+                if (currentTime > existingTime) {
+                    deviceMap.set(deviceKey, session);
+                }
+            }
+        }
+
+        // Convert back to array
+        sessionsData = Array.from(deviceMap.values());
     } catch (err) {
         console.error('Error loading sessions:', err);
         sessionsData = [];
