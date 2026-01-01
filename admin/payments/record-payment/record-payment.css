@@ -3,7 +3,7 @@
    ============================================ */
 
 .payment-form-section {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
@@ -46,9 +46,20 @@
 
 /* Form Styles */
 .payment-form {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
+}
+
+/* Full width items */
+.payment-form .form-group:nth-child(n+5) {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+    .payment-form {
+        grid-template-columns: 1fr;
+    }
 }
 
 .form-group {
