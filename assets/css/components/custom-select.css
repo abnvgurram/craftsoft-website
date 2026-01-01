@@ -122,3 +122,40 @@
 .custom-options::-webkit-scrollbar-thumb:hover {
     background: var(--gray-400);
 }
+
+/* Mobile: Use fixed bottom sheet style */
+@media (max-width: 768px) {
+    .custom-select.open .custom-options {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-height: 60vh;
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        border: 1px solid var(--gray-200);
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+        z-index: 9999;
+    }
+
+    .custom-select.open::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 9998;
+    }
+
+    .custom-option {
+        padding: 16px 20px;
+        font-size: 1rem;
+        border-bottom: 1px solid var(--gray-100);
+    }
+
+    .custom-option:last-child {
+        border-bottom: none;
+    }
+}
