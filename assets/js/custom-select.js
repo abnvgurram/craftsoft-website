@@ -10,8 +10,8 @@ class CustomSelect {
     }
 
     init() {
-        // Hide original select
-        this.selectElement.style.display = 'none';
+        // Fully hide original select (not just display:none for accessibility)
+        this.selectElement.style.cssText = 'position: absolute; opacity: 0; pointer-events: none; height: 0; overflow: hidden;';
 
         // Create custom select structure
         this.wrapper = document.createElement('div');
