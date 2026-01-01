@@ -476,20 +476,25 @@ function setupFormSync(form) {
 
             if (window.supabaseClient) {
                 try {
-                    // Get next ID sequence (Match Admin Panel Logic)
+                    // 1. Get the absolute last inquiry to find the next number
                     const { data: maxData } = await window.supabaseClient
                         .from('inquiries')
                         .select('inquiry_id')
-                        .order('inquiry_id', { ascending: false })
+                        .order('created_at', { ascending: false })
                         .limit(1);
 
                     let nextNum = 1;
                     if (maxData && maxData.length > 0) {
-                        const m = maxData[0].inquiry_id.match(/INQ-ACS-(\d+)/);
+                        // Match any digits at the end of the ID, regardless of prefix (INQ-ACS- or Sr-ACS-)
+                        const m = maxData[0].inquiry_id.match(/(\d+)$/);
                         if (m) nextNum = parseInt(m[1]) + 1;
                     }
 
                     inquiryId = `INQ-ACS-${String(nextNum).padStart(3, '0')}`;
+
+                    // Handle 'Other' selection - should map to no courses selected
+                    const rawInterest = formData.get('interest') || formData.get('course');
+                    const courses = (rawInterest && rawInterest !== 'Other') ? [rawInterest] : [];
 
                     // Insert into Supabase
                     const { error: inqError } = await window.supabaseClient
@@ -499,11 +504,9 @@ function setupFormSync(form) {
                             name: formData.get('name'),
                             email: formData.get('email'),
                             phone: formData.get('phone') || '-',
-                            // Support both 'interest' (home) and 'course' (courses page) fields
-                            courses: [formData.get('interest') || formData.get('course')].filter(Boolean),
+                            courses: courses,
                             source: 'Website',
                             status: 'New',
-                            // Support both 'message' (home) and 'query' (courses page) fields
                             notes: formData.get('message') || formData.get('query') || '-'
                         });
 
