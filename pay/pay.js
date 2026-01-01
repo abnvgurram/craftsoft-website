@@ -33,8 +33,8 @@ function initSecurity() {
             if (!overlay) {
                 const div = document.createElement('div');
                 div.id = 'blur-overlay';
-                div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,15,26,0.95);backdrop-filter:blur(20px);z-index:9999;display:flex;align-items:center;justify-content:center;';
-                div.innerHTML = '<div style="text-align:center;color:#fff;"><i class="fa-solid fa-lock" style="font-size:48px;margin-bottom:16px;color:#2896cd;"></i><p style="font-size:16px;">Switch back to continue</p></div>';
+                div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(245,247,250,0.98);backdrop-filter:blur(20px);z-index:9999;display:flex;align-items:center;justify-content:center;';
+                div.innerHTML = '<div style="text-align:center;color:#1a1a2e;"><i class="fa-solid fa-lock" style="font-size:48px;margin-bottom:16px;color:#2896cd;"></i><p style="font-size:16px;">Switch back to continue</p></div>';
                 document.body.appendChild(div);
             }
         } else {

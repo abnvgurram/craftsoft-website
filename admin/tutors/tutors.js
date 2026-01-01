@@ -88,8 +88,9 @@ function renderTutorsList(tutors) {
             <table class="premium-table">
                 <thead>
                     <tr>
-                        <th width="30%">ID / NAME</th>
-                        <th width="20%">PHONE</th>
+                        <th width="12%">TUTOR ID</th>
+                        <th width="20%">NAME</th>
+                        <th width="18%">PHONE</th>
                         <th width="35%">COURSES</th>
                         <th width="15%" class="text-right">ACTIONS</th>
                     </tr>
@@ -97,12 +98,8 @@ function renderTutorsList(tutors) {
                 <tbody>
                     ${tutors.map(t => `
                         <tr>
-                            <td>
-                                <div class="cell-primary-info">
-                                    <span class="cell-badge">${t.tutor_id}</span>
-                                    <span class="cell-title">${t.full_name}</span>
-                                </div>
-                            </td>
+                            <td><span class="cell-badge">${t.tutor_id}</span></td>
+                            <td><span class="cell-title">${t.full_name}</span></td>
                             <td><span class="cell-phone">${t.phone}</span></td>
                             <td>
                                 <div class="cell-tags">

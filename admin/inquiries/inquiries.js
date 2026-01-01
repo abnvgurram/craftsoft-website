@@ -96,7 +96,8 @@ function renderInquiries(inquiries) {
             <table class="inquiries-table">
                 <thead>
                     <tr>
-                        <th>ID / Name</th>
+                        <th>Inquiry ID</th>
+                        <th>Name</th>
                         <th>Phone</th>
                         <th>Courses</th>
                         <th>Status</th>
@@ -106,10 +107,8 @@ function renderInquiries(inquiries) {
                 <tbody>
                     ${inquiries.map(inq => `
                         <tr data-id="${inq.id}">
-                            <td>
-                                <div class="inquiry-id">${inq.inquiry_id}</div>
-                                <div class="inquiry-name">${inq.name}</div>
-                            </td>
+                            <td><div class="inquiry-id">${inq.inquiry_id}</div></td>
+                            <td><div class="inquiry-name">${inq.name}</div></td>
                             <td class="inquiry-phone">${inq.phone}</td>
                             <td>
                                 <div class="inquiry-courses">

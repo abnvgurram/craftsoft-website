@@ -152,9 +152,10 @@ function renderStudentsList(students) {
             <table class="premium-table">
                 <thead>
                     <tr>
-                        <th width="30%">ID / NAME</th>
+                        <th width="12%">STUDENT ID</th>
+                        <th width="20%">NAME</th>
                         <th width="15%">PHONE</th>
-                        <th width="30%">COURSE(S)</th>
+                        <th width="28%">COURSE(S)</th>
                         <th width="12%">FEE</th>
                         <th width="13%" class="text-right">ACTIONS</th>
                     </tr>
@@ -162,12 +163,8 @@ function renderStudentsList(students) {
                 <tbody>
                     ${students.map(s => `
                         <tr>
-                            <td>
-                                <div class="cell-primary-info">
-                                    <span class="cell-badge">${s.student_id}</span>
-                                    <span class="cell-title">${s.first_name} ${s.last_name}</span>
-                                </div>
-                            </td>
+                            <td><span class="cell-badge">${s.student_id}</span></td>
+                            <td><span class="cell-title">${s.first_name} ${s.last_name}</span></td>
                             <td><span class="cell-phone">${s.phone}</span></td>
                             <td>
                                 <div class="cell-tags">
