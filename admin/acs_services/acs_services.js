@@ -110,55 +110,59 @@ function bindEvents() {
 }
 
 async function syncFromWebsite() {
-    const { Toast } = window.AdminUtils;
+    const { Toast, Modal } = window.AdminUtils;
     const btn = document.getElementById('sync-services-btn');
 
-    if (!confirm('This will sync services from the official website list. Proceed?')) return;
+    Modal.confirm(
+        'Sync Services',
+        'This will sync services from the official website list. Proceed?',
+        async () => {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
 
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
+            try {
+                // 1. Get existing services to avoid duplicates
+                const { data: existing } = await window.supabaseClient.from('services').select('name');
+                const existingNames = new Set(existing?.map(s => s.name) || []);
 
-    try {
-        // 1. Get existing services to avoid duplicates
-        const { data: existing } = await window.supabaseClient.from('services').select('name');
-        const existingNames = new Set(existing?.map(s => s.name) || []);
+                // 2. Get highest sequence for Sr-ACS-XXX
+                const { data: maxInq } = await window.supabaseClient
+                    .from('services')
+                    .select('service_id')
+                    .order('service_id', { ascending: false })
+                    .limit(1);
 
-        // 2. Get highest sequence for Sr-ACS-XXX
-        const { data: maxInq } = await window.supabaseClient
-            .from('services')
-            .select('service_id')
-            .order('service_id', { ascending: false })
-            .limit(1);
+                let nextNum = 1;
+                if (maxInq?.length > 0) {
+                    const match = maxInq[0].service_id.match(/Sr-ACS-(\d+)/);
+                    if (match) nextNum = parseInt(match[1]) + 1;
+                }
 
-        let nextNum = 1;
-        if (maxInq?.length > 0) {
-            const match = maxInq[0].service_id.match(/Sr-ACS-(\d+)/);
-            if (match) nextNum = parseInt(match[1]) + 1;
-        }
+                let addedCount = 0;
+                for (const s of websiteServices) {
+                    if (!existingNames.has(s.name)) {
+                        const newId = `Sr-ACS-${String(nextNum).padStart(3, '0')}`;
+                        const { error } = await window.supabaseClient.from('services').insert({
+                            service_id: newId,
+                            name: s.name,
+                            category: s.category
+                        });
+                        if (error) throw error;
+                        nextNum++;
+                        addedCount++;
+                    }
+                }
 
-        let addedCount = 0;
-        for (const s of websiteServices) {
-            if (!existingNames.has(s.name)) {
-                const newId = `Sr-ACS-${String(nextNum).padStart(3, '0')}`;
-                const { error } = await window.supabaseClient.from('services').insert({
-                    service_id: newId,
-                    name: s.name,
-                    category: s.category
-                });
-                if (error) throw error;
-                nextNum++;
-                addedCount++;
+                Toast.success('Sync Success', `${addedCount} new services added from website list.`);
+                await loadServices();
+
+            } catch (err) {
+                console.error(err);
+                Toast.error('Sync error', err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sync from Website';
             }
         }
-
-        Toast.success('Sync Success', `${addedCount} new services added from website list.`);
-        await loadServices();
-
-    } catch (err) {
-        console.error(err);
-        Toast.error('Sync error', err.message);
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sync from Website';
-    }
+    );
 }
