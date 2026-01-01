@@ -5,13 +5,13 @@
 const SUPABASE_URL = 'https://afocbygdakyqtmmrjvmy.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmb2NieWdkYWt5cXRtbXJqdm15Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5Mzc5MjksImV4cCI6MjA4MjUxMzkyOX0.VxB8IqBJOBv-L-cAhQ_9YwMDIa9clvuL9bEqPE8xLvM';
 
-let supabase;
+let supabaseClient;
 let currentStudent = null;
 let coursesData = [];
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     bindEvents();
 });
 
@@ -43,7 +43,7 @@ async function lookupStudent() {
 
     try {
         // Fetch student by student_id (case-insensitive)
-        const { data: student, error } = await supabase
+        const { data: student, error } = await supabaseClient
             .from('students')
             .select('id, student_id, first_name, last_name, phone, courses, course_discounts')
             .ilike('student_id', studentId)
@@ -92,7 +92,7 @@ async function loadStudentCourses(student) {
     }
 
     // Fetch course details
-    const { data: courses, error: courseError } = await supabase
+    const { data: courses, error: courseError } = await supabaseClient
         .from('courses')
         .select('id, course_code, course_name, fee')
         .in('course_code', courseCodes);
@@ -100,7 +100,7 @@ async function loadStudentCourses(student) {
     if (courseError) throw courseError;
 
     // Fetch all payments for this student
-    const { data: payments, error: paymentError } = await supabase
+    const { data: payments, error: paymentError } = await supabaseClient
         .from('payments')
         .select('course_id, amount_paid')
         .eq('student_id', student.id);
