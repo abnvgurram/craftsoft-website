@@ -49,6 +49,20 @@
     <!-- Page Specific & Components -->
     <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/components/pagination.css">
     <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/components/notifications.css">
+    <!-- FOUC Protection -->
+    <style>
+        .no-fouc { opacity: 0; }
+        body { transition: opacity 0.3s ease; }
+    </style>
+    <script>
+        document.documentElement.className += ' no-fouc';
+        document.addEventListener('DOMContentLoaded', function() {
+            document.documentElement.classList.remove('no-fouc');
+        });
+        window.addEventListener('load', function() {
+            document.documentElement.classList.remove('no-fouc');
+        });
+    </script>
 </head>
 
 <body class="dashboard-page">
@@ -100,4 +114,5 @@
 </body>
 
 </html>
+
 

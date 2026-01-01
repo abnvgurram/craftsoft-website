@@ -20,6 +20,20 @@
 
     <!-- Page Styles (minified) -->
     <link rel="stylesheet" href="pay.min.css">
+    <!-- FOUC Protection -->
+    <style>
+        .no-fouc { opacity: 0; }
+        body { transition: opacity 0.3s ease; }
+    </style>
+    <script>
+        document.documentElement.className += ' no-fouc';
+        document.addEventListener('DOMContentLoaded', function() {
+            document.documentElement.classList.remove('no-fouc');
+        });
+        window.addEventListener('load', function() {
+            document.documentElement.classList.remove('no-fouc');
+        });
+    </script>
 </head>
 
 <body>
@@ -114,4 +128,5 @@
 </body>
 
 </html>
+
 

@@ -152,6 +152,27 @@
         ]
     }
     </script>
+
+    <!-- FOUC Protection: Prevent unstyled content flash -->
+    <style>
+        .no-fouc {
+            opacity: 0;
+        }
+
+        body {
+            transition: opacity 0.3s ease;
+        }
+    </style>
+    <script>
+        document.documentElement.className += ' no-fouc';
+        document.addEventListener('DOMContentLoaded', function () {
+            document.documentElement.classList.remove('no-fouc');
+        });
+        // Fallback for slow connections
+        window.addEventListener('load', function () {
+            document.documentElement.classList.remove('no-fouc');
+        });
+    </script>
 </head>
 
 <body>
@@ -164,14 +185,15 @@
                         Soft</span></span>
             </a>
             <ul class="nav-menu" id="nav-menu">
-          <div class="mobile-menu-header">
-            <div class="logo">
-              <div class="logo-placeholder"><i class="fas fa-graduation-cap"></i></div>
-              <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft Soft</span></span>
-            </div>
-            <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
-          </div>
-          <li><a href="#home" class="nav-link active">Home</a></li>
+                <div class="mobile-menu-header">
+                    <div class="logo">
+                        <div class="logo-placeholder"><i class="fas fa-graduation-cap"></i></div>
+                        <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
+                                Soft</span></span>
+                    </div>
+                    <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
+                </div>
+                <li><a href="#home" class="nav-link active">Home</a></li>
                 <li><a href="about.html" class="nav-link">About</a></li>
                 <li><a href="courses.html" class="nav-link">Courses</a></li>
                 <li><a href="services.html" class="nav-link">Services</a></li>
@@ -857,5 +879,3 @@
 </body>
 
 </html>
-
-

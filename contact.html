@@ -15,6 +15,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="assets/css/main.css?v=1.0">
+    <!-- FOUC Protection -->
+    <style>
+        .no-fouc { opacity: 0; }
+        body { transition: opacity 0.3s ease; }
+    </style>
+    <script>
+        document.documentElement.className += ' no-fouc';
+        document.addEventListener('DOMContentLoaded', function() {
+            document.documentElement.classList.remove('no-fouc');
+        });
+        window.addEventListener('load', function() {
+            document.documentElement.classList.remove('no-fouc');
+        });
+    </script>
 </head>
 
 <body>
@@ -316,5 +330,6 @@
 </body>
 
 </html>
+
 
 

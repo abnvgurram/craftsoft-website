@@ -20,7 +20,21 @@
     />
     <link rel="icon" type="image/svg+xml" href="../../favicon.svg" />
     <link rel="stylesheet" href="../../assets/css/main.css" />
-  </head>
+      <!-- FOUC Protection -->
+    <style>
+        .no-fouc { opacity: 0; }
+        body { transition: opacity 0.3s ease; }
+    </style>
+    <script>
+        document.documentElement.className += ' no-fouc';
+        document.addEventListener('DOMContentLoaded', function() {
+            document.documentElement.classList.remove('no-fouc');
+        });
+        window.addEventListener('load', function() {
+            document.documentElement.classList.remove('no-fouc');
+        });
+    </script>
+</head>
   <body>
     <nav class="navbar" id="navbar">
       <div class="container nav-container">
@@ -590,6 +604,7 @@
     <script src="../../assets/js/main.js?v=1.1"></script>
   </body>
 </html>
+
 
 
 
