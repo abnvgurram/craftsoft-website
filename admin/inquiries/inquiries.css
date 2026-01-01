@@ -311,9 +311,10 @@
 }
 
 .inquiry-id {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 600;
     color: var(--admin-text-muted);
-    font-family: monospace;
+    font-family: inherit;
 }
 
 .inquiry-phone {
@@ -510,8 +511,9 @@
 }
 
 .inquiry-card-id {
-    font-size: 0.75rem;
-    font-family: monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
     color: var(--admin-text-muted);
 }
 

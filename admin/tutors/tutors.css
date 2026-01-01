@@ -387,8 +387,9 @@
 }
 
 .cell-badge {
-    font-family: monospace;
-    font-size: 0.7rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
     color: var(--admin-text-muted, #94a3b8);
 }
 
