@@ -356,7 +356,7 @@ async function processUPIPayment(amount) {
         const course = courses.find(c => c.id === selectedCourse);
 
         // Step 3: Open Razorpay Checkout (UPI only)
-        btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Complete UPI payment...';
+        btn.innerHTML = '<i class="fa-brands fa-gg"></i> Complete UPI payment...';
 
         const razorpayOptions = {
             key: orderData.key_id,
@@ -373,7 +373,8 @@ async function processUPIPayment(amount) {
                 upi: true,
                 card: false,
                 netbanking: false,
-                wallet: false
+                wallet: false,
+                emi: false
             },
             theme: {
                 color: '#2896cd'
