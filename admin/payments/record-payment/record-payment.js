@@ -181,8 +181,12 @@ function updateProceedButton() {
     const btn = document.getElementById('proceed-btn');
     const amount = parseFloat(document.getElementById('amount-input').value) || 0;
     const mode = document.querySelector('input[name="payment-mode"]:checked')?.value;
+    const utr = document.getElementById('utr-input')?.value?.trim() || '';
 
-    btn.disabled = !(selectedStudent && selectedCourse && amount > 0 && amount <= balanceDue && mode);
+    // For Offline UPI, require UTR
+    const utrValid = mode === 'OFFLINE_UPI' ? utr.length > 5 : true;
+
+    btn.disabled = !(selectedStudent && selectedCourse && amount > 0 && amount <= balanceDue && mode && utrValid);
 }
 
 // =====================
@@ -230,8 +234,20 @@ function bindEvents() {
 
     // Payment mode change
     document.querySelectorAll('input[name="payment-mode"]').forEach(radio => {
-        radio.addEventListener('change', updateProceedButton);
+        radio.addEventListener('change', (e) => {
+            const utrGroup = document.getElementById('utr-group');
+            if (e.target.value === 'OFFLINE_UPI') {
+                utrGroup.style.display = 'block';
+            } else {
+                utrGroup.style.display = 'none';
+                document.getElementById('utr-input').value = '';
+            }
+            updateProceedButton();
+        });
     });
+
+    // UTR input change
+    document.getElementById('utr-input').addEventListener('input', updateProceedButton);
 
     // Form submission
     document.getElementById('payment-form').addEventListener('submit', handlePayment);
@@ -261,6 +277,9 @@ async function handlePayment(e) {
             await processCashPayment(amount);
         } else if (mode === 'UPI') {
             await processUPIPayment(amount);
+        } else if (mode === 'OFFLINE_UPI') {
+            const utr = document.getElementById('utr-input').value.trim();
+            await processOfflineUPIPayment(amount, utr);
         }
     } catch (err) {
         console.error('Payment error:', err);
@@ -317,6 +336,46 @@ async function processCashPayment(amount) {
     await window.AdminUtils.Activity.add('fee_recorded', studentName, '../payments/receipts/');
 
     Toast.success('Success', 'Payment recorded successfully');
+
+    // Redirect to receipts
+    setTimeout(() => {
+        window.location.href = '../receipts/';
+    }, 1500);
+}
+
+// =====================
+// Process Offline UPI Payment (Manual Entry)
+// =====================
+async function processOfflineUPIPayment(amount, utr) {
+    const { Toast } = window.AdminUtils;
+    const paymentDate = document.getElementById('payment-date').value;
+
+    // Insert payment with mode = 'UPI' but reference = admin-entered UTR
+    const { data: payment, error: paymentError } = await window.supabaseClient
+        .from('payments')
+        .insert({
+            student_id: selectedStudent,
+            course_id: selectedCourse,
+            amount_paid: amount,
+            payment_mode: 'UPI',
+            reference_id: utr,
+            status: 'SUCCESS',
+            payment_date: paymentDate
+        })
+        .select()
+        .single();
+
+    if (paymentError) throw paymentError;
+
+    // Auto-create receipt
+    await createReceipt(payment);
+
+    // Log activity
+    const student = students.find(s => s.id === selectedStudent);
+    const studentName = student ? `${student.first_name} ${student.last_name}` : 'Unknown Student';
+    await window.AdminUtils.Activity.add('fee_recorded', studentName, '../payments/receipts/');
+
+    Toast.success('Success', 'Offline UPI payment recorded');
 
     // Redirect to receipts
     setTimeout(() => {

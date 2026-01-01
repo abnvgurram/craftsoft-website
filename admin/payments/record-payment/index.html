@@ -134,7 +134,22 @@
                                         <span>UPI</span>
                                     </div>
                                 </label>
+                                <label class="payment-mode-option">
+                                    <input type="radio" name="payment-mode" value="OFFLINE_UPI">
+                                    <div class="mode-card">
+                                        <i class="fa-solid fa-file-invoice"></i>
+                                        <span>Offline UPI</span>
+                                    </div>
+                                </label>
                             </div>
+                        </div>
+
+                        <!-- UTR Input (for Offline UPI) -->
+                        <div class="form-group" id="utr-group" style="display: none;">
+                            <label class="form-label">UTR / Reference ID <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="utr-input"
+                                placeholder="Enter UTR from your UPI app">
+                            <small class="form-hint">Transaction ID from your received payment confirmation</small>
                         </div>
 
                         <!-- Submit Button -->
