@@ -477,20 +477,28 @@ function setupFormSync(form) {
             if (window.supabaseClient) {
                 try {
                     // 1. Get the absolute last inquiry to find the next number
-                    const { data: maxData } = await window.supabaseClient
+                    // We sort by inquiry_id DESC to get the highest numeric ID
+                    const { data: maxData, error: selectError } = await window.supabaseClient
                         .from('inquiries')
                         .select('inquiry_id')
-                        .order('created_at', { ascending: false })
+                        .order('inquiry_id', { ascending: false })
                         .limit(1);
+
+                    if (selectError) {
+                        console.warn('Could not read existing inquiries (check RLS):', selectError);
+                    }
 
                     let nextNum = 1;
                     if (maxData && maxData.length > 0) {
-                        // Match any digits at the end of the ID, regardless of prefix (INQ-ACS- or Sr-ACS-)
+                        console.log('Last Inquiry ID found:', maxData[0].inquiry_id);
                         const m = maxData[0].inquiry_id.match(/(\d+)$/);
                         if (m) nextNum = parseInt(m[1]) + 1;
+                    } else {
+                        console.log('No existing inquiries found or access denied. Starting at 001.');
                     }
 
                     inquiryId = `INQ-ACS-${String(nextNum).padStart(3, '0')}`;
+                    console.log('Generating New ID:', inquiryId);
 
                     // Handle 'Other' selection - should map to no courses selected
                     const rawInterest = formData.get('interest') || formData.get('course');
