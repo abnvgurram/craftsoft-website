@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initTestimonialsSlider();
     initContactForm();
     initChatWidget();
+    initDynamicCopyright();
 });
 
 /* ============================================
@@ -746,6 +747,20 @@ function initChatWidget() {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && chatWidget.classList.contains('active')) {
             chatWidget.classList.remove('active');
+        }
+    });
+}
+
+/* ============================================
+   DYNAMIC COPYRIGHT YEAR
+   ============================================ */
+function initDynamicCopyright() {
+    const copyrightElements = document.querySelectorAll('.footer-bottom p, .copyright-text');
+    const currentYear = new Date().getFullYear();
+
+    copyrightElements.forEach(el => {
+        if (el.textContent.includes('©')) {
+            el.textContent = el.textContent.replace(/© \d{4}/, `© ${currentYear}`);
         }
     });
 }

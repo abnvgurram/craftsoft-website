@@ -37,3 +37,34 @@
   from = "/favicon.ico"
   to = "/favicon.svg"
   status = 200
+
+# URL Restructuring Redirects - old paths to new root paths
+[[redirects]]
+  from = "/pages/courses.html"
+  to = "/courses.html"
+  status = 301
+
+[[redirects]]
+  from = "/pages/courses"
+  to = "/courses.html"
+  status = 301
+
+[[redirects]]
+  from = "/pages/services.html"
+  to = "/services.html"
+  status = 301
+
+[[redirects]]
+  from = "/pages/services"
+  to = "/services.html"
+  status = 301
+
+[[redirects]]
+  from = "/index.html#contact"
+  to = "/contact.html"
+  status = 301
+
+[[redirects]]
+  from = "/#contact"
+  to = "/contact.html"
+  status = 301
