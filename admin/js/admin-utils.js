@@ -485,7 +485,12 @@ function initPasswordToggles() {
 // ============================================
 // Page Protection (Redirect if not authenticated)
 // ============================================
-async function requireAuth(redirectTo = '/admin/login.html') {
+async function requireAuth(redirectTo = null) {
+    if (!redirectTo) {
+        // If on subdomain, root is login. If not, /admin/login.html
+        redirectTo = window.location.hostname.includes('admin.') ? '/' : '/admin/';
+    }
+
     const session = await window.supabaseConfig.getSession();
     if (!session) {
         window.location.href = redirectTo;
@@ -494,7 +499,11 @@ async function requireAuth(redirectTo = '/admin/login.html') {
     return true;
 }
 
-async function requireNoAuth(redirectTo = '/admin/dashboard.html') {
+async function requireNoAuth(redirectTo = null) {
+    if (!redirectTo) {
+        redirectTo = window.location.hostname.includes('admin.') ? '/dashboard/' : '/admin/dashboard/';
+    }
+
     const session = await window.supabaseConfig.getSession();
     if (session) {
         window.location.href = redirectTo;

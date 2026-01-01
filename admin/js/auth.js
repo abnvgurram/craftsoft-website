@@ -24,7 +24,7 @@ const Auth = {
                 email: email,
                 password: password,
                 options: {
-                    emailRedirectTo: `${window.location.origin}/admin/login.html`,
+                    emailRedirectTo: `https://admin.craftsoft.co.in/`,
                     data: {
                         full_name: fullName,
                         phone: phone
@@ -168,7 +168,7 @@ const Auth = {
             sessionStorage.removeItem('tab_id');
 
             // Redirect to login
-            window.location.replace('/admin/login.html');
+            window.location.replace(window.location.hostname.includes('admin.') ? '/' : '/admin/');
 
             return { success: true };
 
@@ -196,7 +196,7 @@ const Auth = {
             await supabase.auth.signOut();
 
             // Redirect to login
-            window.location.replace('/admin/login.html');
+            window.location.replace(window.location.hostname.includes('admin.') ? '/' : '/admin/');
 
             return { success: true };
 
@@ -411,7 +411,7 @@ const Auth = {
                 type: 'signup',
                 email: email,
                 options: {
-                    emailRedirectTo: `${window.location.origin}/admin/login.html`
+                    emailRedirectTo: `https://admin.craftsoft.co.in/`
                 }
             });
 
@@ -655,10 +655,10 @@ const Auth = {
         const { Modal } = window.AdminUtils || {};
         if (Modal && typeof Modal.alert === 'function') {
             Modal.alert('warning', 'Session Ended', 'Your session was logged out from another device.', () => {
-                window.location.href = '/admin/login.html';
+                window.location.href = window.location.hostname.includes('admin.') ? '/' : '/admin/';
             });
         } else {
-            window.location.href = '/admin/login.html';
+            window.location.href = window.location.hostname.includes('admin.') ? '/' : '/admin/';
         }
     }
 };

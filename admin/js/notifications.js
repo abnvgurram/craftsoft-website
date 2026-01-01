@@ -243,6 +243,11 @@ function showToast(type, title, message, duration = 5000) {
 
 // Helper to get root path relative to current page
 function getRootPath() {
+    // If on subdomain, root is just /
+    if (window.location.hostname.includes('admin.')) {
+        return '/';
+    }
+
     const parts = window.location.pathname.split('/');
     const adminIndex = parts.lastIndexOf('admin');
     if (adminIndex === -1) return '../'; // Fallback
