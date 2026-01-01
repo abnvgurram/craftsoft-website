@@ -168,7 +168,7 @@ const Auth = {
             sessionStorage.removeItem('tab_id');
 
             // Redirect to login
-            window.location.replace(window.location.hostname.includes('admin.') ? '/' : '/admin/');
+            window.location.replace(window.location.pathname.includes('/admin/') ? '/admin/' : '/');
 
             return { success: true };
 
@@ -196,7 +196,7 @@ const Auth = {
             await supabase.auth.signOut();
 
             // Redirect to login
-            window.location.replace(window.location.hostname.includes('admin.') ? '/' : '/admin/');
+            window.location.replace(window.location.pathname.includes('/admin/') ? '/admin/' : '/');
 
             return { success: true };
 
@@ -655,10 +655,10 @@ const Auth = {
         const { Modal } = window.AdminUtils || {};
         if (Modal && typeof Modal.alert === 'function') {
             Modal.alert('warning', 'Session Ended', 'Your session was logged out from another device.', () => {
-                window.location.href = window.location.hostname.includes('admin.') ? '/' : '/admin/';
+                window.location.href = window.location.pathname.includes('/admin/') ? '/admin/' : '/';
             });
         } else {
-            window.location.href = window.location.hostname.includes('admin.') ? '/' : '/admin/';
+            window.location.href = window.location.pathname.includes('/admin/') ? '/admin/' : '/';
         }
     }
 };

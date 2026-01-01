@@ -487,8 +487,8 @@ function initPasswordToggles() {
 // ============================================
 async function requireAuth(redirectTo = null) {
     if (!redirectTo) {
-        // If on subdomain, root is login. If not, /admin/login.html
-        redirectTo = window.location.hostname.includes('admin.') ? '/' : '/admin/';
+        const isSubdomain = !window.location.pathname.startsWith('/admin/');
+        redirectTo = isSubdomain ? '/' : '/admin/';
     }
 
     const session = await window.supabaseConfig.getSession();
@@ -501,7 +501,8 @@ async function requireAuth(redirectTo = null) {
 
 async function requireNoAuth(redirectTo = null) {
     if (!redirectTo) {
-        redirectTo = window.location.hostname.includes('admin.') ? '/dashboard/' : '/admin/dashboard/';
+        const isSubdomain = !window.location.pathname.startsWith('/admin/');
+        redirectTo = isSubdomain ? '/dashboard/' : '/admin/dashboard/';
     }
 
     const session = await window.supabaseConfig.getSession();
