@@ -333,7 +333,7 @@ async function openForm(tutorId = null) {
     renderCoursesCheckboxes(tutor?.courses || []);
 
     formTitle.textContent = isEdit ? 'Edit Tutor' : 'Add Tutor';
-    saveBtn.innerHTML = `< i class= "fa-solid fa-check" ></i > ${isEdit ? 'Update' : 'Save'} Tutor`;
+    saveBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isEdit ? 'Update' : 'Save'} Tutor`;
 
     container.style.display = 'block';
     container.scrollIntoView({ behavior: 'smooth', block: 'start' });
