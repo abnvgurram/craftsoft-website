@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Initialize sidebar and header
+    // Initialize sidebar
     if (window.AdminSidebar) {
         window.AdminSidebar.init('acs_services', '../');
     }
@@ -59,31 +59,33 @@ async function loadServices() {
         if (error) throw error;
 
         allServices = data || [];
-        renderServicesTable(allServices);
+        renderServicesLayout(allServices);
 
     } catch (err) {
         console.error('Error loading services:', err);
-        container.innerHTML = '<div class="empty-state">Error loading services.</div>';
+        container.innerHTML = '<div class="empty-state"><p>Error loading services.</p></div>';
     }
 }
 
-function renderServicesTable(services) {
+function renderServicesLayout(services) {
     const container = document.getElementById('services-content');
 
     if (services.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <i class="fa-solid fa-briefcase"></i>
-                <p>No services found in database.</p>
-                <button class="btn btn-outline btn-sm" onclick="syncFromWebsite()">Sync Now</button>
+                <div class="empty-state-icon"><i class="fa-solid fa-briefcase"></i></div>
+                <h3>No services yet</h3>
+                <p>Click "Sync from Website" to populate services</p>
+                <button class="btn btn-outline btn-sm" style="margin-top: 15px;" onclick="syncFromWebsite()">Sync Now</button>
             </div>
         `;
         return;
     }
 
-    container.innerHTML = `
-        <div class="table-container">
-            <table class="admin-table">
+    // Desktop Table View
+    const tableView = `
+        <div class="data-table-wrapper">
+            <table class="data-table">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -94,7 +96,7 @@ function renderServicesTable(services) {
                 <tbody>
                     ${services.map(srv => `
                         <tr>
-                            <td><span class="badge badge-outline">${srv.service_id}</span></td>
+                            <td><span class="badge badge-primary">${srv.service_id}</span></td>
                             <td class="font-medium">${srv.name}</td>
                             <td><span class="badge badge-secondary">${srv.category}</span></td>
                         </tr>
@@ -103,6 +105,25 @@ function renderServicesTable(services) {
             </table>
         </div>
     `;
+
+    // Mobile Card View (for optimization)
+    const cardView = `
+        <div class="data-cards">
+            ${services.map(srv => `
+                <div class="data-card">
+                    <div class="data-card-header">
+                        <span class="badge badge-primary">${srv.service_id}</span>
+                        <span class="badge badge-secondary">${srv.category}</span>
+                    </div>
+                    <div class="data-card-body">
+                        <h4 class="data-card-title">${srv.name}</h4>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    container.innerHTML = tableView + cardView;
 }
 
 function bindEvents() {
@@ -118,23 +139,23 @@ async function syncFromWebsite() {
         'This will sync services from the official website list. Proceed?',
         async () => {
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Syncing...</span>';
 
             try {
-                // 1. Get existing services to avoid duplicates
+                // 1. Get existing services
                 const { data: existing } = await window.supabaseClient.from('services').select('name');
                 const existingNames = new Set(existing?.map(s => s.name) || []);
 
-                // 2. Get highest sequence for Sr-ACS-XXX
-                const { data: maxInq } = await window.supabaseClient
+                // 2. Get highest sequence
+                const { data: lastSrv } = await window.supabaseClient
                     .from('services')
                     .select('service_id')
                     .order('service_id', { ascending: false })
                     .limit(1);
 
                 let nextNum = 1;
-                if (maxInq?.length > 0) {
-                    const match = maxInq[0].service_id.match(/Sr-ACS-(\d+)/);
+                if (lastSrv?.length > 0) {
+                    const match = lastSrv[0].service_id.match(/Sr-ACS-(\d+)/);
                     if (match) nextNum = parseInt(match[1]) + 1;
                 }
 
@@ -153,7 +174,7 @@ async function syncFromWebsite() {
                     }
                 }
 
-                Toast.success('Sync Success', `${addedCount} new services added from website list.`);
+                Toast.success('Sync Success', `${addedCount} new services added.`);
                 await loadServices();
 
             } catch (err) {
@@ -161,7 +182,7 @@ async function syncFromWebsite() {
                 Toast.error('Sync error', err.message);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sync from Website';
+                btn.innerHTML = '<i class="fa-solid fa-rotate"></i> <span>Sync from Website</span>';
             }
         }
     );
