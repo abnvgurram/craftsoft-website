@@ -4,7 +4,8 @@
 .footer {
     background: var(--gray-900);
     color: var(--gray-400);
-    padding: var(--spacing-3xl) 0 var(--spacing-xl);
+    padding: var(--spacing-xl) 0;
+    /* Reduced top padding from 3xl */
 }
 
 .footer-content {

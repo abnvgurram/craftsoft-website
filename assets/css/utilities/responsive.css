@@ -163,7 +163,8 @@
     }
 
     .contact-section {
-        padding: var(--spacing-md) 0;
+        padding: var(--spacing-md) 0 0;
+        /* Trimmed bottom padding */
     }
 
     /* Mobile Navigation - Enhanced Dropdown Panel */
@@ -211,10 +212,15 @@
         width: 40px;
         height: 40px;
         font-size: 1.1rem;
+        background: transparent;
+        /* Removed background as requested */
+        box-shadow: none;
+        color: var(--primary-600);
     }
 
     .mobile-menu-header .logo-text {
         font-size: 1.15rem;
+        text-align: left;
     }
 
     /* Backdrop overlay */
