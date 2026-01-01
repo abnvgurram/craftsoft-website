@@ -1215,17 +1215,29 @@
     color: var(--primary-700);
 }
 
-/* Directions Link */
+/* Directions Link (Button Style) */
 .directions-link {
-    display: inline-block;
-    margin-top: var(--spacing-xs);
-    color: var(--primary-600);
-    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 20px;
+    background: var(--accent-gradient);
+    color: white !important;
+    border-radius: 50px;
+    font-weight: 600;
     font-size: 0.9rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
 }
 
 .directions-link:hover {
-    color: var(--primary-700);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+}
+
+.directions-link i {
+    font-size: 1rem;
 }
 
 /* ============================================
