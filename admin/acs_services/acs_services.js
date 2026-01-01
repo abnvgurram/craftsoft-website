@@ -1,202 +1,150 @@
-document.addEventListener('DOMContentLoaded', () => {
-    initServices();
+// ACS Services Module - Website Sync Approach
+const websiteServices = [
+    { name: 'Graphic Design', category: 'Design' },
+    { name: 'UI/UX Design', category: 'Design' },
+    { name: 'Website Development', category: 'Tech' },
+    { name: 'Cloud & DevOps', category: 'Cloud' },
+    { name: 'Branding & Marketing', category: 'Branding' },
+    { name: 'Career Services', category: 'Branding' }
+];
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // Auth & Sidebar check
+    if (window.Auth) {
+        const { session, admin } = await window.Auth.checkSession();
+        if (session && admin) {
+            window.AdminSidebar.init('acs_services', '../');
+            // Header
+            const headerContainer = document.getElementById('header-container');
+            if (headerContainer) {
+                headerContainer.innerHTML = window.AdminHeader.render('ACS Services');
+                window.AdminSidebar.renderAccountPanel(session, admin);
+            }
+            await initServices();
+        }
+    }
 });
 
 let allServices = [];
 
 async function initServices() {
-    // Initialize Sidebar
-    if (window.AdminSidebar) {
-        window.AdminSidebar.init('acs_services', '../');
-    }
-
     await loadServices();
     bindEvents();
 }
 
 async function loadServices() {
     const { Toast } = window.AdminUtils;
-    const container = document.getElementById('services-table-container');
+    const container = document.getElementById('services-content');
 
     try {
         const { data, error } = await window.supabaseClient
             .from('services')
             .select('*')
-            .order('created_at', { ascending: false });
+            .order('service_id', { ascending: true });
 
         if (error) throw error;
 
         allServices = data || [];
         renderServicesTable(allServices);
-        updateStats(allServices);
 
     } catch (err) {
         console.error('Error loading services:', err);
-        Toast.error('Error', 'Failed to load services data');
-        container.innerHTML = '<div class="error-state">Failed to load services. Please try again.</div>';
+        container.innerHTML = '<div class="empty-state">Error loading services.</div>';
     }
 }
 
 function renderServicesTable(services) {
-    const container = document.getElementById('services-table-container');
+    const container = document.getElementById('services-content');
 
     if (services.length === 0) {
-        container.innerHTML = '<div class="empty-state">No services found. Add your first service!</div>';
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fa-solid fa-briefcase"></i>
+                <p>No services found in database.</p>
+                <button class="btn btn-outline btn-sm" onclick="syncFromWebsite()">Sync Now</button>
+            </div>
+        `;
         return;
     }
 
     container.innerHTML = `
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Service Name</th>
-                    <th>Category</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${services.map(srv => `
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
                     <tr>
-                        <td><span class="service-id-badge">${srv.service_id || 'SRV-X'}</span></td>
-                        <td style="font-weight: 500;">${srv.name}</td>
-                        <td><span class="category-tag category-${srv.category.toLowerCase()}">${srv.category}</span></td>
-                        <td><span class="status-badge status-${srv.status.toLowerCase()}">${srv.status}</span></td>
-                        <td>
-                            <div class="action-btns">
-                                <button class="action-btn edit-btn" onclick="openModal(true, ${srv.id})" title="Edit">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button class="action-btn delete-btn" onclick="deleteService(${srv.id})" title="Delete">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
+                        <th>ID</th>
+                        <th>Service Name</th>
+                        <th>Category</th>
                     </tr>
-                `).join('')}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    ${services.map(srv => `
+                        <tr>
+                            <td><span class="badge badge-outline">${srv.service_id}</span></td>
+                            <td class="font-medium">${srv.name}</td>
+                            <td><span class="badge badge-secondary">${srv.category}</span></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
     `;
 }
 
-function updateStats(services) {
-    document.getElementById('total-services').textContent = services.length;
-    document.getElementById('active-services').textContent = services.filter(s => s.status === 'Active').length;
-}
-
 function bindEvents() {
-    document.getElementById('add-service-btn').addEventListener('click', () => openModal(false));
-    document.getElementById('close-modal-btn').addEventListener('click', closeModal);
-    document.getElementById('cancel-btn').addEventListener('click', closeModal);
-    document.getElementById('service-form').addEventListener('submit', handleFormSubmit);
-
-    // Search & Filter
-    document.getElementById('service-search').addEventListener('input', filterData);
-    document.getElementById('category-filter').addEventListener('change', filterData);
+    document.getElementById('sync-services-btn')?.addEventListener('click', syncFromWebsite);
 }
 
-function openModal(isEdit = false, id = null) {
-    const modal = document.getElementById('service-modal');
-    const title = document.getElementById('modal-title');
-    const form = document.getElementById('service-form');
-
-    form.reset();
-    document.getElementById('edit-service-id').value = '';
-
-    if (isEdit) {
-        const service = allServices.find(s => s.id === id);
-        if (service) {
-            title.textContent = 'Edit Service';
-            document.getElementById('edit-service-id').value = service.id;
-            document.getElementById('service-name').value = service.name;
-            document.getElementById('service-category').value = service.category;
-            document.getElementById('service-status').value = service.status;
-            document.getElementById('service-description').value = service.description || '';
-        }
-    } else {
-        title.textContent = 'Add New Service';
-    }
-
-    modal.classList.add('active');
-}
-
-function closeModal() {
-    document.getElementById('service-modal').classList.remove('active');
-}
-
-async function handleFormSubmit(e) {
-    e.preventDefault();
+async function syncFromWebsite() {
     const { Toast } = window.AdminUtils;
-    const saveBtn = document.getElementById('save-service-btn');
+    const btn = document.getElementById('sync-services-btn');
 
-    const id = document.getElementById('edit-service-id').value;
-    const name = document.getElementById('service-name').value;
-    const category = document.getElementById('service-category').value;
-    const status = document.getElementById('service-status').value;
-    const description = document.getElementById('service-description').value;
+    if (!confirm('This will sync services from the official website list. Proceed?')) return;
 
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
 
     try {
-        const serviceData = { name, category, status, description };
+        // 1. Get existing services to avoid duplicates
+        const { data: existing } = await window.supabaseClient.from('services').select('name');
+        const existingNames = new Set(existing?.map(s => s.name) || []);
 
-        if (id) {
-            // Update
-            const { error } = await window.supabaseClient.from('services').update(serviceData).eq('id', id);
-            if (error) throw error;
-            Toast.success('Updated', 'Service updated successfully');
-        } else {
-            // New ID generation (SRV-001 format)
-            const { data: maxSrv } = await window.supabaseClient.from('services').select('service_id').order('service_id', { ascending: false }).limit(1);
-            let nextNum = 1;
-            if (maxSrv?.length > 0) {
-                const match = maxSrv[0].service_id.match(/SRV-(\d+)/);
-                if (match) nextNum = parseInt(match[1]) + 1;
+        // 2. Get highest sequence for Sr-ACS-XXX
+        const { data: maxInq } = await window.supabaseClient
+            .from('services')
+            .select('service_id')
+            .order('service_id', { ascending: false })
+            .limit(1);
+
+        let nextNum = 1;
+        if (maxInq?.length > 0) {
+            const match = maxInq[0].service_id.match(/Sr-ACS-(\d+)/);
+            if (match) nextNum = parseInt(match[1]) + 1;
+        }
+
+        let addedCount = 0;
+        for (const s of websiteServices) {
+            if (!existingNames.has(s.name)) {
+                const newId = `Sr-ACS-${String(nextNum).padStart(3, '0')}`;
+                const { error } = await window.supabaseClient.from('services').insert({
+                    service_id: newId,
+                    name: s.name,
+                    category: s.category
+                });
+                if (error) throw error;
+                nextNum++;
+                addedCount++;
             }
-            const service_id = `SRV-${String(nextNum).padStart(3, '0')}`;
-
-            const { error } = await window.supabaseClient.from('services').insert({ ...serviceData, service_id });
-            if (error) throw error;
-            Toast.success('Created', 'New service added');
         }
 
-        closeModal();
+        Toast.success('Sync Success', `${addedCount} new services added from website list.`);
         await loadServices();
+
     } catch (err) {
-        console.error('Error saving service:', err);
-        Toast.error('Error', err.message);
+        console.error(err);
+        Toast.error('Sync error', err.message);
     } finally {
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = '<i class="fa-solid fa-check"></i> Save Service';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sync from Website';
     }
-}
-
-async function deleteService(id) {
-    if (!confirm('Are you sure you want to delete this service?')) return;
-    const { Toast } = window.AdminUtils;
-
-    try {
-        const { error } = await window.supabaseClient.from('services').delete().eq('id', id);
-        if (error) throw error;
-        Toast.success('Deleted', 'Service removed');
-        await loadServices();
-    } catch (err) {
-        Toast.error('Error', 'Failed to delete service');
-    }
-}
-
-function filterData() {
-    const searchTerm = document.getElementById('service-search').value.toLowerCase();
-    const categoryFilter = document.getElementById('category-filter').value;
-
-    const filtered = allServices.filter(srv => {
-        const matchesSearch = srv.name.toLowerCase().includes(searchTerm) ||
-            (srv.service_id && srv.service_id.toLowerCase().includes(searchTerm));
-        const matchesCategory = categoryFilter === 'all' || srv.category === categoryFilter;
-        return matchesSearch && matchesCategory;
-    });
-
-    renderServicesTable(filtered);
 }

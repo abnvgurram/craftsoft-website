@@ -4,125 +4,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Services Management - Admin Panel</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../css/admin-common.css">
-    <link rel="stylesheet" href="acs_services.css">
+    <title>Services - CraftSoft Admin</title>
+    <link rel="icon" href="../../favicon.ico" type="image/x-icon">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Admin Styles - Base -->
+    <link rel="stylesheet" href="../../assets/css/base/variables.css">
+    <link rel="stylesheet" href="../css/base/variables.css">
+    <link rel="stylesheet" href="../css/base/reset.css">
+    <link rel="stylesheet" href="../css/base/typography.css">
+
+    <!-- Admin Styles - Layout -->
+    <link rel="stylesheet" href="../css/layout/auth.css">
+    <link rel="stylesheet" href="../css/layout/dashboard.css">
+    <link rel="stylesheet" href="../css/layout/header.css">
+    <link rel="stylesheet" href="../css/layout/sidebar.css">
+
+    <!-- Admin Styles - Components -->
+    <link rel="stylesheet" href="../css/components/buttons.css">
+    <link rel="stylesheet" href="../css/components/forms.css">
+    <link rel="stylesheet" href="../css/components/modals.css">
+    <link rel="stylesheet" href="../css/components/toasts.css">
+    <link rel="stylesheet" href="../css/components/tables.css">
+    <link rel="stylesheet" href="../css/components/cards.css">
+    <link rel="stylesheet" href="../css/components/badges.css">
+    <link rel="stylesheet" href="../css/components/account-panel.css">
+
+    <!-- Admin Styles - Utilities -->
+    <link rel="stylesheet" href="../css/utilities/skeleton.css">
+    <link rel="stylesheet" href="../css/utilities/helpers.css">
+
+    <!-- Admin Styles - Responsive -->
+    <link rel="stylesheet" href="../css/responsive/tablet.css">
+    <link rel="stylesheet" href="../css/responsive/mobile.css">
 </head>
 
 <body>
     <div class="admin-layout">
-        <div id="sidebar-placeholder"></div>
-
         <main class="admin-main">
-            <header class="admin-header">
-                <div class="header-left">
-                    <h1>Service Management</h1>
-                    <p>Manage your IT offerings and business solutions</p>
+            <div id="header-container"></div>
+
+            <div class="content-card">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <div class="section-icon">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </div>
+                        <div class="section-info">
+                            <h2 class="section-title">Services</h2>
+                            <p class="section-subtitle">Manage IT services and offerings</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="header-actions">
-                    <button class="btn-primary" id="add-service-btn">
-                        <i class="fa-solid fa-plus"></i> Add New Service
+
+                <div class="section-actions">
+                    <button class="btn btn-primary" id="sync-services-btn">
+                        <i class="fa-solid fa-rotate"></i>
+                        Sync from Website
                     </button>
                 </div>
-            </header>
 
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fa-solid fa-briefcase"></i></div>
-                    <div class="stat-info">
-                        <span class="stat-label">Total Services</span>
-                        <h3 id="total-services">0</h3>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i
-                            class="fa-solid fa-check"></i></div>
-                    <div class="stat-info">
-                        <span class="stat-label">Active</span>
-                        <h3 id="active-services">0</h3>
-                    </div>
-                </div>
-            </section>
+                <div class="section-divider"></div>
 
-            <section class="data-section">
-                <div class="table-controls">
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="service-search" placeholder="Search services...">
-                    </div>
-                    <div class="filter-box">
-                        <select id="category-filter">
-                            <option value="all">All Categories</option>
-                            <option value="Design">Design</option>
-                            <option value="Tech">Tech</option>
-                            <option value="Cloud">Cloud</option>
-                            <option value="Branding">Branding</option>
-                        </select>
+                <div id="services-content">
+                    <div class="loading-spinner">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        Loading services...
                     </div>
                 </div>
-
-                <div class="table-container" id="services-table-container">
-                    <div class="loading-state">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Loading services...
-                    </div>
-                </div>
-            </section>
+            </div>
         </main>
     </div>
 
-    <!-- Add/Edit Modal -->
-    <div class="modal" id="service-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-title">Add New Service</h2>
-                <button class="close-modal" id="close-modal-btn"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="service-form">
-                    <input type="hidden" id="edit-service-id">
-                    <div class="form-group">
-                        <label for="service-name">Service Name *</label>
-                        <input type="text" id="service-name" required placeholder="e.g. Website Development">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="service-category">Category *</label>
-                            <select id="service-category" required>
-                                <option value="Design">Design</option>
-                                <option value="Tech">Tech</option>
-                                <option value="Cloud">Cloud</option>
-                                <option value="Branding">Branding</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="service-status">Status</label>
-                            <select id="service-status">
-                                <option value="Active">Active</option>
-                                <option value="Hidden">Hidden</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="service-description">Description</label>
-                        <textarea id="service-description" rows="4"
-                            placeholder="Brief details about the service..."></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn-secondary" id="cancel-btn">Cancel</button>
-                        <button type="submit" class="btn-primary" id="save-service-btn">
-                            <i class="fa-solid fa-check"></i> Save Service
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase-config.js"></script>
-    <script src="../js/auth-guard.js"></script>
     <script src="../js/admin-utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/sidebar.js"></script>
     <script src="acs_services.js"></script>
 </body>
 

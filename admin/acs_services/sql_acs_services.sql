@@ -1,22 +1,22 @@
 -- Create Service Management Table
+-- Prefix: Sr-ACS-XXX
 CREATE TABLE IF NOT EXISTS services (
     id BIGSERIAL PRIMARY KEY,
-    service_id TEXT UNIQUE, -- e.g. SRV-001
+    service_id TEXT UNIQUE, -- e.g. Sr-ACS-001
     name TEXT NOT NULL,
     category TEXT,
     description TEXT,
-    status TEXT DEFAULT 'Active',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Add public read policy for website (if needed later)
+-- RLS
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Allow public read services" ON services;
 CREATE POLICY "Allow public read services" ON services
     FOR SELECT
     TO anon
-    USING (status = 'Active');
+    USING (true);
 
 DROP POLICY IF EXISTS "Allow admin all services" ON services;
 CREATE POLICY "Allow admin all services" ON services
