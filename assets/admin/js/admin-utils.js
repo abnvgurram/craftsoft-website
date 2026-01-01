@@ -380,7 +380,7 @@ const NavigationSecurity = {
             const session = await window.supabaseConfig.getSession();
             if (!session) {
                 // No session - redirect to login
-                this.secureRedirect('/admin/login.html');
+                this.secureRedirect(this.getLoginPath());
             }
         });
     },
@@ -391,7 +391,7 @@ const NavigationSecurity = {
             if (document.visibilityState === 'visible') {
                 const session = await window.supabaseConfig.getSession();
                 if (!session) {
-                    this.secureRedirect('/admin/login.html');
+                    this.secureRedirect(this.getLoginPath());
                 }
             }
         });
@@ -433,7 +433,7 @@ const NavigationSecurity = {
             await window.Auth.logout();
         } else {
             // Fallback if Auth not loaded
-            window.location.replace('/admin/login.html');
+            window.location.replace(this.getLoginPath());
         }
     },
 
@@ -446,7 +446,7 @@ const NavigationSecurity = {
             await window.Auth.logoutAll(admin.id);
         } else {
             // Fallback if Auth not loaded or no admin
-            window.location.replace('/admin/login.html');
+            window.location.replace(this.getLoginPath());
         }
     },
 
@@ -457,6 +457,12 @@ const NavigationSecurity = {
 
         // Clear forward history by replacing state
         history.replaceState(null, '', location.href);
+    },
+
+    // Helper: Get login path dynamically
+    getLoginPath() {
+        const isSubdomain = !window.location.pathname.startsWith('/admin/');
+        return isSubdomain ? '/' : '/admin/';
     }
 };
 
@@ -917,7 +923,7 @@ const AccountManager = {
 
                         if (result.accounts.length === 0) {
                             // No accounts left, go to login
-                            NavigationSecurity.secureRedirect('/admin/login.html');
+                            NavigationSecurity.secureRedirect(NavigationSecurity.getLoginPath());
                         } else if (result.newCurrentAccount) {
                             // Removed current account, switch to new one
                             await this.handleSwitchAccount(result.newCurrentAccount.id);
@@ -1044,7 +1050,7 @@ const AccountManager = {
                 <div class="auth-divider">or</div>
                 
                 <p class="auth-link">
-                    Don't have an account? <a href="/admin/signup.html">Sign Up</a>
+                    Don't have an account? <a href="https://signup.craftsoft.co.in">Sign Up</a>
                 </p>
             </div>
         `;
@@ -1411,7 +1417,8 @@ const SessionTimeout = {
         if (window.Auth) {
             await window.Auth.logout();
         } else {
-            window.location.replace('/admin/login.html');
+            const isSubdomain = !window.location.pathname.startsWith('/admin/');
+            window.location.replace(isSubdomain ? '/' : '/admin/');
         }
     },
 
