@@ -490,27 +490,19 @@ function setupFormSync(form) {
 
                     let nextNum = 1;
                     if (maxData && maxData.length > 0) {
-                        console.log('Last Inquiry ID found:', maxData[0].inquiry_id);
                         const m = maxData[0].inquiry_id.match(/(\d+)$/);
                         if (m) nextNum = parseInt(m[1]) + 1;
-                    } else {
-                        console.log('No existing inquiries found or access denied. Starting at 001.');
                     }
 
                     inquiryId = `INQ-ACS-${String(nextNum).padStart(3, '0')}`;
-                    console.log('Generating New ID:', inquiryId);
 
                     // Handle selection logic for mapping
-                    const rawInterest = formData.get('interest') || formData.get('course');
+                    // With updated HTML, values are already official codes (GD, MERN, etc.)
+                    const rawValue = formData.get('interest') || formData.get('course');
                     let courses = [];
 
-                    if (rawInterest && rawInterest !== 'Other') {
-                        // Special case: "Not Sure - Need Guidance" maps to CARRER code
-                        if (rawInterest === 'Not Sure - Need Guidance') {
-                            courses = ['CARRER'];
-                        } else {
-                            courses = [rawInterest];
-                        }
+                    if (rawValue && rawValue !== 'Other') {
+                        courses = [rawValue];
                     }
 
                     // Insert into Supabase
