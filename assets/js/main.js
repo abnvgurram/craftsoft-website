@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initChatWidget();
     initDynamicCopyright();
     initPrivacyProtection();
-    initDynamicFooter();
+    initDynamicContent();
 });
 
 /* ============================================
@@ -751,49 +751,85 @@ function initPrivacyProtection() {
 }
 
 /* ============================================
-   DYNAMIC FOOTER POPULATION
+   DYNAMIC CONTENT POPULATION
    ============================================ */
-function initDynamicFooter() {
-    // All available courses
+function initDynamicContent() {
     const allCourses = [
-        { name: 'Graphic design', url: 'pages/courses/graphic-design.html' },
-        { name: 'UI/UX design', url: 'pages/courses/ui-ux.html' },
-        { name: 'Full stack development', url: 'pages/courses/full-stack.html' },
-        { name: 'DevOps engineering', url: 'pages/courses/devops.html' },
-        { name: 'AWS cloud', url: 'pages/courses/aws.html' },
-        { name: 'Python programming', url: 'pages/courses/python.html' },
-        { name: 'Resume & interview', url: 'pages/courses/resume-interview.html' },
-        { name: 'Spoken English', url: 'pages/courses/spoken-english.html' }
+        { name: 'Graphic design', url: 'pages/courses/graphic-design.html', icon: 'fas fa-palette', desc: 'Master Adobe Creative Suite and visual communication.', features: ['Photoshop & Illustrator', 'Brand identity', 'Portfolio'] },
+        { name: 'UI/UX design', url: 'pages/courses/ui-ux.html', icon: 'fas fa-window-maximize', desc: 'Create stunning user interfaces and experiences.', features: ['Figma & XD', 'User research', 'Prototyping'] },
+        { name: 'Full stack development', url: 'pages/courses/full-stack.html', icon: 'fas fa-layer-group', desc: 'Master both front-end and back-end dev.', features: ['React & Node.js', 'Rest APIs', 'Deployment'] },
+        { name: 'DevOps engineering', url: 'pages/courses/devops.html', icon: 'fas fa-server', desc: 'Learn Cl/CD, Docker, and automation tools.', features: ['Cl/CD pipelines', 'Docker & K8s', 'Automation'] },
+        { name: 'AWS cloud', url: 'pages/courses/aws.html', icon: 'fab fa-aws', desc: 'Master cloud infrastructure on Amazon Web Services.', features: ['EC2 & S3', 'Lambda & IAM', 'CloudFormation'] },
+        { name: 'Python programming', url: 'pages/courses/python.html', icon: 'fab fa-python', desc: 'Learn one of the most versatile coding languages.', features: ['Data science', 'Web dev', 'Automation'] },
+        { name: 'Resume & interview', url: 'pages/courses/resume-interview.html', icon: 'fas fa-file-invoice', desc: 'Prepare for your dream career with mock sessions.', features: ['Mock interviews', 'Resume building', 'Soft skills'] },
+        { name: 'Spoken English', url: 'pages/courses/spoken-english.html', icon: 'fas fa-microphone', desc: 'Enhance your communication and professiona confidence.', features: ['Communication', 'Presentation', 'Confidence'] }
     ];
 
-    // All available services
     const allServices = [
-        { name: 'Graphic design', url: 'pages/services/graphic-design.html' },
-        { name: 'UI/UX design', url: 'pages/services/ui-ux-design.html' },
-        { name: 'Web development', url: 'pages/services/web-development.html' },
-        { name: 'Brand identity', url: 'pages/services/branding.html' },
-        { name: 'Cloud & DevOps', url: 'pages/services/cloud-devops.html' },
-        { name: 'Career services', url: 'pages/services/career-services.html' }
+        { name: 'Graphic design', url: 'pages/services/graphic-design.html', icon: 'fas fa-palette', desc: 'Stunning visuals for your brand identity.' },
+        { name: 'UI/UX design', url: 'pages/services/ui-ux-design.html', icon: 'fas fa-window-maximize', desc: 'User-centered design solution for digital products.' },
+        { name: 'Web development', url: 'pages/services/web-development.html', icon: 'fas fa-globe', desc: 'Custom, responsive websites that drive results.' },
+        { name: 'Brand identity', url: 'pages/services/branding.html', icon: 'fas fa-bullseye', desc: 'Strategic branding to set you apart.' },
+        { name: 'Cloud & DevOps', url: 'pages/services/cloud-devops.html', icon: 'fas fa-server', desc: 'Scalable infrastructure and automation.' },
+        { name: 'Career services', url: 'pages/services/career-services.html', icon: 'fas fa-users', desc: 'Expert guidance for your professional journey.' }
     ];
 
-    // Shuffle and pick 4
     const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
-    const selectedCourses = shuffle([...allCourses]).slice(0, 4);
-    const selectedServices = shuffle([...allServices]).slice(0, 4);
 
-    // Populate courses
-    const coursesContainer = document.getElementById('footer-trending-courses');
-    if (coursesContainer) {
-        coursesContainer.innerHTML = selectedCourses.map(c =>
-            `<li><a href="${c.url}">${c.name}</a></li>`
-        ).join('');
+    // Populate Footer
+    const footerCourses = document.getElementById('footer-trending-courses');
+    const footerServices = document.getElementById('footer-services');
+    if (footerCourses) {
+        footerCourses.innerHTML = shuffle([...allCourses]).slice(0, 4).map(c => `<li><a href="${c.url}">${c.name}</a></li>`).join('');
+    }
+    if (footerServices) {
+        footerServices.innerHTML = shuffle([...allServices]).slice(0, 4).map(s => `<li><a href="${s.url}">${s.name}</a></li>`).join('');
     }
 
-    // Populate services
-    const servicesContainer = document.getElementById('footer-services');
-    if (servicesContainer) {
-        servicesContainer.innerHTML = selectedServices.map(s =>
-            `<li><a href="${s.url}">${s.name}</a></li>`
-        ).join('');
+    // Populate Homepage Grids
+    const homeCoursesGrid = document.getElementById('homepage-courses-grid');
+    const homeCareerGrid = document.getElementById('homepage-career-grid');
+    const homeServicesGrid = document.getElementById('homepage-services-grid');
+
+    if (homeCoursesGrid) {
+        const selected = shuffle(allCourses.filter(c => !c.name.includes('Resume') && !c.name.includes('English'))).slice(0, 3);
+        homeCoursesGrid.innerHTML = selected.map(c => `
+            <div class="unified-card">
+                <div class="unified-card-icon"><i class="${c.icon}"></i></div>
+                <h3>${c.name}</h3>
+                <p>${c.desc}</p>
+                <ul class="unified-card-features">
+                    ${c.features.map(f => `<li>${f}</li>`).join('')}
+                </ul>
+                <a href="${c.url}" class="unified-card-link">View Details <i class="fas fa-arrow-right"></i></a>
+            </div>
+        `).join('');
+    }
+
+    if (homeCareerGrid) {
+        const selected = shuffle(allCourses.filter(c => c.name.includes('Resume') || c.name.includes('English') || c.name.includes('Soft'))).slice(0, 3);
+        homeCareerGrid.innerHTML = selected.map(c => `
+            <div class="unified-card">
+                <div class="unified-card-icon"><i class="${c.icon}"></i></div>
+                <h3>${c.name}</h3>
+                <p>${c.desc}</p>
+                <ul class="unified-card-features">
+                    ${c.features.map(f => `<li>${f}</li>`).join('')}
+                </ul>
+                <a href="${c.url}" class="unified-card-link">View Details <i class="fas fa-arrow-right"></i></a>
+            </div>
+        `).join('');
+    }
+
+    if (homeServicesGrid) {
+        const selected = shuffle([...allServices]).slice(0, 3);
+        homeServicesGrid.innerHTML = selected.map(s => `
+            <div class="unified-card">
+                <div class="unified-card-icon"><i class="${s.icon}"></i></div>
+                <h3>${s.name}</h3>
+                <p>${s.desc}</p>
+                <a href="${s.url}" class="unified-card-link">Read More <i class="fas fa-arrow-right"></i></a>
+            </div>
+        `).join('');
     }
 }

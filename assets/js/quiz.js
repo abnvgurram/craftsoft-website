@@ -84,6 +84,10 @@ function startInlineQuiz() {
     inlineContainer.classList.add('active');
     quizCard.classList.add('quiz-active');
 
+    // Reduce section padding for a tighter fit
+    const section = quizCard.closest('.quiz-cta-section');
+    if (section) section.style.padding = '40px 0';
+
     // Start the quiz
     currentQuizStep = 0;
     userScores = {};
@@ -192,6 +196,10 @@ function resetInlineQuiz() {
     inlineContainer.classList.remove('active');
     quizCard.classList.remove('quiz-active');
     ctaContent.style.display = '';
+
+    // Restore section padding
+    const section = quizCard.closest('.quiz-cta-section');
+    if (section) section.style.padding = '';
 
     // Reset state
     currentQuizStep = 0;

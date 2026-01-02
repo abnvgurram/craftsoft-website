@@ -178,6 +178,16 @@
 </head>
 
 <body>
+    <!-- Page Transition Overlay -->
+    <div class="page-transition">
+        <div class="page-transition-content">
+            <div class="page-transition-logo">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="page-transition-loader"></div>
+        </div>
+    </div>
+
     <!-- Navbar -->
     <nav class="navbar" id="navbar">
         <div class="container nav-container">
@@ -292,43 +302,10 @@
                 <p class="section-description">Choose from our comprehensive range of courses designed to launch and
                     accelerate your career</p>
             </div>
-            <div class="unified-grid">
-                <div class="unified-card">
-                    <div class="unified-card-icon"><i class="fas fa-palette"></i></div>
-                    <h3>Graphic Design</h3>
-                    <p>Master Adobe Creative Suite, branding, and visual communication</p>
-                    <ul class="unified-card-features">
-                        <li>Adobe Photoshop & Illustrator</li>
-                        <li>Brand Identity Design</li>
-                        <li>Portfolio Development</li>
-                    </ul>
-                    <a href="pages/courses/graphic-design.html" class="unified-card-link">View Details <i
-                            class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="unified-card">
-                    <div class="unified-card-icon"><i class="fas fa-window-maximize"></i></div>
-                    <h3>UI/UX Design</h3>
-                    <p>Create stunning user interfaces and seamless user experiences</p>
-                    <ul class="unified-card-features">
-                        <li>Figma & Adobe XD</li>
-                        <li>User Research & Wireframing</li>
-                        <li>Prototyping & Testing</li>
-                    </ul>
-                    <a href="pages/courses/ui-ux.html" class="unified-card-link">View Details <i
-                            class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="unified-card">
-                    <div class="unified-card-icon"><i class="fas fa-layer-group"></i></div>
-                    <h3>Full Stack Development</h3>
-                    <p>Become a complete developer with front-end and back-end mastery</p>
-                    <ul class="unified-card-features">
-                        <li>React, Node.js, MongoDB</li>
-                        <li>RESTful APIs & Databases</li>
-                        <li>Deployment & CI/CD</li>
-                    </ul>
-                    <a href="pages/courses/full-stack.html" class="unified-card-link">View Details <i
-                            class="fas fa-arrow-right"></i></a>
-                </div>
+            <div class="unified-grid" id="homepage-courses-grid">
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
             </div>
             <div class="section-cta"><a href="courses.html" class="btn btn-primary">View All Courses <i
                         class="fas fa-arrow-right"></i></a></div>
@@ -344,46 +321,10 @@
                 <p class="section-description">Beyond technical training, we prepare you for the professional world with
                     essential soft skills.</p>
             </div>
-            <div class="unified-grid">
-                <div class="unified-card">
-                    <div class="unified-card-icon"><i class="fas fa-file-invoice"></i></div>
-                    <h3>Interview preparation</h3>
-                    <p>Master the art of technical and HR interviews with our comprehensive mock sessions and feedback
-                        loops.</p>
-                    <ul class="unified-card-features">
-                        <li>Mock interviews</li>
-                        <li>Resume building</li>
-                        <li>Portfolio showcase</li>
-                    </ul>
-                    <a href="pages/courses/resume-interview.html" class="unified-card-link">View details <i
-                            class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="unified-card">
-                    <div class="unified-card-icon"><i class="fas fa-microphone"></i></div>
-                    <h3>Spoken English</h3>
-                    <p>Enhance your communication skills and confidence to effectively present your ideas
-                        professionally.</p>
-                    <ul class="unified-card-features">
-                        <li>Business communication</li>
-                        <li>Presentation skills</li>
-                        <li>Confidence building</li>
-                    </ul>
-                    <a href="pages/courses/spoken-english.html" class="unified-card-link">View details <i
-                            class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="unified-card">
-                    <div class="unified-card-icon"><i class="fas fa-users"></i></div>
-                    <h3>Soft skills & personality</h3>
-                    <p>Develop essential interpersonal skills that set you apart in interviews and professional
-                        settings.</p>
-                    <ul class="unified-card-features">
-                        <li>Leadership & teamwork</li>
-                        <li>Time management</li>
-                        <li>Professional etiquette</li>
-                    </ul>
-                    <a href="pages/courses/soft-skills.html" class="unified-card-link">View details <i
-                            class="fas fa-arrow-right"></i></a>
-                </div>
+            <div class="unified-grid" id="homepage-career-grid">
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
             </div>
             <div class="section-cta">
                 <a href="courses.html?filter=softskills" class="btn btn-primary">View all career courses <i
@@ -400,45 +341,10 @@
                 <h2 class="section-title">Business <span class="gradient-text">solutions</span></h2>
                 <p class="section-description">Comprehensive design and development services to elevate your brand</p>
             </div>
-            <div class="unified-grid">
-                <div class="unified-card">
-                    <div class="unified-card-icon"><i class="fas fa-palette"></i></div>
-                    <h3>Graphic design</h3>
-                    <p>Stunning visuals for your brand - logos, brochures, social media graphics, and marketing
-                        materials.</p>
-                    <ul class="unified-card-features">
-                        <li>Logo & brand identity</li>
-                        <li>Marketing collaterals</li>
-                        <li>Social media graphics</li>
-                    </ul>
-                    <a href="pages/services/graphic-design.html" class="unified-card-link">Read more <i
-                            class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="unified-card">
-                    <div class="unified-card-icon"><i class="fas fa-window-maximize"></i></div>
-                    <h3>UI/UX design</h3>
-                    <p>User-centered design solutions that enhance usability and create memorable digital experiences.
-                    </p>
-                    <ul class="unified-card-features">
-                        <li>User research & wireframes</li>
-                        <li>Interactive prototypes</li>
-                        <li>Design systems</li>
-                    </ul>
-                    <a href="pages/services/ui-ux-design.html" class="unified-card-link">Read more <i
-                            class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="unified-card">
-                    <div class="unified-card-icon"><i class="fas fa-globe"></i></div>
-                    <h3>Website design & development</h3>
-                    <p>Custom, responsive websites that drive results - from portfolios to e-commerce platforms.</p>
-                    <ul class="unified-card-features">
-                        <li>Custom web development</li>
-                        <li>E-commerce solutions</li>
-                        <li>SEO optimization</li>
-                    </ul>
-                    <a href="pages/services/web-development.html" class="unified-card-link">Read more <i
-                            class="fas fa-arrow-right"></i></a>
-                </div>
+            <div class="unified-grid" id="homepage-services-grid">
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
             </div>
             <div class="section-cta"><a href="services.html" class="btn btn-primary">View all services <i
                         class="fas fa-arrow-right"></i></a></div>
@@ -890,6 +796,7 @@
     <script src="assets/js/custom-select.js?v=1.0"></script>
     <!-- Main JS (Minified) -->
     <script src="assets/js/main.js?v=1.1"></script>
+    <script src="assets/js/transitions.js?v=1.0"></script>
     <!-- Quiz JS (Minified) -->
     <script src="assets/js/quiz.min.js?v=1.0"></script>
     <!-- Snowflakes Effect (Dec 25 - Jan 1) -->
