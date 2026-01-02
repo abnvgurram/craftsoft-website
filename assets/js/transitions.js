@@ -20,7 +20,7 @@
         let skeletonHtml = `
             <div class="page-skeleton-wrapper">
                 <div class="skeleton-nav-strip skeleton">
-                    <div class="skeleton-nav-circle"></div>
+                    <div class="skeleton-nav-line"></div>
                     <div class="skeleton-nav-line"></div>
                     <div class="skeleton-nav-line"></div>
                 </div>`;
