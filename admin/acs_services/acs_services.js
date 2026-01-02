@@ -158,53 +158,51 @@ async function syncFromWebsite() {
     const btn = document.getElementById('sync-services-btn');
 
     Modal.confirm(
-        'Sync Services',
-        'This will sync services from the official website list. Proceed?',
+        'Regenerate Services',
+        'This will DELETE all current service records and rebuild them with standardized S- prefixes (e.g., S-GD) and Serv-XXX IDs. Proceed?',
         async () => {
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Syncing...</span>';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Regenerating...</span>';
 
             try {
-                // 1. Get existing services
-                const { data: existing } = await window.supabaseClient.from('services').select('service_code');
-                const existingCodes = new Set(existing?.map(s => s.service_code) || []);
-
-                // 2. Get highest sequence for Serv-XXX
-                const { data: lastSrv } = await window.supabaseClient
+                // 1. Delete all existing services for a fresh start
+                const { error: deleteError } = await window.supabaseClient
                     .from('services')
-                    .select('service_id')
-                    .like('service_id', 'Serv-%')
-                    .order('service_id', { ascending: false })
-                    .limit(1);
+                    .delete()
+                    .neq('id', 0); // Delete all rows
 
-                let nextNum = 1;
-                if (lastSrv?.length > 0) {
-                    const match = lastSrv[0].service_id.match(/Serv-(\d+)/);
-                    if (match) nextNum = parseInt(match[1]) + 1;
-                }
+                if (deleteError) throw deleteError;
 
+                // 2. Insert standardized services
                 let addedCount = 0;
-                for (const s of websiteServices) {
-                    if (!existingCodes.has(s.code)) {
-                        const newId = `Serv-${String(nextNum).padStart(3, '0')}`;
-                        const { error } = await window.supabaseClient.from('services').insert({
-                            service_id: newId,
-                            service_code: s.code,
-                            name: s.name,
-                            category: s.category
-                        });
-                        if (error) throw error;
-                        nextNum++;
-                        addedCount++;
+                for (let i = 0; i < websiteServices.length; i++) {
+                    const s = websiteServices[i];
+                    const nextNum = i + 1;
+                    const newId = `Serv-${String(nextNum).padStart(3, '0')}`;
+
+                    // Force the prefix if it's missing in the source array
+                    let cleanCode = s.code;
+                    if (!cleanCode.startsWith('S-')) {
+                        cleanCode = 'S-' + cleanCode;
                     }
+
+                    const { error } = await window.supabaseClient.from('services').insert({
+                        service_id: newId,
+                        service_code: cleanCode,
+                        name: s.name,
+                        category: s.category
+                    });
+
+                    if (error) throw error;
+                    addedCount++;
                 }
 
-                Toast.success('Sync Success', `${addedCount} new services added.`);
+                Toast.success('Regeneration Success', `${addedCount} services standardized and rebuilt.`);
                 await loadServices();
 
             } catch (err) {
                 console.error(err);
-                Toast.error('Sync error', err.message);
+                Toast.error('Regeneration error', err.message);
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-rotate"></i> <span>Sync from Website</span>';
