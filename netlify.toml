@@ -88,6 +88,24 @@
   force = true
 
 [[redirects]]
+  host = "signup.craftsoft.co.in"
+  from = "/"
+  to = "/admin/signup/index.html"
+  status = 200
+
+[[redirects]]
+  host = "signup.craftsoft.co.in"
+  from = "/*"
+  to = "/admin/signup/:splat"
+  status = 200
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/"
+  to = "/admin/index.html"
+  status = 200
+
+[[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/login"
   to = "/admin/login.html"
