@@ -166,14 +166,15 @@ async function syncFromWebsite() {
 
             try {
                 // 1. Delete all existing services for a fresh start
+                // Using filter that hits all possible IDs to ensure a total wipe
                 const { error: deleteError } = await window.supabaseClient
                     .from('services')
                     .delete()
-                    .neq('id', 0); // Delete all rows
+                    .gte('id', 0);
 
                 if (deleteError) throw deleteError;
 
-                // 2. Insert standardized services
+                // 2. Insert standardized services from scratch
                 let addedCount = 0;
                 for (let i = 0; i < websiteServices.length; i++) {
                     const s = websiteServices[i];
