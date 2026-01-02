@@ -81,6 +81,9 @@
 
         // Handle internal navigation
         document.addEventListener('click', (e) => {
+            // Disable on mobile
+            if (window.innerWidth <= 768) return;
+
             const link = e.target.closest('a');
             if (!link) return;
 

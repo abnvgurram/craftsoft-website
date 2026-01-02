@@ -232,49 +232,10 @@
     border-radius: 12px;
 }
 
-/* Mobile Overrides */
+/* Mobile Overrides - Disable transition on mobile */
 @media (max-width: 768px) {
-    .page-skeleton-wrapper {
-        padding: 15px;
-        gap: 25px;
-    }
-
-    .skeleton-hero-block {
-        height: 320px;
-        padding: 40px 20px;
-        text-align: center;
-        align-items: center;
-    }
-
-    .skeleton-hero-line-1 {
-        width: 95%;
-        height: 30px;
-    }
-
-    .skeleton-hero-line-2 {
-        width: 80%;
-    }
-
-    .skeleton-hero-btn {
-        width: 100%;
-        max-width: 250px;
-    }
-
-    .skeleton-grid-placeholder {
-        grid-template-columns: 1fr;
-    }
-
-    .skeleton-nav-line {
-        display: none;
-    }
-
-    .skeleton-tabs {
-        overflow-x: auto;
-        padding-bottom: 10px;
-    }
-
-    .skeleton-tab {
-        flex-shrink: 0;
+    .page-transition {
+        display: none !important;
     }
 }
 
