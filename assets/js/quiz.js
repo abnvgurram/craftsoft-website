@@ -6,40 +6,50 @@ const quizData = [
     {
         question: "What excites you the most when you see a great website or app?",
         options: [
-            { text: "The beautiful layout, colors, and how easy it is to use.", score: { design: 10, uiux: 10 } },
-            { text: "The features like 'How does the login work?' or 'How is data stored?'", score: { development: 10, fullstack: 10 } },
-            { text: "The speed and how it handles millions of users without crashing.", score: { cloud: 10, devops: 10 } },
-            { text: "I care mostly about how clear the communication and instructions are.", score: { softskills: 10 } }
+            { text: "The beautiful layout, colors, and visual design.", score: { design: 10, uiux: 8 } },
+            { text: "The features - how login works, how data flows.", score: { fullstack: 10, python: 8 } },
+            { text: "The speed and how it handles millions of users.", score: { aws: 10, devops: 10 } },
+            { text: "The clear messaging and professional tone.", score: { softskills: 10, interview: 5 } }
         ]
     },
     {
-        question: "Which of these tools or activities sounds more interesting to you?",
+        question: "Which activity sounds most enjoyable to you?",
         options: [
-            { text: "Drawing, playing with fonts, and creating visual brands.", score: { design: 10 } },
-            { text: "Solving puzzles and writing logic to make things happen.", score: { development: 10, dsa: 10 } },
-            { text: "Managing servers, security, and complex IT systems.", score: { cloud: 10, aws: 10 } },
-            { text: "Persuading people and improving communication style.", score: { softskills: 10 } }
+            { text: "Creating logos, posters, and visual branding.", score: { design: 10 } },
+            { text: "Building apps and writing code that works.", score: { fullstack: 10, python: 10 } },
+            { text: "Setting up servers and automating deployments.", score: { aws: 10, devops: 10 } },
+            { text: "Presenting ideas and communicating confidently.", score: { softskills: 10, interview: 8 } }
         ]
     },
     {
-        question: "How do you prefer to solve a problem?",
+        question: "What's your biggest career goal right now?",
         options: [
-            { text: "By visualizing it and creating a mock-up/prototype.", score: { uiux: 10, design: 5 } },
-            { text: "By breaking it into logical steps and writing a sequence.", score: { fullstack: 10, python: 10 } },
-            { text: "By looking at the infrastructure and optimizing performance.", score: { devops: 10, aws: 10 } },
-            { text: "By talking it out and finding a diplomatic solution.", score: { softskills: 10 } }
+            { text: "Become a creative professional in design.", score: { design: 10, uiux: 10 } },
+            { text: "Get a high-paying developer job at a tech company.", score: { fullstack: 10, python: 8, interview: 5 } },
+            { text: "Work in cloud/DevOps and manage infrastructure.", score: { aws: 10, devops: 10 } },
+            { text: "Improve my communication and ace interviews.", score: { softskills: 10, interview: 10 } }
+        ]
+    },
+    {
+        question: "How do you prefer to solve problems?",
+        options: [
+            { text: "By sketching, wireframing, and visualizing.", score: { uiux: 10, design: 5 } },
+            { text: "By writing step-by-step logic and code.", score: { fullstack: 10, python: 10 } },
+            { text: "By analyzing systems and optimizing performance.", score: { devops: 10, aws: 8 } },
+            { text: "By discussing and finding collaborative solutions.", score: { softskills: 10, interview: 5 } }
         ]
     }
 ];
 
 const courseRecommendations = {
-    design: { title: "Graphic Design", icon: "fas fa-paint-brush", url: "pages/courses/graphic-design.html", desc: "Unleash your creativity and master branding with our Graphic Design excellence program." },
-    uiux: { title: "UI/UX Design", icon: "fas fa-object-group", url: "pages/courses/ui-ux.html", desc: "Design interfaces that people love using Figma and modern design principles." },
-    fullstack: { title: "Full Stack Development", icon: "fas fa-code", url: "pages/courses/full-stack.html", desc: "Become a complete developer by mastering frontend, backend, and databases." },
-    devops: { title: "DevOps Engineering", icon: "fas fa-infinity", url: "pages/courses/devops.html", desc: "Bridge the gap between development and operations with automation and CI/CD." },
-    aws: { title: "AWS Cloud Excellence", icon: "fab fa-aws", url: "pages/courses/aws.html", desc: "Master the world's leading cloud platform and build scalable infrastructure." },
-    softskills: { title: "Spoken English Mastery", icon: "fas fa-comments", url: "pages/courses/spoken-english.html", desc: "Transform your personality and communication to excel in your professional career." },
-    development: { title: "Python Full Stack", icon: "fab fa-python", url: "pages/courses/python.html", desc: "Learn the most versatile programming language and build powerful applications." }
+    design: { title: "Graphic design", icon: "fas fa-paint-brush", url: "pages/courses/graphic-design.html", desc: "Unleash your creativity and master branding with our graphic design excellence program." },
+    uiux: { title: "UI/UX design", icon: "fas fa-object-group", url: "pages/courses/ui-ux.html", desc: "Design interfaces that people love using Figma and modern design principles." },
+    fullstack: { title: "Full stack development", icon: "fas fa-code", url: "pages/courses/full-stack.html", desc: "Become a complete developer by mastering frontend, backend, and databases." },
+    devops: { title: "DevOps engineering", icon: "fas fa-infinity", url: "pages/courses/devops.html", desc: "Bridge the gap between development and operations with automation and CI/CD." },
+    aws: { title: "AWS cloud excellence", icon: "fab fa-aws", url: "pages/courses/aws.html", desc: "Master the world's leading cloud platform and build scalable infrastructure." },
+    softskills: { title: "Spoken English mastery", icon: "fas fa-comments", url: "pages/courses/spoken-english.html", desc: "Transform your personality and communication to excel in your professional career." },
+    python: { title: "Python programming", icon: "fab fa-python", url: "pages/courses/python.html", desc: "Learn the most versatile programming language and build powerful applications." },
+    interview: { title: "Resume & interview prep", icon: "fas fa-file-alt", url: "pages/courses/resume-interview.html", desc: "Master resume building, mock interviews, and land your dream job." }
 };
 
 let currentQuizStep = 0;

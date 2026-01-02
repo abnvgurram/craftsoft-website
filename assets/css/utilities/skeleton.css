@@ -1,0 +1,162 @@
+/* ============================================
+   SKELETON LOADING Component
+   Smooth page transitions with shimmer effect
+   ============================================ */
+
+/* Base skeleton styles */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+}
+
+.skeleton-text {
+    height: 1em;
+    margin-bottom: 0.5em;
+    border-radius: 4px;
+}
+
+.skeleton-text.short {
+    width: 60%;
+}
+
+.skeleton-text.medium {
+    width: 80%;
+}
+
+.skeleton-title {
+    height: 1.5em;
+    width: 70%;
+    margin-bottom: 1em;
+}
+
+.skeleton-card {
+    height: 300px;
+    border-radius: 16px;
+}
+
+.skeleton-image {
+    height: 200px;
+    border-radius: 12px;
+}
+
+.skeleton-button {
+    height: 48px;
+    width: 150px;
+    border-radius: 24px;
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Page transition overlay */
+.page-transition {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.page-transition.loaded {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.page-transition-content {
+    text-align: center;
+}
+
+.page-transition-logo {
+    width: 60px;
+    height: 60px;
+    background: var(--accent-gradient, linear-gradient(135deg, #667eea, #764ba2));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    margin: 0 auto 20px;
+    animation: pulse 1s infinite;
+}
+
+.page-transition-loader {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f0f0f0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Footer skeleton placeholders */
+.footer-links .skeleton-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-links .skeleton-list-item {
+    height: 16px;
+    width: 80%;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+}
+
+/* Content fade in */
+.fade-in-content {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.fade-in-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Dark mode skeleton (for footer) */
+.skeleton-dark {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
