@@ -504,8 +504,7 @@
     .footer-contact ul li a,
     .footer-contact ul li span {
         text-align: center;
-        display: block;
-        width: 100%;
+        display: inline-block;
     }
 
     .footer-bottom {
