@@ -2533,7 +2533,16 @@
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../assets/js/supabase-website-config.js?v=1.0"></script>
+    <script src="../../assets/js/inquiry-sync.js?v=1.0"></script>
     
     <script src="../../assets/js/main.js?v=1.1"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.InquirySync) {
+                window.InquirySync.initCourseForm('course-contact-form', 'Full Stack Development');
+            }
+        });
+    </script>
 </body>
 </html>

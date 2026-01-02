@@ -600,10 +600,25 @@
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../assets/js/supabase-website-config.js?v=1.0"></script>
+    <script src="../assets/js/inquiry-sync.js?v=1.0"></script>
     <script src="../assets/js/custom-select.js?v=1.0"></script>
 
     <!-- Festival Effects System -->
     <script src="../assets/js/main.js?v=1.1"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize courses inquiry form with dynamic course selection
+            const form = document.getElementById('courses-inquiry-form');
+            if (form && window.InquirySync) {
+                form.addEventListener('submit', async function (e) {
+                    const formData = window.InquirySync.extractFormData(form);
+                    // Use selected course code from dropdown
+                    window.InquirySync.createCourseInquiry(formData);
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

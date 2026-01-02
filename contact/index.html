@@ -355,6 +355,7 @@
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../assets/js/supabase-website-config.js?v=1.0"></script>
+    <script src="../assets/js/inquiry-sync.js?v=1.0"></script>
     <script src="../assets/js/custom-select.js?v=1.0"></script>
 
     <script src="../assets/js/main.js?v=1.1"></script>
@@ -379,6 +380,13 @@
 
             btn.href = `https://wa.me/917842239090?text=${encodeURIComponent(text)}`;
         }
+
+        // Initialize contact form sync
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.InquirySync) {
+                window.InquirySync.initContactForm('contactForm');
+            }
+        });
     </script>
 </body>
 
