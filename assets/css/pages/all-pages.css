@@ -4,8 +4,8 @@
 
 /* Page Header */
 .page-header {
-    background: linear-gradient(135deg, var(--primary-50) 0%, var(--white) 50%, var(--primary-100) 100%);
-    padding: 140px 0 70px;
+    background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
+    padding: 130px 0 30px;
     position: relative;
     overflow: hidden;
 }
@@ -43,21 +43,25 @@
 
 /* Courses Page */
 .courses-page {
-    padding: var(--spacing-3xl) 0;
+    padding: var(--spacing-xl) 0;
+    /* Reduced from 3xl */
     background: rgba(40, 150, 205, 0.05);
 }
 
 /* Breadcrumbs Navigation */
 .breadcrumbs {
-    background: var(--white);
-    padding: var(--spacing-md) 0;
-    border-bottom: 1px solid var(--gray-100);
+    background: transparent;
+    padding: 0;
+    margin-top: -1rem;
+    position: relative;
+    z-index: 10;
+    border: none;
 }
 
 .breadcrumb-list {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: 0.75rem;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -67,7 +71,8 @@
 .breadcrumb-list li {
     display: flex;
     align-items: center;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 500;
     color: var(--gray-500);
 }
 
@@ -240,7 +245,8 @@
 
 /* Services Page */
 .services-page {
-    padding: var(--spacing-3xl) 0;
+    padding: var(--spacing-xl) 0;
+    /* Reduced from 3xl */
     background: rgba(40, 150, 205, 0.05);
 }
 
@@ -517,7 +523,8 @@
 
 /* Individual Course Page */
 .course-detail-page {
-    padding: var(--spacing-3xl) 0;
+    padding: var(--spacing-xl) 0;
+    /* Reduced from 3xl */
 }
 
 .course-detail-header {
@@ -928,7 +935,8 @@
 .page-cta {
     background: var(--accent-gradient);
     border-radius: var(--radius-2xl);
-    padding: var(--spacing-3xl);
+    padding: var(--spacing-2xl);
+    /* Reduced from 3xl */
     text-align: center;
     color: var(--white);
 }
@@ -1246,8 +1254,9 @@
 .courses-contact-section {
     background: rgba(40, 150, 205, 0.05);
     border-radius: var(--radius-2xl);
-    padding: var(--spacing-3xl) 0;
-    margin-top: var(--spacing-3xl);
+    padding: var(--spacing-2xl) 0;
+    /* Reduced from 3xl */
+    margin-top: var(--spacing-2xl);
 }
 
 .courses-contact-wrapper {
