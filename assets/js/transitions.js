@@ -5,20 +5,46 @@
 
 (function () {
     // Inject the transition overlay HTML if it doesn't exist
-    function injectOverlay() {
+    function injectOverlay(targetHref = '') {
         const existing = document.querySelector('.page-transition');
-        if (existing) return existing;
+        const overlay = existing || document.createElement('div');
 
-        const overlay = document.createElement('div');
-        overlay.className = 'page-transition';
-        overlay.innerHTML = `
+        if (!existing) {
+            overlay.className = 'page-transition';
+            document.body.prepend(overlay);
+        }
+
+        // Determine look based on target URL
+        const isCoursePage = targetHref.includes('/courses/') || window.location.pathname.includes('/courses/');
+
+        let skeletonHtml = `
             <div class="page-skeleton-wrapper">
                 <div class="skeleton-nav-strip skeleton">
                     <div class="skeleton-nav-circle"></div>
                     <div class="skeleton-nav-line"></div>
                     <div class="skeleton-nav-line"></div>
-                    <div class="skeleton-nav-line"></div>
+                </div>`;
+
+        if (isCoursePage) {
+            skeletonHtml += `
+                <div class="skeleton-breadcrumbs skeleton"></div>
+                <div class="skeleton-hero-block skeleton">
+                    <div class="skeleton-hero-line-1"></div>
+                    <div class="skeleton-hero-line-2"></div>
+                    <div class="skeleton-hero-btn"></div>
                 </div>
+                <div class="skeleton-tabs">
+                    <div class="skeleton-tab skeleton"></div>
+                    <div class="skeleton-tab skeleton"></div>
+                    <div class="skeleton-tab skeleton"></div>
+                </div>
+                <div class="skeleton-module-list">
+                    <div class="skeleton-module-item skeleton"></div>
+                    <div class="skeleton-module-item skeleton"></div>
+                    <div class="skeleton-module-item skeleton"></div>
+                </div>`;
+        } else {
+            skeletonHtml += `
                 <div class="skeleton-hero-block skeleton">
                     <div class="skeleton-hero-line-1"></div>
                     <div class="skeleton-hero-line-2"></div>
@@ -28,15 +54,16 @@
                     <div class="skeleton-grid-item skeleton"></div>
                     <div class="skeleton-grid-item skeleton"></div>
                     <div class="skeleton-grid-item skeleton"></div>
-                </div>
-            </div>
-        `;
-        document.body.prepend(overlay);
+                </div>`;
+        }
+
+        skeletonHtml += `</div>`;
+        overlay.innerHTML = skeletonHtml;
         return overlay;
     }
 
     function initTransitions() {
-        const overlay = injectOverlay();
+        const overlay = injectOverlay(window.location.href);
 
         function hideOverlay() {
             if (overlay && !overlay.classList.contains('loaded')) {
@@ -74,6 +101,7 @@
                 e.preventDefault();
 
                 if (overlay) {
+                    injectOverlay(href); // Update skeleton to match destination
                     overlay.classList.remove('loaded');
                 }
 

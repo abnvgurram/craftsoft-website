@@ -197,6 +197,87 @@
     border-radius: 16px;
 }
 
+/* Course Specific Skeletons */
+.skeleton-breadcrumbs {
+    height: 18px;
+    width: 200px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.skeleton-tabs {
+    display: flex;
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.skeleton-tab {
+    height: 40px;
+    width: 120px;
+    background: #f0f0f0;
+    border-radius: 20px;
+}
+
+.skeleton-module-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.skeleton-module-item {
+    height: 60px;
+    width: 100%;
+    background: #f0f0f0;
+    border-radius: 12px;
+}
+
+/* Mobile Overrides */
+@media (max-width: 768px) {
+    .page-skeleton-wrapper {
+        padding: 15px;
+        gap: 25px;
+    }
+
+    .skeleton-hero-block {
+        height: 320px;
+        padding: 40px 20px;
+        text-align: center;
+        align-items: center;
+    }
+
+    .skeleton-hero-line-1 {
+        width: 95%;
+        height: 30px;
+    }
+
+    .skeleton-hero-line-2 {
+        width: 80%;
+    }
+
+    .skeleton-hero-btn {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .skeleton-grid-placeholder {
+        grid-template-columns: 1fr;
+    }
+
+    .skeleton-nav-line {
+        display: none;
+    }
+
+    .skeleton-tabs {
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .skeleton-tab {
+        flex-shrink: 0;
+    }
+}
+
 @keyframes pulse {
 
     0%,
