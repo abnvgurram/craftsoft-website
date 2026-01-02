@@ -197,9 +197,11 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        width: 100%;
         padding: 24px 20px;
         background: transparent;
         border-bottom: none;
+        flex-shrink: 0;
     }
 
     .mobile-menu-header .logo {
