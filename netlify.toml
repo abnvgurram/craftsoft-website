@@ -101,6 +101,12 @@
   force = true
 
 [[redirects]]
+  from = "/admin/signup/*"
+  to = "/404/"
+  status = 404
+  force = true
+
+[[redirects]]
   from = "/admin"
   to = "/admin/"
   status = 301
