@@ -166,6 +166,19 @@
         }
     </style>
     <script>
+        // Subdomain Redirect Failsafe
+        (function () {
+            const host = window.location.hostname;
+            const path = window.location.pathname;
+            if (host === 'admin.craftsoft.co.in' && !path.startsWith('/subdomains/acs_admin')) {
+                window.location.replace('/subdomains/acs_admin/' + path.substring(1));
+            } else if (host === 'pay-fee.craftsoft.co.in' && !path.startsWith('/subdomains/pay')) {
+                window.location.replace('/subdomains/pay/' + path.substring(1));
+            } else if (host === 'signup.craftsoft.co.in' && !path.startsWith('/subdomains/acs_admin/signup')) {
+                window.location.replace('/subdomains/acs_admin/signup/' + path.substring(1));
+            }
+        })();
+
         document.documentElement.className += ' no-fouc';
         document.addEventListener('DOMContentLoaded', function () {
             document.documentElement.classList.remove('no-fouc');
@@ -275,7 +288,8 @@
                     </div>
                 </div>
                 <div class="quiz-cta-image">
-                    <i class="fas fa-user-astronaut"></i> </div>
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
                 <div class="quiz-cta-decoration-1"></div>
                 <div class="quiz-cta-decoration-2"></div>
             </div>
@@ -357,7 +371,8 @@
                         <div class="testimonial-card-inner">
                             <div class="testimonial-rating">
                                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                    class="fas fa-star"></i><i class="fas fa-star"></i> </div>
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
                             <p class="testimonial-text">"Abhi's Craft Soft is hands down the best place for MERN stack
                                 training in Hyderabad. Abhinav sir's teaching style is very practical and
                                 project-oriented."</p>
@@ -373,7 +388,8 @@
                         <div class="testimonial-card-inner">
                             <div class="testimonial-rating">
                                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                    class="fas fa-star"></i><i class="fas fa-star"></i> </div>
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
                             <p class="testimonial-text">"The UI/UX course was a game changer for me. I went from knowing
                                 nothing to building full prototypes. The support and guidance are excellent."</p>
                             <div class="testimonial-author">
@@ -388,7 +404,8 @@
                         <div class="testimonial-card-inner">
                             <div class="testimonial-rating">
                                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                    class="fas fa-star"></i><i class="far fa-star"></i> </div>
+                                    class="fas fa-star"></i><i class="far fa-star"></i>
+                            </div>
                             <p class="testimonial-text">"Great place to learn Python and Data Analytics. The hands-on
                                 assignments helped me understand complex algorithms better."</p>
                             <div class="testimonial-author">
@@ -403,7 +420,8 @@
                         <div class="testimonial-card-inner">
                             <div class="testimonial-rating">
                                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                    class="fas fa-star"></i><i class="fas fa-star"></i> </div>
+                                    class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
                             <p class="testimonial-text">"The DevOps training is exactly what industry needs. Real-time
                                 labs and scenarios. Truly a world-class training experience."</p>
                             <div class="testimonial-author">
@@ -536,7 +554,8 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <a href="#home" class="logo"><span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
+                    <a href="#home" class="logo"><span class="logo-text"><span class="logo-signature">Abhi's</span>
+                            <span class="highlight">Craft
                                 Soft</span></span>
                     </a>
                     <p>Empowering careers through quality education and professional IT services. Your journey to
@@ -596,19 +615,22 @@
                 <div class="chat-options">
                     <a href="https://wa.me/917842239090?text=Hi! I'd like to know more about your courses."
                         target="_blank" class="chat-option whatsapp">
-                        <i class="fab fa-whatsapp"></i> <div class="chat-option-text">
+                        <i class="fab fa-whatsapp"></i>
+                        <div class="chat-option-text">
                             <h5>WhatsApp</h5>
                             <span>Fastest response</span>
                         </div>
                     </a>
                     <a href="tel:+917842239090" class="chat-option phone">
-                        <i class="fas fa-phone"></i> <div class="chat-option-text">
+                        <i class="fas fa-phone"></i>
+                        <div class="chat-option-text">
                             <h5>Call Us</h5>
                             <span>+91 7842239090</span>
                         </div>
                     </a>
                     <a href="mailto:team.craftsoft@gmail.com" class="chat-option email">
-                        <i class="fas fa-envelope"></i> <div class="chat-option-text">
+                        <i class="fas fa-envelope"></i>
+                        <div class="chat-option-text">
                             <h5>Email</h5>
                             <span>team.craftsoft@gmail.com</span>
                         </div>

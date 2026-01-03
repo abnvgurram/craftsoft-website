@@ -25,6 +25,53 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
+# ============================================
+# ADMIN SUBDOMAIN (admin.craftsoft.co.in)
+# ============================================
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/signup/*"
+  to = "/subdomains/acs_admin/404/"
+  status = 404
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/shared/*"
+  to = "/shared/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/"
+  to = "/subdomains/acs_admin/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/login"
+  to = "/subdomains/acs_admin/login.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/*"
+  to = "/subdomains/acs_admin/:splat"
+  status = 200
+  force = true
+
+# ============================================
+
 # Redirect favicon.ico to master favicon.svg
 [[redirects]]
   from = "/favicon.ico"
@@ -115,58 +162,6 @@
   from = "/*"
   to = "/subdomains/pay/404/index.html"
   status = 404
-
-# ============================================
-# ADMIN SUBDOMAIN (admin.craftsoft.co.in)
-# ============================================
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/signup/*"
-  to = "/subdomains/acs_admin/404/"
-  status = 404
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/assets/*"
-  to = "/assets/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/shared/*"
-  to = "/shared/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/"
-  to = "/subdomains/acs_admin/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/login"
-  to = "/subdomains/acs_admin/login.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/*"
-  to = "/subdomains/acs_admin/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/*"
-  to = "/subdomains/acs_admin/404/"
-  status = 404
-  force = true
 
 # ============================================
 # SIGNUP SUBDOMAIN (signup.craftsoft.co.in)
