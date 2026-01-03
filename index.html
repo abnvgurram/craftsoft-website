@@ -166,19 +166,6 @@
         }
     </style>
     <script>
-        // Subdomain Redirect Failsafe
-        (function () {
-            const host = window.location.hostname;
-            const path = window.location.pathname;
-            if (host === 'admin.craftsoft.co.in' && !path.startsWith('/subdomains/acs_admin')) {
-                window.location.replace('/subdomains/acs_admin/' + path.substring(1));
-            } else if (host === 'pay-fee.craftsoft.co.in' && !path.startsWith('/subdomains/pay')) {
-                window.location.replace('/subdomains/pay/' + path.substring(1));
-            } else if (host === 'signup.craftsoft.co.in' && !path.startsWith('/subdomains/acs_admin/signup')) {
-                window.location.replace('/subdomains/acs_admin/signup/' + path.substring(1));
-            }
-        })();
-
         document.documentElement.className += ' no-fouc';
         document.addEventListener('DOMContentLoaded', function () {
             document.documentElement.classList.remove('no-fouc');

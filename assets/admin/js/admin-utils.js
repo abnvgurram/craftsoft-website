@@ -214,9 +214,9 @@ const Validators = {
         return re.test(password);
     },
 
-    // Admin ID format
+    // Admin ID format (Case-insensitive)
     isValidAdminId(id) {
-        const re = /^ACS-\d{2,}$/;
+        const re = /^ACS-\d{1,}$/i;
         return re.test(id);
     },
 
@@ -1046,12 +1046,6 @@ const AccountManager = {
                         Sign In
                     </button>
                 </form>
-                
-                <div class="auth-divider">or</div>
-                
-                <p class="auth-link">
-                    Don't have an account? <a href="https://signup.craftsoft.co.in">Sign Up</a>
-                </p>
             </div>
         `;
 
@@ -1102,7 +1096,12 @@ const AccountManager = {
     async handleAddAccountSubmit(closeModal) {
         const { Toast, FormHelpers, Validators } = window.AdminUtils;
 
-        const identifier = document.getElementById('add-identifier').value.trim();
+        let identifier = document.getElementById('add-identifier').value.trim();
+        // Auto-normalize Admin ID (e.g. acs-01 -> ACS-01)
+        if (identifier.toLowerCase().startsWith('acs-')) {
+            identifier = identifier.toUpperCase();
+        }
+
         const password = document.getElementById('add-password').value;
         const submitBtn = document.getElementById('add-account-submit');
 

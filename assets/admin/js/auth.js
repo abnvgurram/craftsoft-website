@@ -75,11 +75,14 @@ const Auth = {
 
             // Check if identifier is an Admin ID (ACS-XX)
             if (Validators.isValidAdminId(identifier)) {
+                // Normalize Admin ID (e.g. acs-01 -> ACS-01)
+                const normalizedId = identifier.toUpperCase();
+
                 // Fetch email by admin_id
                 const { data: adminData, error: adminError } = await supabase
                     .from('admins')
                     .select('email, status')
-                    .eq('admin_id', identifier)
+                    .eq('admin_id', normalizedId)
                     .maybeSingle();
 
                 if (adminError) {

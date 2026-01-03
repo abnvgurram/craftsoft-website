@@ -65,6 +65,63 @@
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
+  from = "/dashboard/*"
+  to = "/subdomains/acs_admin/dashboard/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/students/*"
+  to = "/subdomains/acs_admin/students/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/tutors/*"
+  to = "/subdomains/acs_admin/tutors/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/inquiries/*"
+  to = "/subdomains/acs_admin/inquiries/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/courses/*"
+  to = "/subdomains/acs_admin/courses/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/acs_services/*"
+  to = "/subdomains/acs_admin/acs_services/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/payments/*"
+  to = "/subdomains/acs_admin/payments/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/settings/*"
+  to = "/subdomains/acs_admin/settings/:splat"
+  status = 200
+  force = true
+
+# Catch-all for other files in acs_admin root (js, css, etc.)
+[[redirects]]
+  host = "admin.craftsoft.co.in"
   from = "/*"
   to = "/subdomains/acs_admin/:splat"
   status = 200

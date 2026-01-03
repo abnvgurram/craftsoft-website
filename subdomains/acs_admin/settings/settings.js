@@ -388,7 +388,7 @@ function renderSettings() {
                 
                 <div class="settings-edit-form" id="timeout-edit-form" style="display: none;">
                     <div class="timeout-options-grid" id="timeout-options">
-                        ${['2', '5', '15', '30', '60', '0'].map(val => `
+                        ${['1', '2', '5', '10', '15', '0'].map(val => `
                             <button class="timeout-option ${settingsData.inactivity_timeout === val ? 'selected' : ''}" data-value="${val}">
                                 ${getTimeoutLabel(val)}
                             </button>
@@ -430,7 +430,7 @@ function maskValue(value, showLast = 4, separator = '') {
 
 function getTimeoutLabel(val) {
     if (val === '0' || val === 'never') return 'Never';
-    return `${val} minutes`;
+    return `${val} minute${val === '1' ? '' : 's'}`;
 }
 
 function getBrowserName() {
