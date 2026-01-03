@@ -18,40 +18,11 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Page Styles (minified) -->
-    <link rel="stylesheet" href="pay.min.css">
-    <!-- FOUC Protection -->
-    <style>
-        .no-fouc { opacity: 0; }
-        body { transition: opacity 0.3s ease; }
-    </style>
-    <script>
-        document.documentElement.className += ' no-fouc';
-        document.addEventListener('DOMContentLoaded', function() {
-            document.documentElement.classList.remove('no-fouc');
-        });
-        window.addEventListener('load', function() {
-            document.documentElement.classList.remove('no-fouc');
-        });
-    </script>
+    <!-- Page Styles -->
+    <link rel="stylesheet" href="pay.css">
 </head>
 
 <body>
-    <!-- Page Transition Overlay -->
-        <!-- Page Transition Overlay -->
-            <div class="skeleton-hero-block skeleton">
-                <div class="skeleton-hero-line-1"></div>
-                <div class="skeleton-hero-line-2"></div>
-                <div class="skeleton-hero-btn"></div>
-            </div>
-            <div class="skeleton-grid-placeholder">
-                <div class="skeleton-grid-item skeleton"></div>
-                <div class="skeleton-grid-item skeleton"></div>
-                <div class="skeleton-grid-item skeleton"></div>
-            </div>
-        </div>
-    </div>
-    </div>
     <div class="pay-container">
         <!-- Header -->
         <header class="pay-header">
@@ -65,12 +36,13 @@
         <!-- Step 1: Enter Student ID -->
         <div id="step-lookup" class="pay-card">
             <div class="card-header">
-                <i class="fa-solid fa-user-check"></i> <h2>Find Your Account</h2>
+                <i class="fa-solid fa-user-check"></i>
+                <h2>Find Your Account</h2>
             </div>
             <div class="card-body">
                 <div class="form-group">
                     <label class="form-label">Student ID</label>
-                    <input type="text" id="student-id-input" class="form-input" placeholder="e.g., STU-001"
+                    <input type="text" id="student-id-input" class="form-input" placeholder="e.g., IN-ACS1001"
                         autocomplete="off">
                     <span class="form-hint">Enter the Student ID provided by Craftsoft</span>
                 </div>
@@ -83,7 +55,8 @@
         <!-- Step 2: Show Courses & Pay -->
         <div id="step-pay" class="pay-card" style="display: none;">
             <div class="card-header">
-                <i class="fa-solid fa-user"></i> <div class="student-info">
+                <i class="fa-solid fa-user"></i>
+                <div class="student-info">
                     <h2 id="student-name">—</h2>
                     <span id="student-id-display" class="student-id-badge">—</span>
                 </div>
@@ -104,7 +77,8 @@
         <!-- Success State -->
         <div id="step-success" class="pay-card success-card" style="display: none;">
             <div class="success-icon">
-                <i class="fa-solid fa-check-circle"></i> </div>
+                <i class="fa-solid fa-check-circle"></i>
+            </div>
             <h2>Payment Successful!</h2>
             <p id="success-message">Your payment has been recorded.</p>
             <div class="receipt-info">
@@ -133,9 +107,8 @@
     <!-- Supabase (for initial lookup only - backend handles sensitive ops) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Page Script (minified) -->
-    <script src="pay.min.js"></script>
-    
-    <script src="assets/js/main.js?v=1.1"></script>
+    <!-- Page Script -->
+    <script src="pay.js"></script>
 </body>
+
 </html>
