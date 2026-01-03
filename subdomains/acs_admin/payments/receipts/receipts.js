@@ -47,6 +47,7 @@ async function loadReceipts() {
                 created_at,
                 student:student_id (
                     id,
+                    student_id,
                     first_name,
                     last_name,
                     phone
@@ -101,12 +102,18 @@ function renderReceipts() {
         return `
         <div class="premium-card">
             <div class="card-header">
-                <span class="card-id-badge">${r.receipt_id}</span>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <span class="card-id-badge">${r.receipt_id}</span>
+                    <span style="font-size: 0.75rem; color: var(--admin-text-muted);">${formatDate(r.created_at)}</span>
+                </div>
                 <span class="card-amount">${formatCurrency(r.amount_paid)}</span>
             </div>
             <div class="card-body">
                 <div class="card-info-row">
-                    <span class="card-info-item"><i class="fa-solid fa-user"></i> ${r.student ? `${r.student.first_name} ${r.student.last_name}` : 'Unknown'}</span>
+                    <span class="card-info-item">
+                        <i class="fa-solid fa-user"></i> 
+                        ${r.student ? `${r.student.first_name} ${r.student.last_name} (${r.student.student_id})` : 'Unknown'}
+                    </span>
                     <span class="card-info-item"><i class="fa-solid fa-book"></i> ${itemName}</span>
                     <span class="card-info-item ${r.balance_due <= 0 ? 'text-success' : 'text-danger'}">
                         <i class="fa-solid fa-coins"></i> ${r.balance_due <= 0 ? 'Fully Paid' : `Due: ${formatCurrency(r.balance_due)}`}
@@ -313,6 +320,7 @@ function bindEvents() {
             filteredReceipts = receipts.filter(r =>
                 r.receipt_id?.toLowerCase().includes(query) ||
                 (r.student ? `${r.student.first_name} ${r.student.last_name}`.toLowerCase().includes(query) : false) ||
+                (r.student?.student_id ? r.student.student_id.toLowerCase().includes(query) : false) ||
                 r.course?.course_name?.toLowerCase().includes(query) ||
                 r.service?.name?.toLowerCase().includes(query)
             );

@@ -45,6 +45,7 @@ async function loadPayments() {
                 created_at,
                 student:student_id (
                     id,
+                    student_id,
                     first_name,
                     last_name
                 ),
@@ -96,7 +97,10 @@ function renderPayments() {
             </div>
             <div class="card-body">
                 <div class="card-info-row">
-                    <span class="card-info-item"><i class="fa-solid fa-user"></i> ${p.student ? `${p.student.first_name} ${p.student.last_name}` : 'Unknown'}</span>
+                    <span class="card-info-item">
+                        <i class="fa-solid fa-user"></i> 
+                        ${p.student ? `${p.student.first_name} ${p.student.last_name} (${p.student.student_id})` : 'Unknown'}
+                    </span>
                     <span class="card-info-item"><i class="fa-solid fa-book"></i> ${p.course?.course_name || 'Unknown'}</span>
                     <span class="card-info-item"><i class="fa-solid fa-hashtag"></i> ${p.reference_id}</span>
                 </div>
@@ -156,6 +160,7 @@ function bindEvents() {
         } else {
             filteredPayments = payments.filter(p =>
                 (p.student ? `${p.student.first_name} ${p.student.last_name}`.toLowerCase().includes(query) : false) ||
+                (p.student?.student_id ? p.student.student_id.toLowerCase().includes(query) : false) ||
                 p.course?.course_name?.toLowerCase().includes(query) ||
                 p.reference_id?.toLowerCase().includes(query)
             );
