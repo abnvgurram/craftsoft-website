@@ -100,6 +100,13 @@
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
+  from = "/acs_services"
+  to = "/subdomains/acs_admin/acs_services/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
   from = "/acs_services/*"
   to = "/subdomains/acs_admin/acs_services/:splat"
   status = 200
