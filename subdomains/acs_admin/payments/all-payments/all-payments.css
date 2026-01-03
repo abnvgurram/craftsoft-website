@@ -110,10 +110,27 @@
 /* ============================================
    Cards Layout (Desktop & Mobile)
    ============================================ */
+/* Hybrid Layout Toggle */
+.table-container {
+    display: block;
+    /* Desktop by default */
+}
+
 .data-cards {
-    display: flex;
+    display: none;
+    /* Hidden on desktop */
     flex-direction: column;
     gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .table-container {
+        display: none;
+    }
+
+    .data-cards {
+        display: flex;
+    }
 }
 
 .premium-card {

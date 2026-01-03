@@ -96,7 +96,37 @@ function renderReceipts() {
     const start = (currentPage - 1) * itemsPerPage;
     const paginatedReceipts = filteredReceipts.slice(start, start + itemsPerPage);
 
-    // Cards layout
+    // Desktop Table Rendering
+    const tbody = document.getElementById('receipts-tbody');
+    if (tbody) {
+        tbody.innerHTML = paginatedReceipts.map(r => {
+            const studentName = r.student ? `${r.student.first_name} ${r.student.last_name}` : 'Unknown';
+            const itemName = r.course?.course_name || r.service?.name || 'Unknown Item';
+            return `
+                <tr>
+                    <td><span class="cell-badge">${r.receipt_id}</span></td>
+                    <td>
+                        <div class="student-cell">
+                            <span class="cell-title">${studentName}</span>
+                            <span class="cell-id-small">${r.student?.student_id || '-'}</span>
+                        </div>
+                    </td>
+                    <td><span class="cell-title">${itemName}</span></td>
+                    <td><span class="cell-amount">${formatCurrency(r.amount_paid)}</span></td>
+                    <td><span class="glass-tag ${r.payment_mode.toLowerCase()}">${r.payment_mode}</span></td>
+                    <td class="text-right">
+                        <div class="cell-actions">
+                            <button class="action-btn" onclick="viewReceipt('${r.receipt_id}')" title="View"><i class="fa-solid fa-eye"></i></button>
+                            <button class="action-btn" onclick="downloadReceipt('${r.receipt_id}')" title="Download"><i class="fa-solid fa-download"></i></button>
+                            <button class="action-btn whatsapp" onclick="sendWhatsApp('${r.receipt_id}')" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Cards layout (Mobile/Tablet)
     cards.innerHTML = paginatedReceipts.map(r => {
         const itemName = r.course?.course_name || r.service?.name || 'Unknown Item';
         return `
@@ -155,66 +185,124 @@ function renderReceipts() {
 // =====================
 // View Receipt
 // =====================
-function viewReceipt(receiptId) {
+async function viewReceipt(receiptId) {
     currentReceipt = receipts.find(r => r.receipt_id === receiptId);
     if (!currentReceipt) return;
 
-    const itemName = currentReceipt.course?.course_name || currentReceipt.service?.name || 'Unknown Item';
-    const itemLabel = currentReceipt.course ? 'Course' : 'Service';
+    const { Toast } = window.AdminUtils;
 
+    // Show loading state in modal first
     const content = document.getElementById('receipt-content');
-    content.innerHTML = `
-        <div class="receipt-view" id="receipt-printable">
-            <div class="receipt-header">
-                <div class="receipt-logo">Abhi's Craftsoft</div>
-                <div class="receipt-subtitle">Payment Receipt</div>
-            </div>
-            
-            <div class="receipt-details">
-                <div class="receipt-row">
-                    <span class="receipt-label">Receipt ID</span>
-                    <span class="receipt-value">${currentReceipt.receipt_id}</span>
-                </div>
-                <div class="receipt-row">
-                    <span class="receipt-label">Date</span>
-                    <span class="receipt-value">${formatDate(currentReceipt.created_at)}</span>
-                </div>
-                <div class="receipt-row">
-                    <span class="receipt-label">Student</span>
-                    <span class="receipt-value">${currentReceipt.student ? `${currentReceipt.student.first_name} ${currentReceipt.student.last_name}` : 'Unknown'}</span>
-                </div>
-                <div class="receipt-row">
-                    <span class="receipt-label">${itemLabel}</span>
-                    <span class="receipt-value">${itemName}</span>
-                </div>
-                <div class="receipt-row receipt-amount-row">
-                    <span class="receipt-label">Amount Paid</span>
-                    <span class="receipt-value">${formatCurrency(currentReceipt.amount_paid)}</span>
-                </div>
-                <div class="receipt-row">
-                    <span class="receipt-label">Payment Mode</span>
-                    <span class="receipt-value">${currentReceipt.payment_mode === 'CASH' ? 'Cash' : 'Online (UPI)'}</span>
-                </div>
-                <div class="receipt-row">
-                    <span class="receipt-label">Reference ID</span>
-                    <span class="receipt-value" style="font-size: 0.75rem; font-family: monospace;">${currentReceipt.reference_id}</span>
-                </div>
-                <div class="receipt-row">
-                    <span class="receipt-label">Balance Due</span>
-                    <span class="receipt-value ${currentReceipt.balance_due <= 0 ? 'paid' : 'due'}">
-                        ${currentReceipt.balance_due <= 0 ? '₹0 (Fully Paid)' : formatCurrency(currentReceipt.balance_due)}
-                    </span>
-                </div>
-            </div>
-            
-            <div class="receipt-footer">
-                <p>This is a system-generated receipt.</p>
-                <p>No signature required.</p>
-            </div>
-        </div>
-    `;
-
+    content.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading Ledger...</div>';
     document.getElementById('receipt-modal').classList.add('active');
+
+    try {
+        // 1. Calculate Live Item Balance
+        const { data: history, error: hErr } = await window.supabaseClient
+            .from('receipts')
+            .select('amount_paid')
+            .eq('student_id', currentReceipt.student?.id)
+            .eq(currentReceipt.course ? 'course_id' : 'service_id', currentReceipt.course?.id || currentReceipt.service?.id);
+
+        if (hErr) throw hErr;
+
+        // 2. Get Course Fee (to handle discounts correctly from student record)
+        const { data: studentRecord } = await window.supabaseClient
+            .from('students')
+            .select('course_discounts, final_fee')
+            .eq('id', currentReceipt.student?.id)
+            .single();
+
+        let totalItemFee = 0;
+        if (currentReceipt.course) {
+            const { data: courseData } = await window.supabaseClient.from('courses').select('fee').eq('id', currentReceipt.course.id).single();
+            const discount = (studentRecord?.course_discounts || {})[currentReceipt.course.course_code] || 0;
+            totalItemFee = (courseData?.fee || 0) - discount;
+        }
+
+        const totalPaidForItem = history.reduce((sum, r) => sum + (r.amount_paid || 0), 0);
+        const pendingForItem = Math.max(0, totalItemFee - totalPaidForItem);
+
+        // 3. Global Summary
+        const { data: allStudentReceipts } = await window.supabaseClient
+            .from('receipts')
+            .select('amount_paid')
+            .eq('student_id', currentReceipt.student?.id);
+        const globalPaid = allStudentReceipts.reduce((sum, r) => sum + (r.amount_paid || 0), 0);
+        const globalPending = Math.max(0, (studentRecord?.final_fee || 0) - globalPaid);
+
+        const itemName = currentReceipt.course?.course_name || currentReceipt.service?.name || 'Unknown Item';
+        const itemLabel = currentReceipt.course ? 'Course' : 'Service';
+
+        content.innerHTML = `
+            <div class="receipt-view" id="receipt-printable">
+                <div class="receipt-header">
+                    <div class="receipt-logo">Abhi's Craftsoft</div>
+                    <div class="receipt-subtitle">Payment Receipt</div>
+                </div>
+                
+                <div class="receipt-details">
+                    <div class="receipt-row">
+                        <span class="receipt-label">Receipt ID</span>
+                        <span class="receipt-value">${currentReceipt.receipt_id}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Date</span>
+                        <span class="receipt-value">${formatDate(currentReceipt.created_at)}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Student</span>
+                        <span class="receipt-value">${currentReceipt.student ? `${currentReceipt.student.first_name} ${currentReceipt.student.last_name} (${currentReceipt.student.student_id})` : 'Unknown'}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">${itemLabel}</span>
+                        <span class="receipt-value">${itemName}</span>
+                    </div>
+                    <div class="receipt-row receipt-amount-row">
+                        <span class="receipt-label">Amount Paid</span>
+                        <span class="receipt-value">${formatCurrency(currentReceipt.amount_paid)}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Payment Mode</span>
+                        <span class="receipt-value">${currentReceipt.payment_mode === 'CASH' ? 'Cash' : 'Online (UPI)'}</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Reference ID</span>
+                        <span class="receipt-value" style="font-size: 0.75rem; font-family: monospace;">${currentReceipt.reference_id}</span>
+                    </div>
+                </div>
+
+                <div class="receipt-ledger">
+                    <div class="ledger-header">LEDGER STATUS (${currentReceipt.course?.course_code || 'Service'})</div>
+                    <div class="ledger-row">
+                        <span>Fee: ${formatCurrency(totalItemFee)}</span>
+                        <span>Paid: ${formatCurrency(totalPaidForItem)}</span>
+                        <strong class="${pendingForItem <= 0 ? 'text-success' : 'text-danger'}">
+                            Pending: ${formatCurrency(pendingForItem)}
+                        </strong>
+                    </div>
+                </div>
+
+                ${globalPending > 0 ? `
+                <div class="receipt-global-summary">
+                    <div class="ledger-header">GLOBAL PENDING (All Courses)</div>
+                    <div class="ledger-row">
+                        <strong class="text-danger">Total Outstanding: ${formatCurrency(globalPending)}</strong>
+                    </div>
+                </div>
+                ` : ''}
+                
+                <div class="receipt-footer">
+                    <p>This is a system-generated receipt.</p>
+                    <p>No signature required.</p>
+                </div>
+            </div>
+        `;
+    } catch (err) {
+        console.error(err);
+        Toast.error('Load Error', 'Failed to fetch live balance');
+        closeReceiptModal();
+    }
 }
 
 // =====================

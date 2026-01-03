@@ -88,21 +88,32 @@
                         </div>
                     </div>
                     <div class="section-actions">
-                        <a href="record-payment/" class="btn btn-primary">
+                        <a href="../record-payment/" class="btn btn-primary">
                             <i class="fa-solid fa-plus"></i> <span>Record Payment</span>
                         </a>
                     </div>
                 </div>
 
-                <!-- Search -->
-                <div class="table-search-wrapper">
-                    <div class="search-box">
-                        <i class="fa-solid fa-search"></i> <input type="text" id="search-input"
-                            placeholder="Search receipts...">
-                    </div>
+                <!-- Desktop Table Layout -->
+                <div class="table-container">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th width="15%">RECEIPT ID</th>
+                                <th width="20%">STUDENT</th>
+                                <th width="20%">ITEM</th>
+                                <th width="15%">AMOUNT</th>
+                                <th width="15%">MODE</th>
+                                <th width="15%" class="text-right">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receipts-tbody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
                 </div>
 
-                <!-- Cards Layout (Desktop & Mobile) -->
+                <!-- Cards Layout (Mobile/Tablet) -->
                 <div class="data-cards" id="receipts-cards">
                     <!-- Populated by JS -->
                 </div>

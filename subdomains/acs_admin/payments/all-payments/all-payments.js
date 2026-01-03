@@ -88,7 +88,31 @@ function renderPayments() {
     const start = (currentPage - 1) * itemsPerPage;
     const paginatedPayments = filteredPayments.slice(start, start + itemsPerPage);
 
-    // Cards layout
+    // Desktop Table Rendering
+    const tbody = document.getElementById('payments-tbody');
+    if (tbody) {
+        tbody.innerHTML = paginatedPayments.map(p => {
+            const studentName = p.student ? `${p.student.first_name} ${p.student.last_name}` : 'Unknown';
+            const studentId = p.student?.student_id || '-';
+            const itemName = p.course?.course_name || 'Unknown';
+            return `
+                <tr>
+                    <td><span class="cell-badge">${formatDate(p.created_at)}</span></td>
+                    <td>
+                        <div class="student-cell">
+                            <span class="cell-title">${studentName}</span>
+                            <span class="cell-id-small">${studentId}</span>
+                        </div>
+                    </td>
+                    <td><span class="cell-title">${itemName}</span></td>
+                    <td><span class="cell-amount">${formatCurrency(p.amount_paid)}</span></td>
+                    <td class="text-right"><span class="cell-badge">${p.reference_id || '-'}</span></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Cards layout (Mobile/Tablet)
     cards.innerHTML = paginatedPayments.map(p => `
         <div class="premium-card">
             <div class="card-header">
