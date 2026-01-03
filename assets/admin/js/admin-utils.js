@@ -1182,45 +1182,61 @@ const AccountManager = {
 // Session Timeout (Inactivity Lock)
 // ============================================
 const SessionTimeout = {
+    // FALLBACK DEFAULTS (used if DB setting fails or is not found)
     INACTIVITY_TIMEOUT: 30 * 60 * 1000, // Default 30 minutes in ms
-    WARNING_DURATION: 15, // 15 seconds countdown
-    ACTIVITY_UPDATE_INTERVAL: 60 * 1000, // Update DB every 60 seconds
+    WARNING_DURATION: 30, // 30 seconds countdown (increased from 15)
+    ACTIVITY_UPDATE_INTERVAL: 60 * 1000, // Update DB every 60 seconds of activity
 
     inactivityTimer: null,
     countdownTimer: null,
-    activityUpdateTimer: null,
-    countdownSeconds: 15,
+    countdownSeconds: 30,
     isWarningShown: false,
     modalElement: null,
     lastActivityUpdate: 0,
+    lastResetTime: 0,
 
-    // Activity events to track
-    activityEvents: ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'],
+    // Activity events to track (Expanded)
+    activityEvents: ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click', 'wheel', 'input'],
 
     // Initialize session timeout
     async init() {
-        // Fetch timeout setting from database
-        await this.loadTimeoutSetting();
+        console.log('%c[Session Management] Initializing...', 'color: #2896cd; font-weight: bold;');
 
-        // Only run if timeout is not 'never' (0)
-        if (this.INACTIVITY_TIMEOUT > 0) {
-            this.resetTimer();
-            this.bindActivityListeners();
+        // 1. START IMMEDIATELY with defaults (Safety First)
+        // This ensures tracking starts even if Supabase initialization or DB network is slow
+        this.resetTimer();
+        this.bindActivityListeners();
+
+        // 2. FETCH OVERRIDES from database
+        try {
+            await this.loadTimeoutSetting();
+
+            // 3. APPLY SETTING
+            if (this.INACTIVITY_TIMEOUT > 0) {
+                this.resetTimer();
+                console.log(`[Session Management] Active. Timeout: ${this.INACTIVITY_TIMEOUT / 60000} mins.`);
+            } else {
+                this.stop();
+                console.log('[Session Management] Disabled by admin setting.');
+            }
+        } catch (err) {
+            console.warn('[Session Management] Failed to load setting, using defaults.', err);
         }
     },
 
     // Load timeout setting from database
     async loadTimeoutSetting() {
+        if (!window.supabaseClient) return;
+
         try {
             const { data, error } = await window.supabaseClient
                 .from('settings')
                 .select('setting_value')
                 .eq('setting_key', 'inactivity_timeout')
-                .single();
+                .maybeSingle();
 
             if (!error && data && data.setting_value !== undefined) {
                 const value = data.setting_value;
-                // Handle both string '0' and 'never'
                 if (value === '0' || value === 0 || value === 'never') {
                     this.INACTIVITY_TIMEOUT = 0; // Never timeout
                 } else {
@@ -1231,7 +1247,7 @@ const SessionTimeout = {
                 }
             }
         } catch (err) {
-            // Use default timeout setting on error
+            // Error handled by init()
         }
     },
 
@@ -1251,15 +1267,20 @@ const SessionTimeout = {
 
     // Handle user activity
     handleActivity() {
-        if (!this.isWarningShown) {
-            this.resetTimer();
+        if (this.isWarningShown) return;
 
-            // Update session activity in DB (throttled)
-            const now = Date.now();
-            if (now - this.lastActivityUpdate > this.ACTIVITY_UPDATE_INTERVAL) {
-                this.lastActivityUpdate = now;
-                this.updateSessionActivity();
-            }
+        const now = Date.now();
+
+        // 1. RESET TIMER (Throttled to once every 2 seconds for performance)
+        if (now - this.lastResetTime > 2000) {
+            this.lastResetTime = now;
+            this.resetTimer();
+        }
+
+        // 2. UPDATE DB (Throttled per ACTIVITY_UPDATE_INTERVAL)
+        if (now - this.lastActivityUpdate > this.ACTIVITY_UPDATE_INTERVAL) {
+            this.lastActivityUpdate = now;
+            this.updateSessionActivity();
         }
     },
 
@@ -1276,7 +1297,8 @@ const SessionTimeout = {
             clearTimeout(this.inactivityTimer);
         }
 
-        if (this.INACTIVITY_TIMEOUT <= 0) return; // Never timeout
+        // Never timeout if set to 0
+        if (this.INACTIVITY_TIMEOUT <= 0) return;
 
         this.inactivityTimer = setTimeout(() => {
             this.showWarning();
@@ -1292,6 +1314,11 @@ const SessionTimeout = {
 
         // Create modal
         const inactivityMinutes = Math.round(this.INACTIVITY_TIMEOUT / 60000);
+
+        // Remove existing if any (failsafe)
+        const oldModal = document.getElementById('session-timeout-modal');
+        if (oldModal) oldModal.remove();
+
         this.modalElement = document.createElement('div');
         this.modalElement.id = 'session-timeout-modal';
         this.modalElement.className = 'session-timeout-overlay';
@@ -1325,7 +1352,7 @@ const SessionTimeout = {
 
         // Show with animation
         requestAnimationFrame(() => {
-            this.modalElement.classList.add('active');
+            if (this.modalElement) this.modalElement.classList.add('active');
         });
 
         // Bind button events
@@ -1352,6 +1379,9 @@ const SessionTimeout = {
     startCountdown() {
         const countdownEl = document.getElementById('timeout-countdown');
 
+        // Clear existing to avoid double timers
+        if (this.countdownTimer) clearInterval(this.countdownTimer);
+
         this.countdownTimer = setInterval(() => {
             this.countdownSeconds--;
 
@@ -1359,12 +1389,13 @@ const SessionTimeout = {
                 countdownEl.textContent = this.formatTime(this.countdownSeconds);
 
                 // Add urgency class when low
-                if (this.countdownSeconds <= 5) {
+                if (this.countdownSeconds <= 10) {
                     countdownEl.classList.add('urgent');
                 }
             }
 
             if (this.countdownSeconds <= 0) {
+                clearInterval(this.countdownTimer);
                 this.logout();
             }
         }, 1000);
@@ -1390,12 +1421,11 @@ const SessionTimeout = {
             this.modalElement.classList.remove('active');
             document.body.style.overflow = '';
 
+            const el = this.modalElement;
             setTimeout(() => {
-                if (this.modalElement) {
-                    this.modalElement.remove();
-                    this.modalElement = null;
-                }
+                if (el && el.parentNode) el.remove();
             }, 300);
+            this.modalElement = null;
         }
 
         this.isWarningShown = false;
@@ -1408,13 +1438,10 @@ const SessionTimeout = {
         const { Toast } = window.AdminUtils;
         Toast.info('Session Expired', 'Logging out...');
 
-        // Clear timers
-        if (this.inactivityTimer) {
-            clearTimeout(this.inactivityTimer);
-        }
+        this.stop();
 
         // Delegate to Auth - SINGLE SOURCE OF TRUTH
-        if (window.Auth) {
+        if (window.Auth && typeof window.Auth.logout === 'function') {
             await window.Auth.logout();
         } else {
             const isSubdomain = !window.location.pathname.startsWith('/admin/');
@@ -1422,14 +1449,21 @@ const SessionTimeout = {
         }
     },
 
-    // Stop all timers (call when leaving page)
-    destroy() {
+    // Full stop
+    stop() {
         if (this.inactivityTimer) {
             clearTimeout(this.inactivityTimer);
+            this.inactivityTimer = null;
         }
         if (this.countdownTimer) {
             clearInterval(this.countdownTimer);
+            this.countdownTimer = null;
         }
+    },
+
+    // Stop all timers (call when leaving page)
+    destroy() {
+        this.stop();
         this.hideWarning();
     }
 };
