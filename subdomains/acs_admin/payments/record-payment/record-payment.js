@@ -264,10 +264,12 @@ async function createReceipt(payment) {
         const { data: student } = await window.supabaseClient.from('students').select('first_name, last_name').eq('id', payment.student_id).single();
         const itemName = masterItems.find(i => i.id == selectedItem)?.name || 'Unknown';
 
-        const { data: receiptId } = await window.supabaseClient.rpc('generate_receipt_id', {
-            p_student_name: `${student.first_name} ${student.last_name}`,
-            p_course_name: itemName
-        });
+        // Generate consistent Receipt ID (Format: 001-ACS-NA-GD)
+        const { count } = await window.supabaseClient.from('receipts').select('*', { count: 'exact', head: true });
+        const seq = (count || 0) + 1;
+        const initials = ((student.first_name?.charAt(0) || '') + (student.last_name?.charAt(0) || '')).toUpperCase();
+        const courseCode = masterItems.find(i => i.id == selectedItem)?.code || 'NA';
+        const receiptId = `${String(seq).padStart(3, '0')}-ACS-${initials}-${courseCode}`;
 
         const receiptPayload = {
             receipt_id: receiptId || `${Date.now()}-ACS`,

@@ -84,7 +84,7 @@ async function loadCourses(courseCodes) {
         .from('payments')
         .select('course_id, amount_paid')
         .eq('student_id', currentStudent.id)
-        .eq('status', 'completed');
+        .eq('status', 'SUCCESS');
 
     if (paymentError) throw paymentError;
 
@@ -237,7 +237,7 @@ async function verifyPayment(razorpayRes, courseId, amountPaid) {
         switchView('success-view');
 
     } catch (err) {
-        showToast("Payment recorded successfully. Reciept will be updated shortly.");
+        showToast("Payment recorded successfully. Receipt will be updated shortly.");
         // Still show success if payment was actually made
         switchView('success-view');
     }
