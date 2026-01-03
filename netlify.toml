@@ -131,36 +131,42 @@
   from = "/assets/*"
   to = "/assets/:splat"
   status = 200
+  force = true
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/shared/*"
   to = "/shared/:splat"
   status = 200
+  force = true
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/"
   to = "/subdomains/acs_admin/index.html"
   status = 200
+  force = true
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/login"
   to = "/subdomains/acs_admin/login.html"
   status = 200
+  force = true
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/*"
   to = "/subdomains/acs_admin/:splat"
   status = 200
+  force = true
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/*"
   to = "/subdomains/acs_admin/404/"
   status = 404
+  force = true
 
 # ============================================
 # SIGNUP SUBDOMAIN (signup.craftsoft.co.in)
