@@ -380,25 +380,6 @@
   status = 301
 
 # ============================================
-# PAY SUBDOMAIN (pay-fee.craftsoft.co.in)
-# ============================================
-[[redirects]]
-  host = "pay-fee.craftsoft.co.in"
-  from = "/"
-  to = "/subdomains/pay/index.html"
-  status = 200
-
-[[redirects]]
-  host = "pay-fee.craftsoft.co.in"
-  from = "/*"
-  to = "/subdomains/pay/:splat"
-  status = 200
-
-[[redirects]]
-  host = "pay-fee.craftsoft.co.in"
-  from = "/*"
-  to = "/subdomains/pay/404/index.html"
-  status = 404
 
 # ============================================
 # SIGNUP SUBDOMAIN (signup.craftsoft.co.in)
