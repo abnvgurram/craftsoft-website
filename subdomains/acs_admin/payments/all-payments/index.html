@@ -48,15 +48,20 @@
     <link rel="stylesheet" href="all-payments.css">
     <!-- FOUC Protection -->
     <style>
-        .no-fouc { opacity: 0; }
-        body { transition: opacity 0.3s ease; }
+        .no-fouc {
+            opacity: 0;
+        }
+
+        body {
+            transition: opacity 0.3s ease;
+        }
     </style>
     <script>
         document.documentElement.className += ' no-fouc';
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.documentElement.classList.remove('no-fouc');
         });
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             document.documentElement.classList.remove('no-fouc');
         });
     </script>
@@ -75,7 +80,8 @@
                 <div class="section-header">
                     <div class="section-header-left">
                         <div class="section-icon">
-                            <i class="fa-solid fa-list"></i> </div>
+                            <i class="fa-solid fa-list"></i>
+                        </div>
                         <div class="section-info">
                             <h2 class="section-title">All Payments</h2>
                             <p class="section-subtitle">All payment records</p>
@@ -91,13 +97,14 @@
                 <!-- Search -->
                 <div class="table-search-wrapper">
                     <div class="search-box">
-                        <i class="fa-solid fa-search"></i> <input type="text" id="search-input" placeholder="Search payments...">
+                        <i class="fa-solid fa-search"></i> <input type="text" id="search-input"
+                            placeholder="Search payments...">
                     </div>
                 </div>
 
                 <!-- Desktop Table -->
-                <div class="Data-table-wrapper">
-                    <table class="Data-table" id="payments-table">
+                <div class="data-table-wrapper">
+                    <table class="data-table" id="payments-table">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -115,19 +122,21 @@
                 </div>
 
                 <!-- Mobile Cards -->
-                <div class="Data-cards" id="payments-cards">
+                <div class="data-cards" id="payments-cards">
                     <!-- Populated by JS -->
                 </div>
 
                 <!-- Empty State -->
                 <div class="empty-state" id="empty-state" style="display: none;">
-                    <i class="fa-solid fa-credit-card"></i> <h3>No Payments Yet</h3>
+                    <i class="fa-solid fa-credit-card"></i>
+                    <h3>No Payments Yet</h3>
                     <p>Record your first payment to get started</p>
                 </div>
 
                 <!-- Loading State -->
                 <div class="loading-state" id="loading-state">
-                    <i class="fa-solid fa-spinner fa-spin"></i> <p>Loading payments...</p>
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <p>Loading payments...</p>
                 </div>
 
                 <!-- Footer with count -->
@@ -154,6 +163,3 @@
 </body>
 
 </html>
-
-
-
