@@ -87,7 +87,8 @@
 }
 
 .glass-tag.offline_upi,
-.glass-tag.upi {
+.glass-tag.upi,
+.glass-tag.online {
     background: var(--primary-50, #edf6fb);
     color: var(--primary-600, #1a7eb0);
     border-color: var(--primary-100, #cfe7f5);
