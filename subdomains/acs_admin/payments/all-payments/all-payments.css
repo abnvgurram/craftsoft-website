@@ -242,7 +242,7 @@
 
 /* Mobile overrides for list-specific items */
 @media (max-width: 768px) {
-    .data-table-wrapper {
+    .table-container {
         display: none;
     }
 
