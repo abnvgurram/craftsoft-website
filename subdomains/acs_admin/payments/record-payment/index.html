@@ -47,15 +47,20 @@
     <link rel="stylesheet" href="record-payment.css">
     <!-- FOUC Protection -->
     <style>
-        .no-fouc { opacity: 0; }
-        body { transition: opacity 0.3s ease; }
+        .no-fouc {
+            opacity: 0;
+        }
+
+        body {
+            transition: opacity 0.3s ease;
+        }
     </style>
     <script>
         document.documentElement.className += ' no-fouc';
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.documentElement.classList.remove('no-fouc');
         });
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             document.documentElement.classList.remove('no-fouc');
         });
     </script>
@@ -74,7 +79,8 @@
                 <div class="payment-form-section">
                     <div class="section-header">
                         <div class="section-icon">
-                            <i class="fa-solid fa-plus"></i> </div>
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
                         <div class="section-info">
                             <h2 class="section-title">Record Payment</h2>
                             <p class="section-subtitle">Record a new payment for a student</p>
@@ -182,8 +188,7 @@
         </main>
     </div>
 
-    <!-- Razorpay Checkout -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -200,6 +205,3 @@
 </body>
 
 </html>
-
-
-

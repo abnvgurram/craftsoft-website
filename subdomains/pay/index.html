@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pay Your Fee - Abhi's Craftsoft</title>
+    <title>Maintenance - Abhi's Craftsoft</title>
     <link rel="icon" href="https://craftsoft.co.in/favicon.svg" type="image/svg+xml">
 
     <!-- Fonts -->
@@ -18,103 +18,73 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <link rel="stylesheet" href="style.css?v=1.2">
+    <style>
+        .maintenance-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .maintenance-icon {
+            font-size: 4rem;
+            color: #2896cd;
+            margin-bottom: 2rem;
+            background: rgba(40, 150, 205, 0.1);
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .maintenance-container h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .maintenance-container p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        .logo-section {
+            margin-bottom: 3rem;
+        }
+    </style>
 </head>
 
 <body>
     <div class="pay-container">
-        <!-- Header -->
-        <header class="pay-header">
-            <div class="logo-container">
+        <div class="maintenance-container">
+            <div class="logo-section">
                 <div class="logo-link">
                     <div class="logo-placeholder"><i class="fas fa-graduation-cap"></i></div>
                     <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
                             Soft</span></span>
                 </div>
             </div>
-            <h1>Pay your fee</h1>
-        </header>
 
-        <main class="payment-card">
-            <!-- Step 1: Lookup -->
-            <section id="lookup-view" class="view active">
-                <div class="card-header-inner">
-                    <i class="fa-solid fa-money-bill-transfer"></i>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="student-id">Student ID <span class="required-star">*</span></label>
-                        <input type="text" id="student-id" placeholder="Enter your student id provided"
-                            autocomplete="off">
-                    </div>
-                    <button id="lookup-btn" class="primary-btn">
-                        <i class="fa-regular fa-money-bill-1"></i>
-                        <span>Pay Fee</span>
-                    </button>
-                </div>
-            </section>
-
-            <!-- Step 2: Details & Pay -->
-            <section id="payment-view" class="view">
-                <div class="student-header-box">
-                    <div class="info">
-                        <h2 id="display-name">—</h2>
-                        <span id="display-id" class="badge">—</span>
-                    </div>
-                </div>
-
-                <div class="course-section">
-                    <h3>YOUR COURSES</h3>
-                    <div id="courses-container" class="courses-list">
-                        <!-- Dynamic course blocks here -->
-                    </div>
-                </div>
-
-                <div class="card-actions">
-                    <button id="back-btn" class="back-btn">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        <span>Back</span>
-                    </button>
-                </div>
-            </section>
-
-            <!-- Step 3: Success -->
-            <section id="success-view" class="view">
-                <div class="success-icon">
-                    <i class="fa-solid fa-circle-check"></i>
-                </div>
-                <h2>Payment Successful!</h2>
-                <p>Your payment has been recorded successfully.</p>
-                <div class="receipt-card">
-                    <div class="row">
-                        <span>Receipt ID</span>
-                        <strong id="receipt-id">—</strong>
-                    </div>
-                    <div class="row">
-                        <span>Amount Paid</span>
-                        <strong id="paid-amount">—</strong>
-                    </div>
-                </div>
-                <button onclick="location.reload()" class="primary-btn">
-                    <span>Done</span>
-                </button>
-            </section>
-        </main>
+            <div class="maintenance-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <h2>Temporarily Paused</h2>
+            <p>The online fee payment system is currently under maintenance. Please try again later or contact the
+                administration for manual payment options.</p>
+        </div>
 
         <footer class="pay-footer">
-            <p>Powered by <strong>Razorpay</strong> • Secure & Encrypted</p>
+            <p>&copy; 2026 Abhi's Craftsoft. All rights reserved.</p>
         </footer>
     </div>
-
-    <!-- Error Toast Notification -->
-    <div id="toast" class="toast">
-        <i class="fa-solid fa-exclamation-circle"></i>
-        <span id="toast-message">Error message here</span>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js?v=1.2"></script>
 </body>
 
 </html>

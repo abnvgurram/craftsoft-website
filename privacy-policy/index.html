@@ -16,7 +16,8 @@
         href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/master.css?v=2.0">    <link rel="stylesheet" href="../assets/css/utilities/skeleton.css?v=1.0">
+    <link rel="stylesheet" href="../assets/css/master.css?v=2.0">
+    <link rel="stylesheet" href="../assets/css/utilities/skeleton.css?v=1.0">
     <style>
         .legal-page {
             padding: var(--spacing-4xl) 0;
@@ -102,15 +103,20 @@
     </style>
     <!-- FOUC Protection -->
     <style>
-        .no-fouc { opacity: 0; }
-        body { transition: opacity 0.3s ease; }
+        .no-fouc {
+            opacity: 0;
+        }
+
+        body {
+            transition: opacity 0.3s ease;
+        }
     </style>
     <script>
         document.documentElement.className += ' no-fouc';
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.documentElement.classList.remove('no-fouc');
         });
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             document.documentElement.classList.remove('no-fouc');
         });
     </script>
@@ -124,19 +130,20 @@
                 <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
                         Soft</span></span>
             </a>
-                        <ul class="nav-menu" id="nav-menu">
-          <div class="mobile-menu-header">
-            <div class="logo">
-              <div class="logo-placeholder"><i class="fas fa-graduation-cap"></i></div>
-              <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft Soft</span></span>
-            </div>
-            <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
-          </div>
-          <li><a href="../" class="nav-link">Home</a></li>
+            <ul class="nav-menu" id="nav-menu">
+                <div class="mobile-menu-header">
+                    <div class="logo">
+                        <div class="logo-placeholder"><i class="fas fa-graduation-cap"></i></div>
+                        <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
+                                Soft</span></span>
+                    </div>
+                    <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
+                </div>
+                <li><a href="../" class="nav-link">Home</a></li>
                 <li><a href="../about/" class="nav-link">About</a></li>
                 <li><a href="../courses/" class="nav-link">Courses</a></li>
                 <li><a href="../acs_services/" class="nav-link">Services</a></li>
-                        <li><a href="../portfolio/" class="nav-link">Portfolio</a></li>
+                <li><a href="../portfolio/" class="nav-link">Portfolio</a></li>
                 <li><a href="../#contact" class="nav-link">Contact</a></li>
 
             </ul>
@@ -211,7 +218,7 @@
                 <h2>4. Information Sharing</h2>
                 <p>We do not sell or rent your personal information. We may share Data with:</p>
                 <ul>
-                    <li><strong>Service Providers:</strong> Payment processors (Razorpay), email services, and cloud
+                    <li><strong>Service Providers:</strong> Payment processors, email services, and cloud
                         hosting providers</li>
                     <li><strong>Legal Requirements:</strong> When required by law or to protect our legal rights</li>
                     <li><strong>Business Transfers:</strong> In case of merger, acquisition, or sale of assets</li>
@@ -224,7 +231,7 @@
                     <li><strong>Supabase:</strong> For authentication and Database (governed by Supabase's privacy
                         policy)
                     </li>
-                    <li><strong>Razorpay:</strong> For payment processing (governed by Razorpay's privacy policy)</li>
+                    <li><strong>Payment Gateway:</strong> For secure payment processing</li>
                     <li><strong>Formspree:</strong> For contact form submissions</li>
                 </ul>
                 <p>We encourage you to review the privacy policies of these third-party services.</p>
@@ -354,15 +361,17 @@
     </section>
 
     <!-- Footer -->
-        <footer class="footer">
+    <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <a href="../" class="logo"><span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft Soft</span></span>
+                    <a href="../" class="logo"><span class="logo-text"><span class="logo-signature">Abhi's</span> <span
+                                class="highlight">Craft Soft</span></span>
                     </a>
-                    <p>Empowering careers through quality education and professional IT services. Your journey to excellence starts here.</p>
+                    <p>Empowering careers through quality education and professional IT services. Your journey to
+                        excellence starts here.</p>
                 </div>
-                                <div class="footer-links">
+                <div class="footer-links">
                     <h4>Quick Links</h4>
                     <ul>
                         <li><a href="../courses/">Courses</a></li>
@@ -382,13 +391,16 @@
                 <div class="footer-contact">
                     <h4>Contact Us</h4>
                     <ul>
-                        <li><i class="fas fa-map-marker-alt"></i><a href="https://maps.app.goo.gl/uiTwuixvPKM8oJ9b8" target="_blank">Plot No. 163, Vijayasree Colony,<br>Vanasthalipuram, Hyderabad 500070</a></li>
+                        <li><i class="fas fa-map-marker-alt"></i><a href="https://maps.app.goo.gl/uiTwuixvPKM8oJ9b8"
+                                target="_blank">Plot No. 163, Vijayasree Colony,<br>Vanasthalipuram, Hyderabad
+                                500070</a></li>
                         <li><i class="fas fa-phone"></i><a href="tel:+917842239090">+91 7842239090</a></li>
-                        <li><i class="fas fa-envelope"></i><a href="mailto:team.craftsoft@gmail.com">team.craftsoft@gmail.com</a></li>
+                        <li><i class="fas fa-envelope"></i><a
+                                href="mailto:team.craftsoft@gmail.com">team.craftsoft@gmail.com</a></li>
                     </ul>
                 </div>
             </div>
-                        <div class="footer-bottom">
+            <div class="footer-bottom">
                 <p> 2026 Abhi's Craft Soft. All Rights Reserved.</p>
                 <div class="footer-legal-links">
                     <a href="../about/">About Us</a>
@@ -402,7 +414,8 @@
         </div>
     </footer>
 
-    
+
     <script src="../assets/js/main.js?v=1.1"></script>
 </body>
+
 </html>
