@@ -283,8 +283,10 @@ async function createReceipt(payment) {
             if (match) seq = parseInt(match[1]) + 1;
         }
 
-        const initials = ((student.first_name?.charAt(0) || '') + (student.last_name?.charAt(0) || '')).toUpperCase();
-        const courseCode = masterItems.find(i => i.id == selectedItem)?.code || 'NA';
+        const studentName = `${student.first_name || ''} ${student.last_name || ''}`.trim();
+        const initials = studentName.split(' ').map(w => w[0]?.toUpperCase() || '').join('');
+        const courseRef = masterItems.find(i => i.id == selectedItem);
+        const courseCode = courseRef?.code || 'NA';
         const receiptId = `${String(seq).padStart(3, '0')}-ACS-${initials}-${courseCode}`;
 
         const receiptPayload = {

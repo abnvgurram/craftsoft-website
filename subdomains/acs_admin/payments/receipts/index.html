@@ -48,15 +48,20 @@
     <link rel="stylesheet" href="receipts.css">
     <!-- FOUC Protection -->
     <style>
-        .no-fouc { opacity: 0; }
-        body { transition: opacity 0.3s ease; }
+        .no-fouc {
+            opacity: 0;
+        }
+
+        body {
+            transition: opacity 0.3s ease;
+        }
     </style>
     <script>
         document.documentElement.className += ' no-fouc';
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.documentElement.classList.remove('no-fouc');
         });
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             document.documentElement.classList.remove('no-fouc');
         });
     </script>
@@ -75,7 +80,8 @@
                 <div class="section-header">
                     <div class="section-header-left">
                         <div class="section-icon">
-                            <i class="fa-solid fa-file-invoice"></i> </div>
+                            <i class="fa-solid fa-file-invoice"></i>
+                        </div>
                         <div class="section-info">
                             <h2 class="section-title">Receipts</h2>
                             <p class="section-subtitle">All payment receipts</p>
@@ -91,13 +97,14 @@
                 <!-- Search -->
                 <div class="table-search-wrapper">
                     <div class="search-box">
-                        <i class="fa-solid fa-search"></i> <input type="text" id="search-input" placeholder="Search receipts...">
+                        <i class="fa-solid fa-search"></i> <input type="text" id="search-input"
+                            placeholder="Search receipts...">
                     </div>
                 </div>
 
                 <!-- Desktop Table -->
-                <div class="Data-table-wrapper">
-                    <table class="Data-table" id="receipts-table">
+                <div class="data-table-wrapper">
+                    <table class="data-table" id="receipts-table">
                         <thead>
                             <tr>
                                 <th>Receipt ID</th>
@@ -117,19 +124,21 @@
                 </div>
 
                 <!-- Mobile Cards -->
-                <div class="Data-cards" id="receipts-cards">
+                <div class="data-cards" id="receipts-cards">
                     <!-- Populated by JS -->
                 </div>
 
                 <!-- Empty State -->
                 <div class="empty-state" id="empty-state" style="display: none;">
-                    <i class="fa-solid fa-file-invoice"></i> <h3>No Receipts Yet</h3>
+                    <i class="fa-solid fa-file-invoice"></i>
+                    <h3>No Receipts Yet</h3>
                     <p>Receipts are automatically created when payments are recorded</p>
                 </div>
 
                 <!-- Loading State -->
                 <div class="loading-state" id="loading-state">
-                    <i class="fa-solid fa-spinner fa-spin"></i> <p>Loading receipts...</p>
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <p>Loading receipts...</p>
                 </div>
 
                 <!-- Footer with count -->
@@ -182,6 +191,3 @@
 </body>
 
 </html>
-
-
-
