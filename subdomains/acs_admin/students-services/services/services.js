@@ -10,12 +10,12 @@ const itemsPerPage = 10;
 
 // Website Services (for sync)
 const websiteServices = [
-    { code: 'S-WDEV', name: 'Website Development', base_price: 15000 },
-    { code: 'S-UIUX', name: 'UI/UX Design Services', base_price: 10000 },
-    { code: 'S-GD', name: 'Graphic Design Services', base_price: 5000 },
-    { code: 'S-BRND', name: 'Branding & Marketing', base_price: 8000 },
-    { code: 'S-CLOUD', name: 'Cloud & DevOps Solutions', base_price: 20000 },
-    { code: 'S-CAREER', name: 'Career & Placement Services', base_price: 3000 }
+    { code: 'S-WDEV', name: 'Website Development' },
+    { code: 'S-UIUX', name: 'UI/UX Design Services' },
+    { code: 'S-GD', name: 'Graphic Design Services' },
+    { code: 'S-BRND', name: 'Branding & Marketing' },
+    { code: 'S-CLOUD', name: 'Cloud & DevOps Solutions' },
+    { code: 'S-CAREER', name: 'Career & Placement Services' }
 ];
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -60,11 +60,11 @@ async function syncServices() {
 
     try {
         const { data: existing, error: fetchError } = await window.supabaseClient
-            .from('acs_services')
-            .select('service_code, base_price');
+            .from('services')
+            .select('service_code');
         if (fetchError) throw fetchError;
 
-        const existingMap = new Map(existing?.map(s => [s.service_code, s.base_price]) || []);
+        const existingMap = new Map(existing?.map(s => [s.service_code, true]) || []);
 
         let synced = 0;
         for (let i = 0; i < websiteServices.length; i++) {
@@ -72,22 +72,17 @@ async function syncServices() {
             const sid = `SV-${String(i + 1).padStart(3, '0')}`;
 
             if (existingMap.has(svc.code)) {
-                // Update name but preserve custom price
-                await window.supabaseClient.from('acs_services')
+                // Update name
+                await window.supabaseClient.from('services')
                     .update({
-                        service_id: sid,
-                        name: svc.name,
-                        status: 'ACTIVE'
+                        name: svc.name
                     })
                     .eq('service_code', svc.code);
             } else {
                 // Insert new
-                await window.supabaseClient.from('acs_services').insert({
-                    service_id: sid,
+                await window.supabaseClient.from('services').insert({
                     service_code: svc.code,
-                    name: svc.name,
-                    base_price: svc.base_price,
-                    status: 'ACTIVE'
+                    name: svc.name
                 });
             }
             synced++;
@@ -110,7 +105,7 @@ async function syncServices() {
 async function loadServicesForClients() {
     try {
         const { data, error } = await window.supabaseClient
-            .from('acs_services')
+            .from('services')
             .select('*')
             .order('service_code');
 
