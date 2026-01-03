@@ -49,7 +49,7 @@ async function loadPayments() {
                     first_name,
                     last_name
                 ),
-                client:student_id (
+                client:client_id (
                     id,
                     client_id,
                     first_name,
@@ -198,12 +198,18 @@ function bindEvents() {
         if (!query) {
             filteredPayments = payments;
         } else {
-            filteredPayments = payments.filter(p =>
-                (p.student ? `${p.student.first_name} ${p.student.last_name}`.toLowerCase().includes(query) : false) ||
-                (p.student?.student_id ? p.student.student_id.toLowerCase().includes(query) : false) ||
-                p.course?.course_name?.toLowerCase().includes(query) ||
-                p.reference_id?.toLowerCase().includes(query)
-            );
+            filteredPayments = payments.filter(p => {
+                const entity = p.student || p.client;
+                const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}`.toLowerCase() : '';
+                const displayId = (entity?.student_id || entity?.client_id || '').toLowerCase();
+                const itemName = (p.course?.course_name || p.service?.name || '').toLowerCase();
+                const ref = (p.reference_id || '').toLowerCase();
+
+                return entityName.includes(query) ||
+                    displayId.includes(query) ||
+                    itemName.includes(query) ||
+                    ref.includes(query);
+            });
         }
 
         renderPayments();

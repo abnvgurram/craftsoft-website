@@ -166,9 +166,11 @@ async function calculateFeeSummary(itemId) {
             .eq(isServiceMode ? 'service_id' : 'course_id', item.id)
             .eq('status', 'SUCCESS');
 
-        // Use student_id OR client_id if we want to be safe, but for now we follow the existing pattern
-        // which likely reuses the column or we'll add client_id in handlePayment
-        query.eq('student_id', selectedStudent);
+        if (isServiceMode) {
+            query.eq('client_id', selectedStudent);
+        } else {
+            query.eq('student_id', selectedStudent);
+        }
 
         const { data: payments } = await query;
         paidSoFar = (payments || []).reduce((sum, p) => sum + parseFloat(p.amount_paid || 0), 0);
@@ -259,7 +261,7 @@ async function handlePayment(e) {
         }
 
         const payload = {
-            student_id: selectedStudent, // We continue using this column for the entity ID
+            [isServiceMode ? 'client_id' : 'student_id']: selectedStudent,
             [isServiceMode ? 'service_id' : 'course_id']: selectedItem,
             amount_paid: amount,
             payment_mode: mode === 'OFFLINE_UPI' ? 'ONLINE' : 'CASH',
@@ -287,7 +289,7 @@ async function handlePayment(e) {
 async function createReceipt(payment) {
     try {
         const table = isServiceMode ? 'clients' : 'students';
-        const { data: entity } = await window.supabaseClient.from(table).select('first_name, last_name, any_id:client_id, student_id').eq('id', payment.student_id).single();
+        const { data: entity } = await window.supabaseClient.from(table).select('first_name, last_name, any_id:client_id, student_id').eq('id', selectedStudent).single();
 
         const itemName = masterItems.find(i => i.id == selectedItem)?.name || 'Unknown';
         const entityName = `${entity.first_name || ''} ${entity.last_name || ''}`.trim();
@@ -314,7 +316,7 @@ async function createReceipt(payment) {
         const receiptPayload = {
             receipt_id: receiptId || `${Date.now()}-ACS`,
             payment_id: payment.id,
-            student_id: payment.student_id,
+            [isServiceMode ? 'client_id' : 'student_id']: selectedStudent,
             [isServiceMode ? 'service_id' : 'course_id']: selectedItem,
             amount_paid: payment.amount_paid,
             payment_mode: payment.payment_mode,

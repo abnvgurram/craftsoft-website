@@ -52,7 +52,7 @@ async function loadReceipts() {
                     last_name,
                     phone
                 ),
-                client:student_id (
+                client:client_id (
                     id,
                     client_id,
                     first_name,
@@ -416,13 +416,18 @@ function bindEvents() {
         if (!query) {
             filteredReceipts = receipts;
         } else {
-            filteredReceipts = receipts.filter(r =>
-                r.receipt_id?.toLowerCase().includes(query) ||
-                (r.student ? `${r.student.first_name} ${r.student.last_name}`.toLowerCase().includes(query) : false) ||
-                (r.student?.student_id ? r.student.student_id.toLowerCase().includes(query) : false) ||
-                r.course?.course_name?.toLowerCase().includes(query) ||
-                r.service?.name?.toLowerCase().includes(query)
-            );
+            filteredReceipts = receipts.filter(r => {
+                const entity = r.student || r.client;
+                const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}`.toLowerCase() : '';
+                const displayId = (entity?.student_id || entity?.client_id || '').toLowerCase();
+                const itemName = (r.course?.course_name || r.service?.name || '').toLowerCase();
+                const receiptId = (r.receipt_id || '').toLowerCase();
+
+                return entityName.includes(query) ||
+                    displayId.includes(query) ||
+                    itemName.includes(query) ||
+                    receiptId.includes(query);
+            });
         }
         renderReceipts();
     });
