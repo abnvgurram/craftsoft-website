@@ -45,7 +45,7 @@ async function handleLookup() {
     try {
         const { data: student, error } = await supabaseClient
             .from('students')
-            .select('id, student_id, first_name, last_name, courses, course_discounts')
+            .select('id, student_id, first_name, last_name, phone, email, courses, course_discounts')
             .ilike('student_id', studentId)
             .maybeSingle();
 
@@ -176,6 +176,8 @@ async function initiatePayment(courseId, courseName) {
             },
             prefill: {
                 name: `${currentStudent.first_name} ${currentStudent.last_name}`,
+                contact: currentStudent.phone,
+                email: currentStudent.email || ""
             },
             theme: { color: "#2896cd" },
             modal: {
