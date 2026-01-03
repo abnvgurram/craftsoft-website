@@ -93,16 +93,15 @@ function renderPayments() {
     tbody.innerHTML = paginatedPayments.map(p => `
         <tr>
             <td>${formatDate(p.created_at)}</td>
-            <td>${p.student ? `${p.student.first_name} ${p.student.last_name}` : 'Unknown'}</td>
-            <td>${p.course?.course_name || 'Unknown'}</td>
-            <td class="amount-cell">${formatCurrency(p.amount_paid)}</td>
+            <td><span class="cell-title">${p.student ? `${p.student.first_name} ${p.student.last_name}` : 'Unknown'}</span></td>
+            <td><span class="cell-title">${p.course?.course_name || 'Unknown'}</span></td>
+            <td><span class="cell-amount">${formatCurrency(p.amount_paid)}</span></td>
             <td>
-                <span class="mode-badge ${p.payment_mode.toLowerCase()}">
-                    <i class="fa-solid ${p.payment_mode === 'CASH' ? 'fa-money-bill-wave' : 'fa-credit-card'}"></i>
+                <span class="glass-tag ${p.payment_mode.toLowerCase()}">
                     ${p.payment_mode}
                 </span>
             </td>
-            <td class="reference-cell">${p.reference_id}</td>
+            <td><span class="cell-badge">${p.reference_id}</span></td>
         </tr>
     `).join('');
 

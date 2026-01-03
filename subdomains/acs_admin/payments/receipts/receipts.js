@@ -53,6 +53,7 @@ async function loadReceipts() {
                 ),
                 course:course_id (
                     id,
+                    course_code,
                     course_name
                 ),
                 service:service_id (
@@ -103,24 +104,24 @@ function renderReceipts() {
 
         return `
         <tr>
-            <td class="receipt-id-cell">${r.receipt_id}</td>
+            <td><span class="cell-badge">${r.receipt_id}</span></td>
             <td>${formatDate(r.created_at)}</td>
-            <td>${r.student ? `${r.student.first_name} ${r.student.last_name}` : 'Unknown'}</td>
+            <td><span class="cell-title">${r.student ? `${r.student.first_name} ${r.student.last_name}` : 'Unknown'}</span></td>
             <td>
-                <span class="item-name">${itemName}</span>
-                ${isService ? '<span class="badge badge-outline" style="font-size: 0.6rem; margin-left: 5px;">Service</span>' : ''}
+                <span class="cell-title">${itemName}</span>
+                ${isService ? '<span class="glass-tag" style="font-size: 0.6rem; margin-left: 5px;">Service</span>' : ''}
             </td>
-            <td class="amount-cell">${formatCurrency(r.amount_paid)}</td>
+            <td><span class="cell-amount">${formatCurrency(r.amount_paid)}</span></td>
             <td>
-                <span class="mode-badge ${r.payment_mode.toLowerCase()}">
+                <span class="glass-tag ${r.payment_mode.toLowerCase()}">
                     ${r.payment_mode}
                 </span>
             </td>
-            <td class="balance-cell ${r.balance_due <= 0 ? 'paid' : 'due'}">
+            <td class="${r.balance_due <= 0 ? 'text-success' : 'text-danger'}">
                 ${r.balance_due <= 0 ? 'Paid' : formatCurrency(r.balance_due)}
             </td>
-            <td>
-                <div class="action-btns">
+            <td class="text-right">
+                <div class="cell-actions">
                     <button class="action-btn view" title="View" onclick="viewReceipt('${r.receipt_id}')">
                         <i class="fa-solid fa-eye"></i>
                     </button>
