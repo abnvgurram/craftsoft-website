@@ -105,9 +105,10 @@
     margin: 0;
 }
 
-.notification-header .mark-all-read {
+/* Clear All Button */
+.notification-header .clear-all-btn {
     font-size: 0.8rem;
-    color: var(--primary-600);
+    color: var(--danger);
     background: none;
     border: none;
     cursor: pointer;
@@ -116,8 +117,8 @@
     transition: background 0.2s;
 }
 
-.notification-header .mark-all-read:hover {
-    background: var(--primary-50);
+.notification-header .clear-all-btn:hover {
+    background: rgba(231, 76, 60, 0.1);
 }
 
 /* Notification List */
@@ -126,25 +127,34 @@
     overflow-y: auto;
 }
 
+/* Notification Item - Wrapper for swipe */
 .notification-item {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--gray-50);
+}
+
+.notification-item-content {
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
     padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--gray-50);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.3s ease;
+    background: white;
+    position: relative;
+    z-index: 1;
 }
 
-.notification-item:hover {
+.notification-item-content:hover {
     background: var(--gray-50);
 }
 
-.notification-item.unread {
+.notification-item.unread .notification-item-content {
     background: var(--primary-50);
 }
 
-.notification-item.unread:hover {
+.notification-item.unread .notification-item-content:hover {
     background: rgba(9, 132, 227, 0.1);
 }
 
@@ -179,6 +189,11 @@
     color: #f39c12;
 }
 
+.notification-icon.service {
+    background: rgba(52, 73, 94, 0.15);
+    color: #34495e;
+}
+
 .notification-content {
     flex: 1;
     min-width: 0;
@@ -194,6 +209,58 @@
 .notification-content .notification-time {
     font-size: 0.75rem;
     color: var(--gray-500);
+}
+
+/* Delete Button (Desktop) */
+.notification-delete-btn {
+    background: none;
+    border: none;
+    color: var(--gray-400);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    opacity: 0;
+    flex-shrink: 0;
+}
+
+.notification-item-content:hover .notification-delete-btn {
+    opacity: 1;
+}
+
+.notification-delete-btn:hover {
+    color: var(--danger);
+    background: rgba(231, 76, 60, 0.1);
+}
+
+/* Swipe Action (Mobile) */
+.notification-swipe-action {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--danger);
+    z-index: 0;
+}
+
+.swipe-delete-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.swipe-delete-btn i {
+    font-size: 1rem;
 }
 
 /* Empty State */
@@ -347,6 +414,15 @@
 
     .notification-dropdown.active {
         transform: translateY(0);
+    }
+
+    /* Hide desktop delete button on mobile */
+    .notification-delete-btn {
+        display: none;
+    }
+
+    .notification-list {
+        max-height: 50vh;
     }
 
     .toast-container {

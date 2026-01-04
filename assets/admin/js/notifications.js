@@ -36,12 +36,12 @@ function createNotificationBell() {
             <div class="notification-dropdown" id="notificationDropdown">
                 <div class="notification-header">
                     <h4>Notifications</h4>
-                    <button class="mark-all-read" onclick="markAllAsRead()">Mark all read</button>
+                    <button class="clear-all-btn" id="clearAllBtn" style="display: none;">Clear All</button>
                 </div>
                 <div class="notification-list" id="notificationList">
                     <div class="notification-empty">
                         <i class="fas fa-bell-slash"></i>
-                        <p>No new notifications</p>
+                        <p>No notifications</p>
                     </div>
                 </div>
             </div>
@@ -59,10 +59,17 @@ function createNotificationBell() {
     // Add click handler
     const bellBtn = document.getElementById('notificationBellBtn');
     const dropdown = document.getElementById('notificationDropdown');
+    const clearAllBtn = document.getElementById('clearAllBtn');
 
     bellBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         dropdown.classList.toggle('active');
+    });
+
+    // Clear all button
+    clearAllBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clearAllNotifications();
     });
 
     // Close on outside click
@@ -122,11 +129,57 @@ function addNotification(type, title, message, link) {
     showToast(type, title, message);
 }
 
+// Delete single notification
+function deleteNotification(id, showConfirm = false) {
+    const doDelete = () => {
+        notifications = notifications.filter(n => n.id != id);
+        saveNotifications();
+        updateNotificationUI();
+    };
+
+    if (showConfirm && window.AdminUtils && window.AdminUtils.Modal) {
+        window.AdminUtils.Modal.confirm(
+            'Delete Notification',
+            'Are you sure you want to delete this notification?',
+            doDelete
+        );
+    } else {
+        doDelete();
+    }
+}
+
+// Clear all notifications
+function clearAllNotifications() {
+    if (notifications.length === 0) return;
+
+    if (window.AdminUtils && window.AdminUtils.Modal) {
+        window.AdminUtils.Modal.confirm(
+            'Clear All Notifications',
+            'Are you sure you want to delete all notifications?',
+            () => {
+                notifications = [];
+                saveNotifications();
+                updateNotificationUI();
+            }
+        );
+    } else {
+        notifications = [];
+        saveNotifications();
+        updateNotificationUI();
+    }
+}
+
+// Check if mobile
+function isMobile() {
+    return window.innerWidth <= 768;
+}
+
 // Update notification UI
 function updateNotificationUI() {
     const list = document.getElementById('notificationList');
     const badge = document.getElementById('notificationBadge');
     const bellBtn = document.getElementById('notificationBellBtn');
+    const clearAllBtn = document.getElementById('clearAllBtn');
 
     if (!list) return;
 
@@ -142,28 +195,112 @@ function updateNotificationUI() {
         bellBtn.classList.toggle('has-notifications', unreadCount > 0);
     }
 
+    // Show/hide clear all button
+    if (clearAllBtn) {
+        clearAllBtn.style.display = notifications.length > 0 ? 'block' : 'none';
+    }
+
     // Update list
     if (notifications.length === 0) {
         list.innerHTML = `
             <div class="notification-empty">
                 <i class="fas fa-bell-slash"></i>
-                <p>No new notifications</p>
+                <p>No notifications</p>
             </div>
         `;
         return;
     }
 
+    const mobile = isMobile();
+
     list.innerHTML = notifications.slice(0, 10).map(n => `
-        <div class="notification-item ${n.read ? '' : 'unread'}" onclick="handleNotificationClick('${n.id}', '${n.link}')">
-            <div class="notification-icon ${n.type}">
-                <i class="${getNotificationIcon(n.type)}"></i>
+        <div class="notification-item ${n.read ? '' : 'unread'} ${mobile ? 'swipeable' : ''}" 
+             data-id="${n.id}" 
+             onclick="handleNotificationClick('${n.id}', '${n.link || ''}')">
+            <div class="notification-item-content">
+                <div class="notification-icon ${n.type}">
+                    <i class="${getNotificationIcon(n.type)}"></i>
+                </div>
+                <div class="notification-content">
+                    <p><strong>${n.title}</strong> ${n.message}</p>
+                    <span class="notification-time">${getTimeAgo(n.timestamp)}</span>
+                </div>
+                ${!mobile ? `
+                    <button class="notification-delete-btn" onclick="event.stopPropagation(); deleteNotification('${n.id}')" title="Delete">
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                ` : ''}
             </div>
-            <div class="notification-content">
-                <p><strong>${n.title}</strong> ${n.message}</p>
-                <span class="notification-time">${getTimeAgo(n.timestamp)}</span>
-            </div>
+            ${mobile ? `
+                <div class="notification-swipe-action">
+                    <button class="swipe-delete-btn" onclick="event.stopPropagation(); deleteNotification('${n.id}', true)">
+                        <i class="fa-regular fa-trash-can"></i> Delete
+                    </button>
+                </div>
+            ` : ''}
         </div>
     `).join('');
+
+    // Setup swipe handlers for mobile
+    if (mobile) {
+        setupSwipeHandlers();
+    }
+}
+
+// Setup swipe handlers for mobile
+function setupSwipeHandlers() {
+    const items = document.querySelectorAll('.notification-item.swipeable');
+
+    items.forEach(item => {
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+
+        item.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+            item.style.transition = 'none';
+        }, { passive: true });
+
+        item.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            currentX = e.touches[0].clientX;
+            const diff = startX - currentX;
+
+            if (diff > 0 && diff < 100) {
+                const content = item.querySelector('.notification-item-content');
+                content.style.transform = `translateX(-${diff}px)`;
+            }
+        }, { passive: true });
+
+        item.addEventListener('touchend', () => {
+            isDragging = false;
+            const content = item.querySelector('.notification-item-content');
+            content.style.transition = 'transform 0.3s ease';
+
+            const diff = startX - currentX;
+            if (diff > 60) {
+                // Show delete action
+                content.style.transform = 'translateX(-80px)';
+                item.classList.add('swiped');
+            } else {
+                // Reset
+                content.style.transform = 'translateX(0)';
+                item.classList.remove('swiped');
+            }
+        });
+
+        // Reset on tap elsewhere
+        item.querySelector('.notification-item-content')?.addEventListener('click', (e) => {
+            if (item.classList.contains('swiped')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const content = item.querySelector('.notification-item-content');
+                content.style.transform = 'translateX(0)';
+                item.classList.remove('swiped');
+            }
+        });
+    });
 }
 
 // Get icon for notification type
@@ -174,7 +311,7 @@ function getNotificationIcon(type) {
         student: 'fas fa-user-graduate',
         tutor: 'fas fa-chalkboard-user',
         course: 'fas fa-book-bookmark',
-        service: 'fas fa-briefcase'
+        service: 'fas fa-wrench'
     };
     return icons[type] || 'fas fa-bell';
 }
@@ -203,13 +340,6 @@ function handleNotificationClick(id, link) {
     if (link) {
         window.location.href = link;
     }
-}
-
-// Mark all as read
-function markAllAsRead() {
-    notifications.forEach(n => n.read = true);
-    saveNotifications();
-    updateNotificationUI();
 }
 
 // Show toast notification
