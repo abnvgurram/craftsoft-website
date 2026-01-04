@@ -91,7 +91,37 @@ const Auth = {
                 }
 
                 if (!adminData) {
-                    return { success: false, error: 'Admin ID not found. Please use your email to login.' };
+                    return { success: false, error: 'Admin ID not found. Please try email or phone.' };
+                }
+
+                if (adminData.status !== 'ACTIVE') {
+                    return { success: false, error: 'Account is not active. Please verify your email first.' };
+                }
+
+                email = adminData.email;
+            }
+            // Check if identifier is a phone number
+            else if (Validators.isValidPhone(identifier)) {
+                // Clean phone number (remove spaces, dashes, +91 prefix)
+                let cleanPhone = identifier.replace(/[\s\-\(\)]/g, '');
+                if (cleanPhone.startsWith('+91')) {
+                    cleanPhone = cleanPhone.substring(3);
+                }
+
+                // Fetch email by phone
+                const { data: adminData, error: phoneError } = await supabase
+                    .from('admins')
+                    .select('email, status')
+                    .eq('phone', cleanPhone)
+                    .maybeSingle();
+
+                if (phoneError) {
+                    console.error('Phone lookup error:', phoneError);
+                    return { success: false, error: 'Error looking up phone number' };
+                }
+
+                if (!adminData) {
+                    return { success: false, error: 'Phone number not found. Please try email or Admin ID.' };
                 }
 
                 if (adminData.status !== 'ACTIVE') {

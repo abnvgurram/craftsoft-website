@@ -90,10 +90,11 @@
             <form id="login-form" class="auth-form" novalidate>
                 <!-- Admin ID or Email -->
                 <div class="form-group">
-                    <label class="form-label" for="identifier">Admin ID or Email <span class="required">*</span></label>
+                    <label class="form-label" for="identifier">Email, Admin ID or Phone <span
+                            class="required">*</span></label>
                     <div class="form-input-wrapper">
                         <input type="text" id="identifier" name="identifier" class="form-input secure-input"
-                            placeholder="Enter Email or Admin ID" autocomplete="off" autocorrect="off"
+                            placeholder="Enter Email, Admin ID or Phone" autocomplete="off" autocorrect="off"
                             autocapitalize="off" spellcheck="false" required>
                     </div>
                     <div id="identifier-error" class="form-error"></div>
@@ -205,10 +206,10 @@
                 let hasError = false;
 
                 if (!identifier) {
-                    FormHelpers.showError('identifier', 'Please enter your Admin ID or Email');
+                    FormHelpers.showError('identifier', 'Please enter your Email, Admin ID or Phone');
                     hasError = true;
-                } else if (!Validators.isValidAdminId(identifier) && !Validators.isValidEmail(identifier)) {
-                    FormHelpers.showError('identifier', 'Please enter a valid Admin ID (ACS-XX) or Email');
+                } else if (!Validators.isValidAdminId(identifier) && !Validators.isValidEmail(identifier) && !Validators.isValidPhone(identifier)) {
+                    FormHelpers.showError('identifier', 'Please enter a valid Email, Admin ID (ACS-XX) or Phone');
                     hasError = true;
                 }
 

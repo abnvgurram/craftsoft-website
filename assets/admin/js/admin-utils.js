@@ -1025,8 +1025,8 @@ const AccountManager = {
                 
                 <form id="add-account-form" class="auth-form" style="margin-top: 1.5rem;">
                     <div class="form-group">
-                        <label class="form-label" for="add-identifier">Email or Admin ID</label>
-                        <input type="text" id="add-identifier" class="form-input" placeholder="Enter Email or Admin ID" required>
+                        <label class="form-label" for="add-identifier">Email, Admin ID or Phone</label>
+                        <input type="text" id="add-identifier" class="form-input" placeholder="Enter Email, Admin ID or Phone" required>
                         <div id="add-identifier-error" class="form-error"></div>
                     </div>
                     
@@ -1110,7 +1110,7 @@ const AccountManager = {
 
         // Validate
         if (!identifier) {
-            document.getElementById('add-identifier-error').innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Please enter email or Admin ID';
+            document.getElementById('add-identifier-error').innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Please enter Email, Admin ID or Phone';
             document.getElementById('add-identifier-error').classList.add('show');
             return;
         }
