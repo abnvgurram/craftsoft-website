@@ -291,6 +291,7 @@ function renderRecentActivity() {
 // Export for global access
 window.deleteActivity = deleteActivity;
 window.handleActivityClick = handleActivityClick;
+window.renderRecentActivity = renderRecentActivity;
 
 // Export addActivity for other modules
 window.DashboardActivities = {

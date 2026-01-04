@@ -136,6 +136,11 @@ function addNotification(type, title, message, link) {
     saveNotifications();
     updateNotificationUI();
     showToast(type, title, message);
+
+    // Update dashboard Recent Activity if on dashboard page
+    if (typeof window.renderRecentActivity === 'function') {
+        window.renderRecentActivity();
+    }
 }
 
 // Delete single notification
