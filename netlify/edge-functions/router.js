@@ -3,24 +3,26 @@ export default async (request, context) => {
     const hostname = url.hostname.toLowerCase();
     const pathname = url.pathname;
 
+    // Bypasses for direct file access (Shared across all domains)
+    if (pathname.startsWith("/assets/") || pathname.startsWith("/shared/") || pathname.startsWith("/subdomains/")) {
+        return; // Fall through to static files at root
+    }
+
     // 1. Signup Subdomain
     if (hostname.includes("signup.craftsoft")) {
         if (pathname === "/") {
             return context.rewrite("/subdomains/acs_admin/signup/index.html");
         }
+
         if (!pathname.includes(".") && !pathname.endsWith("/")) {
             return Response.redirect(`${request.url}/`, 301);
         }
+
         return context.rewrite(`/subdomains/acs_admin/signup${pathname}`);
     }
 
     // 2. Admin Subdomain
     if (hostname.includes("admin.craftsoft")) {
-        // Bypasses for direct file access
-        if (pathname.startsWith("/assets/") || pathname.startsWith("/shared/") || pathname.startsWith("/subdomains/")) {
-            return;
-        }
-
         if (pathname === "/") {
             return context.rewrite("/subdomains/acs_admin/index.html");
         }
@@ -45,7 +47,7 @@ export default async (request, context) => {
             }
         }
 
-        // Redirect directories to trailing slash (except for file-like paths)
+        // Redirect directories to trailing slash
         const adminFolders = ["/dashboard", "/inquiries", "/students", "/clients", "/courses", "/services", "/payments", "/tutors", "/settings", "/students-clients", "/courses-services"];
         if (adminFolders.some(folder => pathname === folder || pathname === folder + "/students" || pathname === folder + "/clients" || pathname === folder + "/courses" || pathname === folder + "/services")) {
             if (!pathname.endsWith("/")) {
