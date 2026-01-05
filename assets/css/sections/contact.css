@@ -190,11 +190,11 @@
 
 /* Form Card Styling - Match Image 2/3 */
 .contact-form-card {
-    background: white;
+    background: linear-gradient(135deg, #ffffff 0%, var(--primary-50) 100%);
     padding: 3rem;
     border-radius: 2rem;
     box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(59, 130, 246, 0.1);
 }
 
 .contact-form-card h3 {
