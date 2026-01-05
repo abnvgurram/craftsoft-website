@@ -162,12 +162,11 @@ function renderStudentsList(students) {
                         <th width="40px">
                             <input type="checkbox" id="select-all-students">
                         </th>
-                        <th width="12%">STUDENT ID</th>
-                        <th width="20%">NAME</th>
+                        <th width="14%">STUDENT ID</th>
+                        <th width="22%">NAME</th>
                         <th width="15%">PHONE</th>
-                        <th width="28%">COURSE(S)</th>
-                        <th width="12%">FEE</th>
-                        <th width="13%" class="text-right">ACTIONS</th>
+                        <th width="32%">COURSE(S)</th>
+                        <th width="17%" class="text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -176,7 +175,7 @@ function renderStudentsList(students) {
                             <td>
                                 <input type="checkbox" class="student-checkbox" data-id="${s.id}" ${selectedStudents.has(s.id) ? 'checked' : ''}>
                             </td>
-                            <td><span class="cell-badge">${s.student_id}</span></td>
+                            <td><span class="cell-badge clickable" data-id="${s.id}" onclick="openStudentProfile('${s.id}')">${s.student_id}</span></td>
                             <td><span class="cell-title">${s.first_name} ${s.last_name}</span></td>
                             <td><span class="cell-phone">${s.phone}</span></td>
                             <td>
@@ -190,7 +189,7 @@ function renderStudentsList(students) {
     }).join('')}
                                 </div>
                             </td>
-                            <td><span class="cell-fee">₹${formatNumber(s.final_fee || 0)}</span></td>
+                            </td>
                             <td class="text-right">
                                 <div class="cell-actions">
                                     <button class="action-btn edit btn-edit-student" data-id="${s.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
@@ -209,7 +208,7 @@ function renderStudentsList(students) {
                     <div class="card-header">
                         <div style="display: flex; gap: 0.75rem; align-items: center;">
                             <input type="checkbox" class="student-checkbox" data-id="${s.id}" ${selectedStudents.has(s.id) ? 'checked' : ''}>
-                            <span class="card-id-badge">${s.student_id}</span>
+                            <span class="card-id-badge clickable" onclick="openStudentProfile('${s.id}')">${s.student_id}</span>
                         </div>
                     </div>
                     <div class="card-body">
@@ -226,7 +225,7 @@ function renderStudentsList(students) {
     }).join('')}
                                 </div>
                             </div>
-                            <span class="card-info-item"><i class="fa-solid fa-indian-rupee-sign"></i> ₹${formatNumber(s.final_fee || 0)}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="card-actions">
@@ -771,4 +770,296 @@ async function confirmDelete() {
         btn.disabled = false;
         btn.innerHTML = 'Delete';
     }
+}
+
+
+// =====================
+// Student Profile Panel
+// =====================
+
+let currentProfileStudentId = null;
+
+async function openStudentProfile(studentId) {
+    const overlay = document.getElementById('student-profile-overlay');
+    const content = document.getElementById('profile-content');
+    const footer = document.getElementById('profile-footer');
+    
+    if (!overlay || !content) return;
+    
+    currentProfileStudentId = studentId;
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Show loading
+    content.innerHTML = `
+        <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i> Loading profile...
+        </div>
+    `;
+    
+    try {
+        // Fetch student data
+        const { data: student, error: studentError } = await window.supabaseClient
+            .from('students')
+            .select('*')
+            .eq('id', studentId)
+            .single();
+        
+        if (studentError) throw studentError;
+        
+        // Fetch payments for this student
+        const { data: payments, error: paymentsError } = await window.supabaseClient
+            .from('payments')
+            .select('*, courses(course_code, course_name)')
+            .eq('student_id', studentId)
+            .order('payment_date', { ascending: false });
+        
+        if (paymentsError) console.warn('Error loading payments:', paymentsError);
+        
+        // Calculate totals
+        const totalPaid = (payments || []).reduce((sum, p) => sum + parseFloat(p.amount_paid || 0), 0);
+        const balanceDue = (student.final_fee || 0) - totalPaid;
+        
+        // Render profile content
+        content.innerHTML = renderProfileContent(student, payments || [], totalPaid, balanceDue);
+        
+        // Update footer buttons
+        updateProfileFooter(studentId);
+        
+        // Bind close events
+        bindProfileEvents();
+        
+    } catch (e) {
+        console.error('Error loading student profile:', e);
+        content.innerHTML = `
+            <div class="profile-empty-state">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <p>Error loading profile. Please try again.</p>
+            </div>
+        `;
+    }
+}
+
+function renderProfileContent(student, payments, totalPaid, balanceDue) {
+    const formatDate = (dateStr) => {
+        if (!dateStr) return '—';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    };
+    
+    const formatCurrency = (num) => '₹' + (num || 0).toLocaleString('en-IN');
+    
+    return `
+        <!-- Basic Info Section -->
+        <div class="profile-section">
+            <div class="profile-section-header">
+                <i class="fa-solid fa-user"></i> Basic Information
+            </div>
+            <div class="profile-info-grid">
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Student ID</span>
+                    <span class="profile-info-value">${student.student_id}</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Status</span>
+                    <span class="profile-info-value">
+                        <i class="fa-solid fa-circle ${student.status === 'ACTIVE' ? 'status-active' : 'status-inactive'}"></i>
+                        ${student.status || 'ACTIVE'}
+                    </span>
+                </div>
+                <div class="profile-info-item full-width">
+                    <span class="profile-info-label">Full Name</span>
+                    <span class="profile-info-value">${student.first_name} ${student.last_name}</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Phone</span>
+                    <span class="profile-info-value">${student.phone}</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Email</span>
+                    <span class="profile-info-value">${student.email || '—'}</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Joined</span>
+                    <span class="profile-info-value">${formatDate(student.joining_date)}</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Batch Time</span>
+                    <span class="profile-info-value">${student.batch_time || '—'}</span>
+                </div>
+            </div>
+            <div class="profile-contact-btns">
+                <a href="tel:+91${student.phone}" class="profile-contact-btn call">
+                    <i class="fa-solid fa-phone"></i> Call
+                </a>
+                <a href="https://wa.me/91${student.phone.replace(/\D/g, '')}" target="_blank" class="profile-contact-btn whatsapp">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+        </div>
+        
+        <!-- Enrolled Courses Section -->
+        <div class="profile-section">
+            <div class="profile-section-header">
+                <i class="fa-solid fa-book-open"></i> Enrolled Courses
+            </div>
+            ${(student.courses || []).length === 0 ? `
+                <div class="profile-empty-state">
+                    <i class="fa-solid fa-book"></i>
+                    <p>No courses enrolled</p>
+                </div>
+            ` : (student.courses || []).map(code => {
+                const tutorId = student.course_tutors?.[code];
+                const tutor = allTutorsForStudents.find(t => t.tutor_id === tutorId);
+                const course = allCoursesForStudents.find(c => c.course_code === code);
+                const discount = student.course_discounts?.[code] || 0;
+                const courseFee = course?.fee || 0;
+                
+                return `
+                    <div class="profile-course-card">
+                        <div class="profile-course-header">
+                            <span class="profile-course-code">${code}</span>
+                            <span class="profile-course-tutor">
+                                ${tutor ? `<i class="fa-solid fa-chalkboard-user"></i> ${tutor.full_name}` : '<i class="fa-solid fa-user-slash"></i> No tutor'}
+                            </span>
+                        </div>
+                        <div class="profile-course-details">
+                            <span><i class="fa-solid fa-indian-rupee-sign"></i> Fee: ${formatCurrency(courseFee)}</span>
+                            ${discount > 0 ? `<span><i class="fa-solid fa-tag"></i> Discount: ${formatCurrency(discount)}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+        
+        <!-- Fee Summary Section -->
+        <div class="profile-section">
+            <div class="profile-section-header">
+                <i class="fa-solid fa-wallet"></i> Fee Summary
+            </div>
+            <div class="profile-fee-grid">
+                <div class="profile-fee-item">
+                    <div class="profile-fee-label">Total Fee</div>
+                    <div class="profile-fee-value">${formatCurrency(student.fee || 0)}</div>
+                </div>
+                <div class="profile-fee-item">
+                    <div class="profile-fee-label">Discount</div>
+                    <div class="profile-fee-value">${formatCurrency(student.discount || 0)}</div>
+                </div>
+                <div class="profile-fee-item highlight">
+                    <div class="profile-fee-label">Final Fee</div>
+                    <div class="profile-fee-value">${formatCurrency(student.final_fee || 0)}</div>
+                </div>
+                <div class="profile-fee-item ${balanceDue > 0 ? 'danger' : ''}">
+                    <div class="profile-fee-label">Balance Due</div>
+                    <div class="profile-fee-value">${formatCurrency(balanceDue)}</div>
+                </div>
+                <div class="profile-fee-item" style="grid-column: 1 / -1;">
+                    <div class="profile-fee-label">Total Paid</div>
+                    <div class="profile-fee-value">${formatCurrency(totalPaid)}</div>
+                    <div class="profile-fee-count">${payments.length} payment(s)</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment History Section -->
+        <div class="profile-section">
+            <div class="profile-section-header">
+                <i class="fa-solid fa-history"></i> Payment History
+            </div>
+            ${payments.length === 0 ? `
+                <div class="profile-empty-state">
+                    <i class="fa-solid fa-receipt"></i>
+                    <p>No payments recorded yet</p>
+                </div>
+            ` : `
+                <table class="profile-payments-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Mode</th>
+                            <th>Ref</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${payments.map(p => `
+                            <tr>
+                                <td>${formatDate(p.payment_date)}</td>
+                                <td><strong>${formatCurrency(p.amount_paid)}</strong></td>
+                                <td>
+                                    <span class="profile-payment-mode ${p.payment_mode?.toLowerCase()}">
+                                        <i class="fa-solid fa-${p.payment_mode === 'CASH' ? 'money-bill' : 'credit-card'}"></i>
+                                        ${p.payment_mode}
+                                    </span>
+                                </td>
+                                <td>${p.reference_id || '—'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `}
+        </div>
+        
+        <!-- Notes Section -->
+        ${student.notes ? `
+            <div class="profile-section">
+                <div class="profile-section-header">
+                    <i class="fa-solid fa-sticky-note"></i> Notes
+                </div>
+                <div class="profile-notes">"${student.notes}"</div>
+            </div>
+        ` : ''}
+    `;
+}
+
+function updateProfileFooter(studentId) {
+    const editBtn = document.getElementById('profile-edit-btn');
+    const paymentBtn = document.getElementById('profile-payment-btn');
+    
+    if (editBtn) {
+        editBtn.onclick = () => {
+            closeStudentProfile();
+            openForm(studentId);
+        };
+    }
+    
+    if (paymentBtn) {
+        paymentBtn.href = `/payments/record-payment/?student_id=${studentId}`;
+    }
+}
+
+function closeStudentProfile() {
+    const overlay = document.getElementById('student-profile-overlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+        document.body.style.overflow = '';
+        currentProfileStudentId = null;
+    }
+}
+
+function bindProfileEvents() {
+    const closeBtn = document.getElementById('close-profile-btn');
+    const overlay = document.getElementById('student-profile-overlay');
+    
+    if (closeBtn) {
+        closeBtn.onclick = closeStudentProfile;
+    }
+    
+    // Close on overlay click (outside panel)
+    if (overlay) {
+        overlay.onclick = (e) => {
+            if (e.target === overlay) {
+                closeStudentProfile();
+            }
+        };
+    }
+    
+    // Close on Escape key
+    document.addEventListener('keydown', function escHandler(e) {
+        if (e.key === 'Escape' && currentProfileStudentId) {
+            closeStudentProfile();
+            document.removeEventListener('keydown', escHandler);
+        }
+    });
 }

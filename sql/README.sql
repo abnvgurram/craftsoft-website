@@ -1,0 +1,23 @@
+-- ================================================================================
+-- CRAFTSOFT DATABASE - README
+-- ================================================================================
+-- This folder contains all SQL schemas organized by entity/role.
+-- 
+-- STRUCTURE:
+-- ├── 00_setup.sql           # Database setup & Realtime configuration
+-- ├── 01_admins.sql          # Admin users & authentication
+-- ├── 02_services.sql        # Services offered
+-- ├── 03_courses.sql         # Training courses
+-- ├── 04_tutors.sql          # Tutors/trainers
+-- ├── 05_students.sql        # Student records
+-- ├── 06_inquiries.sql       # Leads & inquiries
+-- ├── 07_payments.sql        # Payment transactions
+-- ├── 08_receipts.sql        # Payment receipts
+-- ├── 09_activities.sql      # Audit log
+-- ├── 10_settings.sql        # Global settings
+-- └── 11_sessions.sql        # User session management
+--
+-- HOW TO USE:
+-- Execute files in order (00 → 11) when setting up a fresh database.
+-- Each file is idempotent (can be run multiple times safely).
+-- ================================================================================

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -224,7 +224,7 @@
                             </div>
                             <div class="fee-total-row" id="fee-total-row" style="display: none;">
                                 <div class="fee-total-label">Total Fee</div>
-                                <div class="fee-total-amount" id="fee-total">₹0</div>
+                                <div class="fee-total-amount" id="fee-total">â‚¹0</div>
                             </div>
                         </div>
 
@@ -265,7 +265,33 @@
                 <button class="btn btn-danger btn-sm" id="confirm-delete-btn">Delete</button>
             </div>
         </div>
+    
+    <!-- Student Profile Panel -->
+    <div class="profile-overlay" id="student-profile-overlay" style="display: none;">
+        <div class="profile-panel">
+            <div class="profile-header">
+                <h2><i class="fa-solid fa-user-graduate"></i> Student Profile</h2>
+                <button class="btn-icon profile-close-btn" id="close-profile-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="profile-content" id="profile-content">
+                <!-- Content loaded dynamically -->
+                <div class="loading-spinner">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Loading profile...
+                </div>
+            </div>
+            <div class="profile-footer" id="profile-footer">
+                <button class="btn btn-outline" id="profile-edit-btn">
+                    <i class="fa-solid fa-pen"></i> Edit Student
+                </button>
+                <a href="#" class="btn btn-primary" id="profile-payment-btn">
+                    <i class="fa-solid fa-credit-card"></i> Record Payment
+                </a>
+            </div>
+        </div>
     </div>
+</div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -278,6 +304,7 @@
 </body>
 
 </html>
+
 
 
 

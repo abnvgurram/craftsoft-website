@@ -978,3 +978,457 @@
         max-height: 200px;
     }
 }
+
+/* ============================================
+   Student Profile Panel
+   ============================================ */
+
+.profile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-end;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.profile-panel {
+    width: 100%;
+    max-width: 550px;
+    height: 100%;
+    background: #fff;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, #2896cd 0%, #1a7eb0 100%);
+    color: #fff;
+}
+
+.profile-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.profile-close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.profile-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.profile-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+.profile-footer {
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 1rem;
+}
+
+.profile-footer .btn {
+    flex: 1;
+}
+
+/* Profile Sections */
+.profile-section {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.profile-section:last-child {
+    margin-bottom: 0;
+}
+
+.profile-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #2896cd;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.profile-section-header i {
+    font-size: 1rem;
+}
+
+/* Profile Info Grid */
+.profile-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.profile-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.profile-info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.profile-info-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.profile-info-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-info-value .status-active {
+    color: #10b981;
+}
+
+.profile-info-value .status-inactive {
+    color: #ef4444;
+}
+
+/* Contact Buttons */
+.profile-contact-btns {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.profile-contact-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.profile-contact-btn.call {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.profile-contact-btn.call:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.profile-contact-btn.whatsapp {
+    background: rgba(37, 211, 102, 0.1);
+    color: #25d366;
+    border: 1px solid rgba(37, 211, 102, 0.2);
+}
+
+.profile-contact-btn.whatsapp:hover {
+    background: rgba(37, 211, 102, 0.2);
+}
+
+/* Course Cards in Profile */
+.profile-course-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.profile-course-card:last-child {
+    margin-bottom: 0;
+}
+
+.profile-course-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.625rem;
+}
+
+.profile-course-code {
+    background: linear-gradient(135deg, #2896cd 0%, #1a7eb0 100%);
+    color: #fff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.profile-course-tutor {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.profile-course-tutor i {
+    margin-right: 0.25rem;
+}
+
+.profile-course-details {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.85rem;
+    color: #475569;
+}
+
+.profile-course-details span {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+/* Fee Summary */
+.profile-fee-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.profile-fee-item {
+    text-align: center;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.profile-fee-item.highlight {
+    background: linear-gradient(135deg, rgba(40, 150, 205, 0.1) 0%, rgba(26, 126, 176, 0.1) 100%);
+    border-color: rgba(40, 150, 205, 0.3);
+}
+
+.profile-fee-item.danger {
+    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.profile-fee-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 0.375rem;
+}
+
+.profile-fee-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.profile-fee-item.highlight .profile-fee-value {
+    color: #2896cd;
+}
+
+.profile-fee-item.danger .profile-fee-value {
+    color: #ef4444;
+}
+
+.profile-fee-count {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+/* Payment History Table */
+.profile-payments-table {
+    width: 100%;
+    font-size: 0.85rem;
+}
+
+.profile-payments-table th {
+    text-align: left;
+    padding: 0.625rem 0.5rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.profile-payments-table td {
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: #0f172a;
+}
+
+.profile-payments-table tr:last-child td {
+    border-bottom: none;
+}
+
+.profile-payment-mode {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.profile-payment-mode.cash {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.profile-payment-mode.online {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.profile-receipt-link {
+    color: #2896cd;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.profile-receipt-link:hover {
+    text-decoration: underline;
+}
+
+/* Notes Section */
+.profile-notes {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.875rem;
+    font-size: 0.9rem;
+    color: #475569;
+    font-style: italic;
+    line-height: 1.5;
+}
+
+.profile-notes.empty {
+    color: #94a3b8;
+}
+
+/* Empty State in Profile */
+.profile-empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #94a3b8;
+}
+
+.profile-empty-state i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+/* Clickable Student ID */
+.cell-badge.clickable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cell-badge.clickable:hover {
+    background: linear-gradient(135deg, #2896cd 0%, #1a7eb0 100%);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .profile-panel {
+        max-width: 100%;
+    }
+    
+    .profile-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-fee-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .profile-payments-table {
+        font-size: 0.8rem;
+    }
+    
+    .profile-payments-table th,
+    .profile-payments-table td {
+        padding: 0.5rem 0.375rem;
+    }
+    
+    .profile-contact-btns {
+        flex-direction: column;
+    }
+    
+    .profile-footer {
+        flex-direction: column;
+    }
+}
+
+/* Clickable card ID badge */
+.card-id-badge.clickable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.card-id-badge.clickable:hover {
+    background: linear-gradient(135deg, #2896cd 0%, #1a7eb0 100%);
+    color: #fff;
+    transform: scale(1.05);
+}
