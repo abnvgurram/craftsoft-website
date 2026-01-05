@@ -439,7 +439,7 @@
 
 .related-courses {
     padding: 2rem 0;
-    background: var(--primary-50);
+    background: var(--section-bg);
 }
 
 .related-courses .section-header {
@@ -453,11 +453,12 @@
 }
 
 .related-course-card {
-    background: var(--white);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
     border-radius: var(--radius-xl);
     padding: var(--spacing-xl);
     box-shadow: var(--shadow-md);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.2s ease;
     display: flex;
     flex-direction: column;
 }
@@ -465,6 +466,7 @@
 .related-course-card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-xl);
+    background: var(--card-bg-hover);
 }
 
 .related-course-icon {
