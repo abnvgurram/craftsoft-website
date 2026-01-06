@@ -112,7 +112,9 @@ function resetForm(keepEntity = false) {
         courseSearchableSelect.syncWithOptions();
     }
 
-    document.getElementById('fee-summary').style.display = 'none';
+    document.getElementById('total-fee').textContent = '₹ --';
+    document.getElementById('paid-so-far').textContent = '₹ --';
+    document.getElementById('balance-due').textContent = '₹ --';
     const amountInput = document.getElementById('amount-input');
     amountInput.value = '';
     amountInput.disabled = true;
@@ -278,7 +280,7 @@ async function calculateFeeSummary(itemId) {
         window.AdminUtils.animateValue(paidEl, 0, paidSoFar, 600, '₹ ');
         window.AdminUtils.animateValue(dueEl, 0, balanceDue, 800, '₹ ');
 
-        document.getElementById('fee-summary').style.display = 'block';
+        // Summaries are updated via animateValue above
 
         const amountInput = document.getElementById('amount-input');
         amountInput.value = balanceDue > 0 ? balanceDue : '';

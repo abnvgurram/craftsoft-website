@@ -147,24 +147,24 @@
 
                         <!-- Right Column: Summary -->
                         <div class="payment-grid-right">
-                            <!-- Fee Summary Card (Visible when student selected) -->
-                            <div class="floating-card summary-card glow-card" id="fee-summary" style="display: none;">
+                            <!-- Fee Summary Card (Always Visible) -->
+                            <div class="floating-card summary-card glow-card" id="fee-summary">
                                 <div class="card-header-mini">
                                     <i class="fa-solid fa-file-invoice"></i> Live Summary
                                 </div>
                                 <div class="fee-summary-body">
                                     <div class="fee-row">
                                         <span class="fee-label">Total Fee</span>
-                                        <span class="fee-value" id="total-fee">₹ 0</span>
+                                        <span class="fee-value" id="total-fee">₹ --</span>
                                     </div>
                                     <div class="fee-row">
                                         <span class="fee-label">Paid So Far</span>
-                                        <span class="fee-value text-success" id="paid-so-far">₹ 0</span>
+                                        <span class="fee-value text-success" id="paid-so-far">₹ --</span>
                                     </div>
                                     <div class="fee-divider"></div>
                                     <div class="fee-row fee-row-highlight">
                                         <span class="fee-label">Balance Due</span>
-                                        <span class="fee-value text-danger" id="balance-due">₹ 0</span>
+                                        <span class="fee-value text-danger" id="balance-due">₹ --</span>
                                     </div>
                                 </div>
                             </div>

@@ -40,12 +40,14 @@
 .payment-grid-action {
     grid-column: 1 / -1;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    width: 100%;
+    margin-top: 1rem;
 }
 
 .payment-grid-action .payment-card {
     width: 100%;
-    max-width: 800px;
+    flex: 1;
 }
 
 /* Date Input Icon Fix */
@@ -68,7 +70,6 @@
     padding-left: 3.25rem !important;
 }
 
-/* Floating Card Base */
 .floating-card {
     background: #fff;
     border: 1px solid var(--admin-input-border);
@@ -76,6 +77,7 @@
     padding: 2rem;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
 }
 
 .floating-card:hover {
@@ -281,6 +283,15 @@
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
+        width: 100%;
+    }
+
+    .payment-grid-left,
+    .payment-grid-right,
+    .payment-grid-action {
+        width: 100% !important;
+        flex: 1;
+        margin: 0;
     }
 
     .payment-grid-left {
@@ -293,15 +304,23 @@
 
     .payment-grid-action {
         order: 3;
+        margin-top: 0;
+    }
+
+    .floating-card {
+        padding: 1.25rem;
+        border-radius: 16px;
+        width: 100%;
     }
 
     /* Card Order Adjustments */
-    .selection-card {
+    .selection-card,
+    .summary-card {
         margin-bottom: 0 !important;
     }
 
-    .summary-card {
-        margin-bottom: 0 !important;
+    .workspace-header {
+        margin-bottom: 1.5rem;
     }
 
     .workspace-title {
