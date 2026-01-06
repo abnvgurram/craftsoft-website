@@ -1,6 +1,6 @@
 /* ============================================
    Mobile Responsive Styles (< 768px)
-   Restore Hamburger Menu & Slide-in Nav
+   Light Blue Theme - Slide-in Nav
    ============================================ */
 
 @media (max-width: 768px) {
@@ -9,6 +9,8 @@
     .admin-header {
         padding: 0.75rem 1rem;
         left: 0 !important;
+        background: var(--header-bg);
+        backdrop-filter: blur(10px);
     }
 
     /* Show hamburger */
@@ -16,6 +18,8 @@
         display: flex !important;
         align-items: center;
         justify-content: center;
+        background: rgba(40, 150, 205, 0.1);
+        color: var(--primary-600);
     }
 
     /* Hide desktop sidebar on mobile */
@@ -102,13 +106,14 @@
         font-size: 1.1rem;
     }
 
-    /* Data Tables Mobile */
-    .data-table-wrapper {
-        display: none;
+    /* Data Tables Mobile - Hide table show cards */
+    .data-table-wrapper,
+    .table-container {
+        display: none !important;
     }
 
     .data-cards {
-        display: block;
+        display: block !important;
     }
 
     .table-footer {
@@ -202,6 +207,7 @@
         position: fixed;
         inset: 0;
         background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(4px);
         z-index: 1000;
         opacity: 0;
         visibility: hidden;
@@ -219,14 +225,14 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background: #fff;
+        background: var(--sidebar-bg);
         border-radius: 20px 20px 0 0;
         z-index: 1001;
         transform: translateY(100%);
         transition: transform 0.3s ease, visibility 0.3s ease;
         max-height: 70vh;
         overflow-y: auto;
-        box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 -4px 30px rgba(40, 150, 205, 0.15);
         visibility: hidden;
         pointer-events: none;
     }
@@ -242,14 +248,15 @@
         align-items: center;
         justify-content: space-between;
         padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid var(--admin-input-border, #e2e8f0);
+        border-bottom: 1px solid var(--sidebar-border);
+        background: rgba(255, 255, 255, 0.5);
     }
 
     .mobile-nav-title {
         font-family: 'Outfit', sans-serif;
         font-size: 1rem;
         font-weight: 600;
-        color: var(--admin-text-muted, #94a3b8);
+        color: var(--admin-text-muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
@@ -260,11 +267,16 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--gray-100, #f1f5f9);
+        background: rgba(40, 150, 205, 0.1);
         border: none;
         border-radius: 10px;
-        color: var(--admin-text-secondary, #64748b);
+        color: var(--primary-600);
         cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .mobile-nav-close:hover {
+        background: rgba(40, 150, 205, 0.15);
     }
 
     .mobile-nav-list {
@@ -281,21 +293,31 @@
         padding: 1rem 1.25rem;
         border-radius: 12px;
         text-decoration: none;
-        color: var(--admin-text-secondary, #64748b);
+        color: var(--sidebar-text);
         font-size: 0.95rem;
         font-weight: 500;
-        transition: all 0.15s ease;
+        transition: all 0.2s ease;
     }
 
     .mobile-nav-item i {
         width: 24px;
         text-align: center;
         font-size: 1.1rem;
+        color: var(--sidebar-text-muted);
+    }
+
+    .mobile-nav-item:hover {
+        background: var(--sidebar-item-hover);
     }
 
     .mobile-nav-item.active {
-        background: linear-gradient(135deg, var(--primary-50, #edf6fb) 0%, rgba(108, 92, 231, 0.08) 100%);
-        color: var(--primary-600, #1a7eb0);
+        background: var(--sidebar-item-active);
+        color: var(--sidebar-item-active-text);
+        box-shadow: 0 4px 12px rgba(40, 150, 205, 0.25);
+    }
+
+    .mobile-nav-item.active i {
+        color: var(--sidebar-item-active-text);
     }
 
     /* Mobile Nav Parent (Payments - collapsible) */
@@ -312,11 +334,11 @@
         border-radius: 12px;
         background: transparent;
         border: none;
-        color: var(--admin-text-secondary, #64748b);
+        color: var(--sidebar-text);
         font-size: 0.95rem;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.15s ease;
+        transition: all 0.2s ease;
         width: 100%;
         text-align: left;
     }
@@ -325,6 +347,7 @@
         width: 24px;
         text-align: center;
         font-size: 1.1rem;
+        color: var(--sidebar-text-muted);
     }
 
     .mobile-nav-parent-btn span {
@@ -334,6 +357,7 @@
     .mobile-nav-arrow {
         font-size: 0.7rem;
         transition: transform 0.2s ease;
+        color: var(--sidebar-text-muted);
     }
 
     .mobile-nav-parent.expanded .mobile-nav-arrow {
@@ -341,7 +365,11 @@
     }
 
     .mobile-nav-parent.expanded .mobile-nav-parent-btn {
-        color: var(--primary-600, #1a7eb0);
+        color: var(--primary-600);
+    }
+
+    .mobile-nav-parent.expanded .mobile-nav-parent-btn i:first-child {
+        color: var(--primary-500);
     }
 
     /* Collapsible children */

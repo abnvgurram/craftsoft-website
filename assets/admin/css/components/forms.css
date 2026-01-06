@@ -1,5 +1,5 @@
 /* ============================================
-   Form Styles
+   Form Styles - Blue-Tinted Theme
    ============================================ */
 .auth-form {
     display: flex;
@@ -15,7 +15,7 @@
 
 .form-label {
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--admin-text-primary);
 }
 
@@ -44,7 +44,7 @@
 }
 
 .form-select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%232896cd' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
     background-size: 1.25rem;
@@ -57,7 +57,7 @@
 .form-select:focus {
     border-color: var(--admin-input-focus);
     background: #fff;
-    box-shadow: 0 0 0 4px rgba(40, 150, 205, 0.1);
+    box-shadow: var(--admin-input-focus-glow);
 }
 
 .form-input::placeholder,
@@ -92,7 +92,7 @@
 }
 
 .password-toggle:hover {
-    color: var(--admin-text-secondary);
+    color: var(--primary-500);
 }
 
 .password-toggle i {
@@ -119,9 +119,10 @@
 
 /* Locked Input */
 .input-locked {
-    background: var(--gray-100) !important;
+    background: rgba(40, 150, 205, 0.06) !important;
     color: var(--admin-text-secondary) !important;
     cursor: not-allowed;
+    border-color: rgba(40, 150, 205, 0.1) !important;
 }
 
 /* Input Hint */
@@ -149,7 +150,7 @@
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--admin-text-muted);
+    color: var(--primary-400);
     font-size: 0.9rem;
 }
 
@@ -160,14 +161,15 @@
     border-radius: 10px;
     font-size: 0.9rem;
     color: var(--admin-text-primary);
-    background: #fff;
+    background: var(--admin-input-bg);
     transition: all 0.2s;
 }
 
 .search-box input:focus {
     outline: none;
     border-color: var(--primary-400);
-    box-shadow: 0 0 0 3px rgba(40, 150, 205, 0.1);
+    background: #fff;
+    box-shadow: var(--admin-input-focus-glow);
 }
 
 /* Checkbox List */
@@ -177,7 +179,7 @@
     border: 1px solid var(--admin-input-border);
     border-radius: 10px;
     padding: 0.5rem;
-    background: var(--gray-50);
+    background: var(--admin-input-bg);
 }
 
 .checkbox-item {
@@ -185,13 +187,13 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.5rem 0.75rem;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s;
 }
 
 .checkbox-item:hover {
-    background: #fff;
+    background: rgba(40, 150, 205, 0.08);
 }
 
 .checkbox-item input[type="checkbox"] {
@@ -222,12 +224,12 @@
     font-family: 'Outfit', sans-serif;
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--admin-text-secondary);
+    color: var(--primary-600);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin: 1.5rem 0 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--admin-input-border);
+    border-bottom: 1px solid var(--table-border);
 }
 
 /* Radio Group */
@@ -258,11 +260,11 @@
 /* Toggle Group (Pill Style) */
 .toggle-group {
     display: inline-flex;
-    background: var(--admin-input-bg, #f1f5f9);
+    background: var(--admin-input-bg);
     padding: 4px;
     border-radius: 10px;
     gap: 4px;
-    border: 1.5px solid var(--admin-input-border, #e2e8f0);
+    border: 1.5px solid var(--admin-input-border);
 }
 
 .toggle-item {
@@ -279,15 +281,15 @@
     border-radius: 7px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--admin-text-secondary, #64748b);
+    color: var(--admin-text-secondary);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
 }
 
 .toggle-item input:checked+span {
-    background: #fff;
-    color: var(--primary-600, #2896cd);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: var(--btn-primary-bg);
+    color: #fff;
+    box-shadow: var(--btn-primary-shadow);
 }
 
 /* Form Row Responsive */

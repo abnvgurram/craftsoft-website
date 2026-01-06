@@ -1,9 +1,10 @@
 /* ============================================
-   Admin Header
+   Admin Header - Light Theme
    ============================================ */
 .admin-header {
-    background: #fff;
-    border-bottom: 1px solid var(--admin-input-border);
+    background: var(--header-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--header-border);
     padding: 0.75rem 1.5rem;
     display: flex;
     align-items: center;
@@ -26,23 +27,23 @@
     display: none;
     width: 40px;
     height: 40px;
-    background: var(--gray-100);
+    background: rgba(40, 150, 205, 0.1);
     border: none;
     border-radius: 10px;
-    color: var(--admin-text-primary);
+    color: var(--primary-600);
     font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .mobile-menu-btn:hover {
-    background: var(--gray-200);
+    background: rgba(40, 150, 205, 0.15);
 }
 
 .header-divider {
     width: 1px;
     height: 24px;
-    background: var(--admin-input-border);
+    background: var(--header-border);
     margin: 0 0.5rem;
 }
 
@@ -128,10 +129,10 @@
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
-    background: #fff;
+    background: var(--admin-card-bg-solid);
     border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
-    border: 1px solid var(--admin-input-border);
+    box-shadow: var(--admin-card-hover-shadow);
+    border: 1px solid var(--admin-card-border);
     min-width: 220px;
     padding: 0.5rem;
     opacity: 0;
@@ -165,7 +166,7 @@
 }
 
 .logout-option:hover {
-    background: var(--gray-100);
+    background: var(--sidebar-item-hover);
 }
 
 .logout-option i {

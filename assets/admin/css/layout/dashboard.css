@@ -1,16 +1,18 @@
 /* ============================================
-   Dashboard Layout
+   Dashboard Layout - Blue-Tinted Theme
    ============================================ */
 .dashboard-container {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: var(--admin-bg);
 }
 
 /* Dashboard Header */
 .dashboard-header {
-    background: #fff;
-    border-bottom: 1px solid var(--admin-input-border);
+    background: var(--header-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--header-border);
     padding: 1rem 1.5rem;
     display: flex;
     align-items: center;
@@ -40,7 +42,7 @@
     font-size: 0.9rem;
     color: var(--admin-text-secondary);
     padding-left: 1.5rem;
-    border-left: 1px solid var(--admin-input-border);
+    border-left: 1px solid var(--header-border);
 }
 
 .dashboard-header-right {
@@ -54,11 +56,12 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: var(--primary-50);
+    background: var(--btn-primary-bg);
     border-radius: 8px;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--primary-700);
+    color: #fff;
+    box-shadow: var(--btn-primary-shadow);
 }
 
 .admin-badge i {
@@ -83,16 +86,17 @@
     width: 80px;
     height: 80px;
     margin: 0 auto 1.5rem;
-    background: linear-gradient(135deg, rgba(40, 150, 205, 0.1) 0%, rgba(108, 92, 231, 0.1) 100%);
+    background: var(--btn-primary-bg);
     border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: var(--btn-primary-shadow);
 }
 
 .dashboard-placeholder-icon i {
     font-size: 2rem;
-    color: var(--primary-500);
+    color: #fff;
 }
 
 .dashboard-placeholder h2 {
@@ -112,7 +116,7 @@
 .dashboard-footer {
     text-align: center;
     padding: 1.5rem;
-    border-top: 1px solid var(--admin-input-border);
+    border-top: 1px solid var(--table-border);
     font-size: 0.85rem;
     color: var(--admin-text-muted);
 }
@@ -122,7 +126,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: var(--gray-50);
+    background: var(--admin-bg);
 }
 
 /* Admin Main Content */
@@ -134,13 +138,16 @@
     min-height: calc(100vh - 64px);
 }
 
-/* Content Card */
+/* Content Card - Glassmorphism */
 .content-card {
-    background: #fff;
+    background: var(--admin-card-bg);
+    backdrop-filter: blur(10px);
     border-radius: 16px;
-    border: 1px solid var(--admin-input-border);
+    border: 1px solid var(--admin-card-border);
     padding: 2rem;
     min-height: 400px;
+    box-shadow: var(--admin-card-shadow);
+    transition: box-shadow 0.3s ease;
 }
 
 /* Section Styles */
@@ -162,13 +169,14 @@
 .section-icon {
     width: 48px;
     height: 48px;
-    background: var(--accent-gradient);
+    background: var(--btn-primary-bg);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
     font-size: 1.25rem;
+    box-shadow: var(--btn-primary-shadow);
 }
 
 .section-info {
@@ -191,7 +199,7 @@
 
 .section-divider {
     height: 1px;
-    background: var(--admin-input-border);
+    background: var(--table-border);
     margin: 1.5rem 0;
 }
 
@@ -214,16 +222,17 @@
     width: 80px;
     height: 80px;
     margin: 0 auto 1.5rem;
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%);
+    background: var(--badge-warning);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
 }
 
 .maintenance-icon i {
     font-size: 2rem;
-    color: #F59E0B;
+    color: #fff;
 }
 
 .maintenance-title {
@@ -255,7 +264,7 @@
     width: 80px;
     height: 80px;
     margin: 0 auto 1.5rem;
-    background: var(--gray-100);
+    background: rgba(40, 150, 205, 0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -264,7 +273,7 @@
 
 .empty-state-icon i {
     font-size: 2rem;
-    color: var(--admin-text-muted);
+    color: var(--primary-500);
 }
 
 .empty-state h3 {
