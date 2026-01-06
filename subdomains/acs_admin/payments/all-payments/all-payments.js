@@ -235,6 +235,8 @@ function bindEvents() {
         const query = document.getElementById('search-input').value.toLowerCase();
         const mode = document.getElementById('filter-mode').value;
         const type = document.getElementById('filter-type').value;
+        const dateFrom = document.getElementById('filter-date-from').value;
+        const dateTo = document.getElementById('filter-date-to').value;
 
         filteredPayments = payments.filter(p => {
             // Search match
@@ -258,7 +260,11 @@ function bindEvents() {
                 (type === 'course' && p.student_id) ||
                 (type === 'service' && p.client_id);
 
-            return matchSearch && matchMode && matchType;
+            // Date match
+            const pDate = new Date(p.created_at).toISOString().split('T')[0];
+            const matchDate = (!dateFrom || pDate >= dateFrom) && (!dateTo || pDate <= dateTo);
+
+            return matchSearch && matchMode && matchType && matchDate;
         });
 
         currentPage = 1;
@@ -268,6 +274,6 @@ function bindEvents() {
     document.getElementById('search-input').addEventListener('input', handleFilter);
     document.getElementById('filter-mode').addEventListener('change', handleFilter);
     document.getElementById('filter-type').addEventListener('change', handleFilter);
-
-    document.getElementById('filter-type').addEventListener('change', handleFilter);
+    document.getElementById('filter-date-from').addEventListener('change', handleFilter);
+    document.getElementById('filter-date-to').addEventListener('change', handleFilter);
 }

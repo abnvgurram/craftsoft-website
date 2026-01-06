@@ -246,8 +246,10 @@
 }
 
 .card-actions {
-    display: flex;
-    gap: 0.5rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-top: 0.5rem;
 }
 
 /* Empty State */

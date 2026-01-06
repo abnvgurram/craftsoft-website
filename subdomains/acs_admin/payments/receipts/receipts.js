@@ -462,29 +462,43 @@ function formatDate(dateStr) {
 }
 
 function bindEvents() {
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            if (!query) {
-                filteredReceipts = receipts;
-            } else {
-                filteredReceipts = receipts.filter(r => {
-                    const entity = r.student || r.client;
-                    const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}`.toLowerCase() : '';
-                    const displayId = (entity?.student_id || entity?.client_id || '').toLowerCase();
-                    const itemName = (r.course?.course_name || r.service?.name || '').toLowerCase();
-                    const receiptId = (r.receipt_id || '').toLowerCase();
+    const handleFilter = () => {
+        const searchInput = document.getElementById('search-input');
+        const filterDateFrom = document.getElementById('filter-date-from');
+        const filterDateTo = document.getElementById('filter-date-to');
 
-                    return entityName.includes(query) ||
-                        displayId.includes(query) ||
-                        itemName.includes(query) ||
-                        receiptId.includes(query);
-                });
-            }
-            renderReceipts();
+        const query = searchInput ? searchInput.value.toLowerCase() : '';
+        const dateFrom = filterDateFrom ? filterDateFrom.value : '';
+        const dateTo = filterDateTo ? filterDateTo.value : '';
+
+        filteredReceipts = receipts.filter(r => {
+            // Search Match
+            const entity = r.student || r.client;
+            const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}`.toLowerCase() : '';
+            const displayId = (entity?.student_id || entity?.client_id || '').toLowerCase();
+            const itemName = (r.course?.course_name || r.service?.name || '').toLowerCase();
+            const receiptId = (r.receipt_id || '').toLowerCase();
+
+            const matchSearch = !query ||
+                entityName.includes(query) ||
+                displayId.includes(query) ||
+                itemName.includes(query) ||
+                receiptId.includes(query);
+
+            // Date Match
+            const pDate = new Date(r.created_at).toISOString().split('T')[0];
+            const matchDate = (!dateFrom || pDate >= dateFrom) && (!dateTo || pDate <= dateTo);
+
+            return matchSearch && matchDate;
         });
-    }
+
+        currentPage = 1;
+        renderReceipts();
+    };
+
+    document.getElementById('search-input')?.addEventListener('input', handleFilter);
+    document.getElementById('filter-date-from')?.addEventListener('change', handleFilter);
+    document.getElementById('filter-date-to')?.addEventListener('change', handleFilter);
 
     document.getElementById('close-receipt-modal')?.addEventListener('click', closeReceiptModal);
     document.getElementById('receipt-cancel-btn')?.addEventListener('click', closeReceiptModal);
