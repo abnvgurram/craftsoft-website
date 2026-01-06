@@ -47,44 +47,47 @@ function initHeroTypingEffect() {
     if (!typingElement) return;
 
     const phrases = [
+        'Expert IT Training',
+        'Professional Design Services',
         'Master In-Demand Skills',
-        'Professional Skills Development',
-        'Business Solutions',
-        'Expert Training',
+        'Real-World Projects',
         'Placement Support'
     ];
 
     let phraseIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
+    let typeSpeed = 100;
 
     function type() {
-        const current = phrases[phraseIndex];
+        const currentPhrase = phrases[phraseIndex];
 
         if (isDeleting) {
-            typingElement.textContent = current.substring(0, charIndex - 1);
+            typingElement.textContent = currentPhrase.substring(0, charIndex - 1);
             charIndex--;
+            typeSpeed = 50; // Faster deleting
         } else {
-            typingElement.textContent = current.substring(0, charIndex + 1);
+            typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
             charIndex++;
+            typeSpeed = 120; // Natural typing speed
         }
 
-        let typeSpeed = isDeleting ? 50 : 100;
-
-        if (!isDeleting && charIndex === current.length) {
-            typeSpeed = 2000; // Wait before deleting
+        if (!isDeleting && charIndex === currentPhrase.length) {
+            typeSpeed = 2500; // Pause at end of phrase
             isDeleting = true;
         } else if (isDeleting && charIndex === 0) {
             isDeleting = false;
             phraseIndex = (phraseIndex + 1) % phrases.length;
-            typeSpeed = 500; // Wait before typing next
+            typeSpeed = 800; // Slight pause before starting next phrase
         }
 
-        setTimeout(type, typeSpeed);
+        // Add a slight randomization to typing speed for "natural" feel
+        const randomSpeed = typeSpeed + (Math.random() * 40 - 20);
+        setTimeout(type, isDeleting && charIndex === 0 ? typeSpeed : randomSpeed);
     }
 
-    // Start typing effect after initial delay
-    setTimeout(type, 2000);
+    // Start typing effect
+    setTimeout(type, 1500);
 }
 
 /* ============================================

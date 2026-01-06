@@ -132,8 +132,11 @@
 }
 
 .hero-typing-text {
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
-    font-weight: 700;
+    font-family: var(--font-primary);
+    /* Match website headings */
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.5px;
     background: linear-gradient(135deg, #2896cd 0%, #6C5CE7 50%, #00B894 100%);
     -webkit-background-clip: text;
     background-clip: text;
@@ -141,10 +144,12 @@
 }
 
 .typing-cursor {
-    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
     font-weight: 300;
     color: var(--primary-500);
+    opacity: 0.8;
     animation: blink 1s step-end infinite;
+    margin-left: 2px;
 }
 
 @keyframes blink {
