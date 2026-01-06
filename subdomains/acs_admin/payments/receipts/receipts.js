@@ -1,4 +1,4 @@
-// Receipts List Module
+﻿// Receipts List Module
 let receipts = [];
 let filteredReceipts = [];
 let currentReceipt = null;
@@ -389,7 +389,7 @@ function sendWhatsApp(receiptId) {
     const name = entity ? `${entity.first_name} ${entity.last_name || ''}`.trim() : 'Customer';
     const itemName = receipt.course?.course_name || receipt.service?.name || 'Item';
     const amount = formatCurrency(receipt.amount_paid);
-    const balance = receipt.balance_due <= 0 ? '₹0' : formatCurrency(receipt.balance_due);
+    const balance = receipt.balance_due <= 0 ? 'Rs.0' : formatCurrency(receipt.balance_due);
 
     const message = `Hi ${name},
 
@@ -397,7 +397,7 @@ We have received ${amount} for ${itemName}.
 Receipt ID: ${receipt.receipt_id}
 Balance Due: ${balance}
 
-– Abhi's Craftsoft`;
+â€“ Abhi's Craftsoft`;
 
     window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`, '_blank');
 }
@@ -416,7 +416,7 @@ function formatCurrency(amount) {
 }
 
 function formatDate(dateStr) {
-    if (!dateStr) return '—';
+    if (!dateStr) return 'â€”';
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-IN', {
         day: '2-digit',
@@ -461,3 +461,4 @@ function bindEvents() {
         // if (currentReceipt) downloadReceipt(currentReceipt.receipt_id);
     });
 }
+

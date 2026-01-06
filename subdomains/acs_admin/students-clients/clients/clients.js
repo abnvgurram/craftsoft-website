@@ -1,4 +1,4 @@
-// Clients Module (Converted from Service Inquiries)
+﻿// Clients Module (Converted from Service Inquiries)
 let allClients = [];
 let allServicesForClients = [];
 let deleteTargetId = null;
@@ -150,7 +150,7 @@ function renderClients(clients) {
                 <td>${fullName}</td>
                 <td>${c.phone || '-'}</td>
                 <td><span class="services-tags">${servicesList}</span></td>
-                <td>₹${formatNumber(c.total_fee || 0)}</td>
+                <td><i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(c.total_fee || 0)}</td>
                 <td><span class="status-badge ${statusClass}">${c.status || 'ACTIVE'}</span></td>
                 <td class="actions-cell">
                     <button class="btn-icon edit-btn" data-id="${c.id}" title="Edit">
@@ -195,7 +195,7 @@ function renderClients(clients) {
                         <span class="card-info-item"><i class="fa-solid fa-wrench"></i> ${servicesList}</span>
                     </div>
                     <div class="card-info-row fee-row">
-                        <span class="card-info-item"><i class="fa-solid fa-indian-rupee-sign"></i> ₹${formatNumber(c.total_fee || 0)}</span>
+                        <span class="card-info-item"><i class="fa-solid fa-indian-rupee-sign"></i> ${formatNumber(c.total_fee || 0)}</span>
                     </div>
                 </div>
                 <div class="card-actions">
@@ -427,7 +427,7 @@ function updateFeeBreakdown() {
 
     breakdown.innerHTML = html;
     totalRow.style.display = 'flex';
-    totalEl.textContent = `₹${formatNumber(total)}`;
+    totalEl.innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(total)}`;
 
     // Bind fee input changes
     breakdown.querySelectorAll('.fee-input').forEach(input => {
@@ -451,7 +451,7 @@ function recalculateTotal() {
         total += serviceFees[code] ?? baseFee;
     });
 
-    totalEl.textContent = `₹${formatNumber(total)}`;
+    totalEl.innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(total)}`;
 }
 
 async function saveClient() {
@@ -652,3 +652,4 @@ async function bulkDeleteClients() {
 function formatNumber(num) {
     return new Intl.NumberFormat('en-IN').format(num);
 }
+

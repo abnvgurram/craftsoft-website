@@ -1,4 +1,4 @@
-const websiteCourses = [
+﻿const websiteCourses = [
     { code: 'GD', name: 'Graphic Design' },
     { code: 'UX', name: 'UI/UX Design' },
     { code: 'MERN', name: 'Full Stack Development (MERN)' },
@@ -100,7 +100,7 @@ function renderCoursesList(courses) {
                             <td><span class="badge badge-primary">${c.course_id}</span></td>
                             <td><strong>${c.course_code}</strong></td>
                             <td>${c.course_name}</td>
-                            <td class="fee-cell">₹${formatNumber(c.fee || 0)}</td>
+                            <td class="fee-cell"><i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(c.fee || 0)}</td>
                             <td>
                                 <button class="btn-icon btn-edit-fee" data-id="${c.id}" data-code="${c.course_code}" data-name="${c.course_name}" data-fee="${c.fee || 0}" title="Edit Fee">
                                     <i class="fa-solid fa-pen"></i>
@@ -120,7 +120,7 @@ function renderCoursesList(courses) {
                     </div>
                     <div class="data-card-body">
                         <h4>${c.course_name}</h4>
-                        <p class="data-card-fee">₹${formatNumber(c.fee || 0)}</p>
+                        <p class="data-card-fee"><i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(c.fee || 0)}</p>
                     </div>
                     <div class="data-card-actions">
                         <button class="btn btn-sm btn-outline btn-edit-fee" data-id="${c.id}" data-code="${c.course_code}" data-name="${c.course_name}" data-fee="${c.fee || 0}"><i class="fa-solid fa-pen"></i> Edit Fee</button>
@@ -260,3 +260,5 @@ async function saveFee() {
         saveBtn.innerHTML = '<i class="fa-solid fa-check"></i> Update Fee';
     }
 }
+
+

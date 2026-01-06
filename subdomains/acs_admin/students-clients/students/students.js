@@ -474,12 +474,12 @@ function updateFeeBreakdown() {
         html += `
             <div class="fee-item">
                 <div class="fee-item-name">${course?.course_name || code}</div>
-                <div class="fee-item-price">â‚¹${formatNumber(fee)}</div>
+                <div class="fee-item-price"><i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(fee)}</div>
                 <div class="fee-item-discount">
-                    <span>-â‚¹</span>
+                    <span>-<i class="fa-solid fa-indian-rupee-sign"></i></span>
                     <input type="number" value="${discount}" min="0" max="${fee}" data-course="${code}" class="discount-input">
                 </div>
-                <div class="fee-item-net" data-net="${code}">â‚¹${formatNumber(net)}</div>
+                <div class="fee-item-net" data-net="${code}"><i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(net)}</div>
             </div>
         `;
     });
@@ -501,7 +501,7 @@ function updateFeeBreakdown() {
             const course = allCoursesForStudents.find(c => c.course_code === code);
             const fee = course?.fee || 0;
             const net = Math.max(0, fee - val);
-            document.querySelector(`.fee-item-net[data-net="${code}"]`).textContent = `â‚¹${formatNumber(net)}`;
+            document.querySelector(`.fee-item-net[data-net="${code}"]`).innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(net)}`;
 
             recalculateTotal();
         });
@@ -521,7 +521,7 @@ function recalculateTotal() {
         total += Math.max(0, fee - discount);
     });
 
-    totalEl.textContent = `â‚¹${formatNumber(total)}`;
+    totalEl.innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(total)}`;
 }
 
 async function openForm(studentId = null) {
@@ -850,7 +850,7 @@ function renderProfileContent(student, payments, totalPaid, balanceDue) {
         return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     };
 
-    const formatCurrency = (num) => 'Rs.' + (num || 0).toLocaleString('en-IN');
+    const formatCurrency = (num) => '<i class=\"fa-solid fa-indian-rupee-sign\"></i>' + (num || 0).toLocaleString('en-IN');
 
     return `
         <!-- Basic Info Section -->
