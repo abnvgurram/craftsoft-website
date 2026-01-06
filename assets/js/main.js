@@ -20,7 +20,118 @@ document.addEventListener('DOMContentLoaded', function () {
     initDynamicCopyright();
     initPrivacyProtection();
     initDynamicContent();
+    initHeroTypingEffect();
+    initRandomFloatingCards();
 });
+
+/* ============================================
+   HERO TYPING EFFECT
+   ============================================ */
+function initHeroTypingEffect() {
+    const typingElement = document.querySelector('.hero-typing-text');
+    if (!typingElement) return;
+
+    const phrases = [
+        'Expert-Led Training',
+        'Hands-On Projects',
+        'Placement Support',
+        'Industry Skills'
+    ];
+
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let currentPhrase = phrases[0];
+
+    function type() {
+        const current = phrases[phraseIndex];
+
+        if (isDeleting) {
+            typingElement.textContent = current.substring(0, charIndex - 1);
+            charIndex--;
+        } else {
+            typingElement.textContent = current.substring(0, charIndex + 1);
+            charIndex++;
+        }
+
+        let typeSpeed = isDeleting ? 50 : 100;
+
+        if (!isDeleting && charIndex === current.length) {
+            typeSpeed = 2000; // Wait before deleting
+            isDeleting = true;
+        } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+            typeSpeed = 500; // Wait before typing next
+        }
+
+        setTimeout(type, typeSpeed);
+    }
+
+    // Start typing effect after initial delay
+    setTimeout(type, 2000);
+}
+
+/* ============================================
+   RANDOM FLOATING CARDS
+   ============================================ */
+function initRandomFloatingCards() {
+    const card1 = document.getElementById('floatingCard1');
+    const card2 = document.getElementById('floatingCard2');
+    const card3 = document.getElementById('floatingCard3');
+
+    if (!card1 || !card2 || !card3) return;
+
+    const items = [
+        // Courses
+        { icon: 'fas fa-code', text: 'Full Stack Dev', gradient: 'linear-gradient(135deg, #00B894, #00CEC9)' },
+        { icon: 'fas fa-palette', text: 'UI/UX Design', gradient: 'linear-gradient(135deg, #6C5CE7, #A29BFE)' },
+        { icon: 'fab fa-aws', text: 'AWS Cloud', gradient: 'linear-gradient(135deg, #FF9500, #FFBE0B)' },
+        { icon: 'fab fa-python', text: 'Python Dev', gradient: 'linear-gradient(135deg, #0984e3, #74b9ff)' },
+        { icon: 'fas fa-infinity', text: 'DevOps', gradient: 'linear-gradient(135deg, #6c5ce7, #a29bfe)' },
+        { icon: 'fas fa-chart-bar', text: 'Data Analytics', gradient: 'linear-gradient(135deg, #00cec9, #81ecec)' },
+        // Services
+        { icon: 'fas fa-globe', text: 'Web Development', gradient: 'linear-gradient(135deg, #2896cd, #74b9ff)' },
+        { icon: 'fas fa-bullseye', text: 'Brand Identity', gradient: 'linear-gradient(135deg, #e17055, #fdcb6e)' },
+        { icon: 'fas fa-server', text: 'Cloud Solutions', gradient: 'linear-gradient(135deg, #00b894, #00cec9)' }
+    ];
+
+    function shuffle(arr) {
+        return arr.sort(() => Math.random() - 0.5);
+    }
+
+    function updateCards() {
+        const selected = shuffle([...items]).slice(0, 3);
+
+        [card1, card2, card3].forEach((card, index) => {
+            const item = selected[index];
+            const icon = card.querySelector('i');
+            const span = card.querySelector('span');
+
+            // Fade out
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+
+            setTimeout(() => {
+                icon.className = item.icon;
+                icon.style.background = item.gradient;
+                span.textContent = item.text;
+
+                // Fade in
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            }, 300);
+        });
+    }
+
+    // Add transition for smooth effect
+    [card1, card2, card3].forEach(card => {
+        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    });
+
+    // Update every 5 seconds
+    setInterval(updateCards, 5000);
+}
 
 /* ============================================
    SHARE BAR RESPONSIVE POSITIONING
