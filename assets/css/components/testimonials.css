@@ -18,11 +18,12 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xl);
-    /* Increased gap between rows for desktop */
     width: 100%;
-    /* Back to normal container width */
-    max-width: var(--container-width);
+    max-width: var(--container-max);
+    /* Corrected variable name */
     margin: 0 auto;
+    padding: 0 var(--container-padding);
+    /* Standard site margins */
 }
 
 /* Marquee Track */
@@ -31,8 +32,8 @@
     overflow: hidden;
     user-select: none;
     gap: var(--spacing-lg);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
 
 .marquee-content {
