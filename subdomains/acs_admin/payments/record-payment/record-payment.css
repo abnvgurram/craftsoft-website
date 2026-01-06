@@ -32,9 +32,40 @@
 /* Page Layout Grid */
 .payment-grid {
     display: grid;
-    grid-template-columns: 1fr 400px;
+    grid-template-columns: 1fr 1fr;
     gap: 2rem;
     align-items: start;
+}
+
+.payment-grid-action {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+}
+
+.payment-grid-action .payment-card {
+    width: 100%;
+    max-width: 800px;
+}
+
+/* Date Input Icon Fix */
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon .input-icon {
+    position: absolute;
+    left: 1.25rem;
+    color: var(--primary-400);
+    font-size: 1.1rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.input-with-icon .form-input {
+    padding-left: 3.25rem !important;
 }
 
 /* Floating Card Base */
@@ -246,12 +277,6 @@
 }
 
 @media (max-width: 768px) {
-    .payment-grid-right {
-        /* Mobile: Summary card at top, selection middle, payment bottom */
-        display: flex;
-        flex-direction: column;
-    }
-
     .payment-grid {
         display: flex;
         flex-direction: column;
@@ -262,18 +287,22 @@
         order: 1;
     }
 
-    /* Selection Card */
-    .summary-card {
-        order: 0;
-        margin-bottom: 0 !important;
-    }
-
-    /* Summary at TOP */
-    .payment-card {
+    .payment-grid-right {
         order: 2;
     }
 
-    /* Payment Action at BOTTOM */
+    .payment-grid-action {
+        order: 3;
+    }
+
+    /* Card Order Adjustments */
+    .selection-card {
+        margin-bottom: 0 !important;
+    }
+
+    .summary-card {
+        margin-bottom: 0 !important;
+    }
 
     .workspace-title {
         font-size: 1.5rem;

@@ -326,6 +326,7 @@
     padding: 1.25rem;
     box-shadow: 0 4px 12px rgba(40, 150, 205, 0.05);
     transition: transform 0.2s ease;
+    text-align: left;
 }
 
 .card-header {
@@ -333,6 +334,7 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1rem;
+    text-align: left;
 }
 
 .card-header-left {
@@ -356,15 +358,18 @@
     font-weight: 600;
     margin-bottom: 0.75rem;
     color: var(--admin-text-primary, #0f172a);
+    text-align: left;
 }
 
 .card-info-row {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 0.5rem;
     margin-bottom: 0.5rem;
     color: var(--admin-text-muted, #64748b);
     font-size: 0.9rem;
+    text-align: left;
 }
 
 .card-info-row i {

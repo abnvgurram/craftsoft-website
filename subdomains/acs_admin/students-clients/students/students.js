@@ -256,21 +256,19 @@ function renderStudentsList(students) {
     }).join('')}
                                 </div>
                             </div>
-                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="card-action-btn edit btn-edit-student" data-id="${s.id}">
+                                <i class="fa-solid fa-pen"></i> <span>Edit</span>
+                            </button>
+                            <a href="https://wa.me/91${s.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
+                                <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span>
+                            </a>
+                            <button class="card-action-btn delete btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}">
+                                <i class="fa-solid fa-trash"></i> <span>Delete</span>
+                            </button>
                         </div>
                     </div>
-                    <div class="card-actions">
-                        <button class="card-action-btn edit btn-edit-student" data-id="${s.id}">
-                            <i class="fa-solid fa-pen"></i> <span>Edit</span>
-                        </button>
-                        <a href="https://wa.me/91${s.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
-                            <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span>
-                        </a>
-                        <button class="card-action-btn delete btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}">
-                            <i class="fa-solid fa-trash"></i> <span>Delete</span>
-                        </button>
-                    </div>
-                </div>
             `).join('')}
         </div>
         <div class="table-footer">
