@@ -22,7 +22,23 @@ document.addEventListener('DOMContentLoaded', function () {
     initDynamicContent();
     initHeroTypingEffect();
     initRandomFloatingCards();
+    initScrollToNext();
 });
+
+/* ============================================
+   SCROLL TO NEXT SECTION
+   ============================================ */
+function initScrollToNext() {
+    const scrollIndicator = document.getElementById('heroScrollIndicator');
+    if (!scrollIndicator) return;
+
+    scrollIndicator.addEventListener('click', function () {
+        const nextSection = document.querySelector('section:nth-of-type(2)');
+        if (nextSection) {
+            nextSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+}
 
 /* ============================================
    HERO TYPING EFFECT
@@ -32,10 +48,11 @@ function initHeroTypingEffect() {
     if (!typingElement) return;
 
     const phrases = [
+        'Master In-Demand Skills',
+        'Professional Skills Development',
+        'Business Solutions',
         'Expert Training',
-        'Hands-On Projects',
-        'Placement Support',
-        'Industry Skills'
+        'Placement Support'
     ];
 
     let phraseIndex = 0;
