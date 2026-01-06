@@ -117,6 +117,12 @@ const AdminSidebar = {
                     
                     ${this.mobileNavItem('settings', 'Settings', 'fa-gear')}
                 </nav>
+                <div class="mobile-nav-footer">
+                    <button class="mobile-logout-btn" id="mobile-logout-btn">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
             </div>
         `;
 
@@ -228,6 +234,15 @@ const AdminSidebar = {
             e.preventDefault();
             const parent = document.getElementById('mobile-payments-parent');
             parent?.classList.toggle('expanded');
+        });
+
+        // Mobile Logout
+        document.getElementById('mobile-logout-btn')?.addEventListener('click', async () => {
+            if (window.Auth) {
+                await window.Auth.logout();
+            } else {
+                window.location.href = '../';
+            }
         });
     },
 

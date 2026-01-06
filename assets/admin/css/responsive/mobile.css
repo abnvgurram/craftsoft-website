@@ -220,7 +220,8 @@
     }
 
     .mobile-nav-sheet {
-        display: block !important;
+        display: flex !important;
+        flex-direction: column;
         position: fixed;
         bottom: 0;
         left: 0;
@@ -230,8 +231,8 @@
         z-index: 1001;
         transform: translateY(100%);
         transition: transform 0.3s ease, visibility 0.3s ease;
-        max-height: 70vh;
-        overflow-y: auto;
+        max-height: 85vh;
+        overflow: hidden;
         box-shadow: 0 -4px 30px rgba(40, 150, 205, 0.15);
         visibility: hidden;
         pointer-events: none;
@@ -284,6 +285,8 @@
         display: flex;
         flex-direction: column;
         gap: 0.25rem;
+        overflow-y: auto;
+        flex: 1;
     }
 
     .mobile-nav-item {
@@ -393,5 +396,35 @@
     .mobile-nav-item.mobile-nav-child i {
         font-size: 0.95rem;
         width: 20px;
+    }
+
+    /* Mobile Nav Footer (Logout) */
+    .mobile-nav-footer {
+        margin-top: auto;
+        padding: 1rem 1.25rem;
+        border-top: 1px solid var(--sidebar-border);
+        background: rgba(239, 68, 68, 0.02);
+    }
+
+    .mobile-logout-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        width: 100%;
+        padding: 0.875rem;
+        background: #fff;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .mobile-logout-btn:active {
+        background: rgba(239, 68, 68, 0.05);
+        transform: scale(0.98);
     }
 }
