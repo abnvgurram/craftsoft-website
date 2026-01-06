@@ -1,8 +1,6 @@
 ﻿// Clients Module (Converted from Service Inquiries)
 let allClients = [];
 let allServicesForClients = [];
-let deleteTargetId = null;
-let isBulkDelete = false;
 let serviceFees = {}; // Store per-service fees { serviceCode: fee }
 let selectedClientIds = new Set();
 
@@ -712,89 +710,66 @@ function checkPrefill() {
 // Delete Logic
 // =====================
 function bindDeleteEvents() {
-    document.getElementById('cancel-delete-btn')?.addEventListener('click', hideDeleteConfirm);
-    document.getElementById('confirm-delete-btn')?.addEventListener('click', confirmDelete);
+    // No longer needed - using Modal.confirm() from AdminUtils
 }
 
-function showDeleteConfirm(id, name, bulk = false) {
-    isBulkDelete = bulk;
-    deleteTargetId = id;
-    if (bulk) {
-        document.getElementById('delete-name').textContent = `${selectedClientIds.size} clients`;
-    } else {
-        document.getElementById('delete-name').textContent = name;
-    }
-    document.getElementById('delete-overlay').style.display = 'flex';
-}
+function showDeleteConfirm(id, name) {
+    const { Modal, Toast } = window.AdminUtils;
 
-function hideDeleteConfirm() {
-    document.getElementById('delete-overlay').style.display = 'none';
-    isBulkDelete = false;
-    deleteTargetId = null;
-}
+    Modal.confirm(
+        'Delete Client',
+        `Are you sure you want to delete ${name}? This will also remove all associated payments and receipts.`,
+        async () => {
+            // On Confirm
+            try {
+                // Cascade delete child records manually
+                await window.supabaseClient.from('receipts').delete().eq('client_id', id);
+                await window.supabaseClient.from('payments').delete().eq('client_id', id);
 
-async function confirmDelete() {
-    const { Toast } = window.AdminUtils;
+                const { error } = await window.supabaseClient.from('clients').delete().eq('id', id);
+                if (error) throw error;
 
-    if (isBulkDelete) {
-        // Bulk delete mode
-        if (selectedClientIds.size === 0) {
-            hideDeleteConfirm();
-            return;
+                selectedClientIds.delete(id);
+                await loadClients();
+                Toast.success('Deleted', 'Client and history removed');
+            } catch (e) {
+                console.error(e);
+                Toast.error('Error', 'Failed to delete client history');
+            }
         }
-
-        const btn = document.getElementById('confirm-delete-btn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-
-        try {
-            const ids = Array.from(selectedClientIds);
-
-            // Cascade delete
-            await window.supabaseClient.from('receipts').delete().in('client_id', ids);
-            await window.supabaseClient.from('payments').delete().in('client_id', ids);
-
-            const { error } = await window.supabaseClient.from('clients').delete().in('id', ids);
-            if (error) throw error;
-
-            selectedClientIds.clear();
-            hideDeleteConfirm();
-            Toast.success('Deleted', 'Selected clients removed');
-            await loadClients();
-        } catch (e) {
-            console.error(e);
-            Toast.error('Error', 'Bulk delete failed');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = 'Delete';
-        }
-    } else {
-        // Single delete mode
-        if (!deleteTargetId) return;
-
-        try {
-            // Cascade delete child records manually
-            await window.supabaseClient.from('receipts').delete().eq('client_id', deleteTargetId);
-            await window.supabaseClient.from('payments').delete().eq('client_id', deleteTargetId);
-
-            const { error } = await window.supabaseClient.from('clients').delete().eq('id', deleteTargetId);
-            if (error) throw error;
-
-            selectedClientIds.delete(deleteTargetId);
-            hideDeleteConfirm();
-            await loadClients();
-            Toast.success('Deleted', 'Client and history removed');
-        } catch (e) {
-            console.error(e);
-            Toast.error('Error', 'Failed to delete client history');
-        }
-    }
+    );
 }
 
 async function bulkDeleteClients() {
     if (selectedClientIds.size === 0) return;
-    // Show custom modal instead of browser confirm
-    showDeleteConfirm(null, null, true);
+
+    const { Modal, Toast } = window.AdminUtils;
+    const count = selectedClientIds.size;
+
+    Modal.confirm(
+        'Delete Clients',
+        `Are you sure you want to delete ${count} clients? This will also remove all associated payments and receipts.`,
+        async () => {
+            // On Confirm
+            try {
+                const ids = Array.from(selectedClientIds);
+
+                // Cascade delete
+                await window.supabaseClient.from('receipts').delete().in('client_id', ids);
+                await window.supabaseClient.from('payments').delete().in('client_id', ids);
+
+                const { error } = await window.supabaseClient.from('clients').delete().in('id', ids);
+                if (error) throw error;
+
+                selectedClientIds.clear();
+                Toast.success('Deleted', 'Selected clients removed');
+                await loadClients();
+            } catch (e) {
+                console.error(e);
+                Toast.error('Error', 'Bulk delete failed');
+            }
+        }
+    );
 }
 
 // =====================
