@@ -237,7 +237,7 @@ function renderStudentsList(students) {
             ${paginatedStudents.map(s => `
                 <div class="premium-card">
                     <div class="card-header">
-                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                        <div class="card-header-left">
                             <input type="checkbox" class="student-checkbox" data-id="${s.id}" ${selectedStudents.has(s.id) ? 'checked' : ''}>
                             <span class="card-id-badge clickable btn-view-profile" data-id="${s.id}">${s.student_id}</span>
                         </div>
@@ -246,29 +246,32 @@ function renderStudentsList(students) {
                         <h4 class="card-name">${s.first_name} ${s.last_name}</h4>
                         <div class="card-info-row">
                             <span class="card-info-item"><i class="fa-solid fa-phone"></i> ${s.phone}</span>
-                            <div class="card-info-item">
-                                <i class="fa-solid fa-book-open"></i> 
-                                <div class="cell-tags">
+                            <div class="card-info-item" style="align-items: flex-start; gap: 0.5rem;">
+                                <i class="fa-solid fa-book-open" style="margin-top: 4px;"></i> 
+                                <div class="cell-tags" style="display: flex; flex-wrap: wrap; gap: 4px;">
                                     ${(s.courses || []).map(code => {
         const tutorId = s.course_tutors?.[code];
         const tutor = allTutorsForStudents.find(t => t.tutor_id === tutorId);
-        return `<span class="glass-tag">${code}${tutor ? ` (${tutor.full_name.split(' ')[0]})` : ''}</span>`;
+        return `<span class="glass-tag" style="background: rgba(40, 150, 205, 0.1); color: var(--primary-color); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">
+                                            ${code}${tutor ? ` (${tutor.full_name.split(' ')[0]})` : ''}
+                                        </span>`;
     }).join('')}
                                 </div>
                             </div>
                         </div>
-                        <div class="card-actions">
-                            <button class="card-action-btn edit btn-edit-student" data-id="${s.id}">
-                                <i class="fa-solid fa-pen"></i> <span>Edit</span>
-                            </button>
-                            <a href="https://wa.me/91${s.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
-                                <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span>
-                            </a>
-                            <button class="card-action-btn delete btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}">
-                                <i class="fa-solid fa-trash"></i> <span>Delete</span>
-                            </button>
-                        </div>
                     </div>
+                    <div class="card-actions">
+                        <button class="card-action-btn edit btn-edit-student" data-id="${s.id}">
+                            <i class="fa-solid fa-pen"></i> <span>Edit</span>
+                        </button>
+                        <a href="https://wa.me/91${s.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
+                            <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span>
+                        </a>
+                        <button class="card-action-btn delete btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}">
+                            <i class="fa-solid fa-trash"></i> <span>Delete</span>
+                        </button>
+                    </div>
+                </div>
             `).join('')}
         </div>
         <div class="table-footer">

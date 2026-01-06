@@ -77,12 +77,14 @@
     background: var(--admin-card-bg);
     backdrop-filter: blur(10px);
     border: 1px solid var(--admin-card-border);
-    border-radius: 14px;
+    border-radius: 16px;
     overflow: hidden;
     box-shadow: var(--admin-card-shadow);
     transition: all 0.2s ease;
     margin-bottom: 1rem;
     text-align: left;
+    display: flex;
+    flex-direction: column;
 }
 
 .premium-card:hover {
@@ -132,12 +134,28 @@
     font-size: 0.85rem;
 }
 
-.premium-card .card-actions {
-    display: flex;
-    gap: 0.5rem;
+.premium-card .card-actions,
+.premium-card .card-footer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
     padding: 0.75rem 1rem;
     background: var(--table-header-bg);
     border-top: 1px solid var(--table-border);
+}
+
+.premium-card .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.premium-card .card-footer .card-actions {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    flex: 1;
 }
 
 .premium-card .card-action-btn {

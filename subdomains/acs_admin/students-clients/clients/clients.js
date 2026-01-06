@@ -213,24 +213,27 @@ function renderClients(clients) {
                         <input type="checkbox" class="client-checkbox" data-id="${c.id}" ${selectedClientIds.has(c.id) ? 'checked' : ''}>
                         <span class="card-id-badge">${c.client_id || 'CL-ACS-XXX'}</span>
                     </div>
-                    <span class="status-badge ${statusClass}">${c.status || 'ACTIVE'}</span>
                 </div>
                 <div class="card-body">
                     <h4 class="card-name">${fullName}</h4>
                     <div class="card-info-row">
                         <span class="card-info-item"><i class="fa-solid fa-phone"></i> ${c.phone || '-'}</span>
-                    </div>
-                    <div class="card-info-row">
                         <span class="card-info-item"><i class="fa-solid fa-wrench"></i> ${servicesList}</span>
-                    </div>
-                    <div class="card-info-row fee-row">
-                        <span class="card-info-item"><i class="fa-solid fa-indian-rupee-sign"></i> ${formatNumber(c.total_fee || 0)}</span>
+                        <div class="card-info-item fee-row" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--table-border); color: var(--primary-color); font-weight: 700;">
+                            <i class="fa-solid fa-indian-rupee-sign"></i> ${formatNumber(c.total_fee || 0)}
+                        </div>
                     </div>
                 </div>
                 <div class="card-actions">
-                    <button class="btn btn-outline btn-sm edit-btn" data-id="${c.id}"><i class="fa-solid fa-pen"></i> Edit</button>
-                    <button class="btn btn-outline btn-sm whatsapp" data-phone="${c.phone}"><i class="fa-brands fa-whatsapp"></i> Chat</button>
-                    <button class="btn btn-danger-outline btn-sm delete" data-id="${c.id}" data-name="${fullName}"><i class="fa-solid fa-trash"></i>Delete</button>
+                    <button class="card-action-btn edit edit-btn" data-id="${c.id}">
+                        <i class="fa-solid fa-pen"></i> <span>Edit</span>
+                    </button>
+                    <button class="card-action-btn whatsapp whatsapp" data-phone="${c.phone}">
+                        <i class="fa-brands fa-whatsapp"></i> <span>Chat</span>
+                    </button>
+                    <button class="card-action-btn delete delete" data-id="${c.id}" data-name="${fullName}">
+                        <i class="fa-solid fa-trash"></i> <span>Delete</span>
+                    </button>
                 </div>
             </div>
         `;

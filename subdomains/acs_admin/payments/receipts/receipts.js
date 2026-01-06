@@ -197,17 +197,19 @@ function renderReceipts() {
                     </span>
                 </div>
             </div>
-            <div class="card-footer">
-                <span class="glass-tag ${r.payment_mode.toLowerCase()}">${r.payment_mode}</span>
+            <div class="card-footer" style="display: flex; flex-direction: column; gap: 0.75rem; padding: 0;">
+                <div style="padding: 0.75rem 1rem; border-top: 1px dashed var(--table-border);">
+                     <span class="glass-tag ${r.payment_mode.toLowerCase()}" style="background: rgba(40, 150, 205, 0.1); color: var(--primary-color); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">${r.payment_mode}</span>
+                </div>
                 <div class="card-actions">
-                    <button class="action-btn" onclick="viewReceipt('${r.receipt_id}')">
-                        <i class="fa-solid fa-eye"></i>
+                    <button class="card-action-btn edit" onclick="viewReceipt('${r.receipt_id}')">
+                        <i class="fa-solid fa-eye"></i> <span>View</span>
                     </button>
-                    <button class="action-btn" onclick="downloadReceipt('${r.receipt_id}')">
-                        <i class="fa-solid fa-download"></i>
+                    <button class="card-action-btn" style="background: rgba(108, 92, 231, 0.1); color: #6c5ce7;" onclick="downloadReceipt('${r.receipt_id}')">
+                        <i class="fa-solid fa-download"></i> <span>PDF</span>
                     </button>
-                    <button class="action-btn whatsapp" onclick="sendWhatsApp('${r.receipt_id}')">
-                        <i class="fa-brands fa-whatsapp"></i>
+                    <button class="card-action-btn whatsapp" onclick="sendWhatsApp('${r.receipt_id}')">
+                        <i class="fa-brands fa-whatsapp"></i> <span>Chat</span>
                     </button>
                 </div>
             </div>
