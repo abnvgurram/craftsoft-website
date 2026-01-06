@@ -9,7 +9,7 @@ const websiteServices = [
 
 let allServices = [];
 let currentPage = 1;
-const itemsPerPage = 10;
+const itemsPerPage = window.innerWidth <= 768 ? 5 : 10;
 
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();

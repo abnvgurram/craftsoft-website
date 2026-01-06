@@ -7,7 +7,7 @@ let selectedClientIds = new Set();
 
 // Pagination State
 let currentPage = 1;
-const itemsPerPage = 10;
+const itemsPerPage = window.innerWidth <= 768 ? 5 : 10;
 
 
 
