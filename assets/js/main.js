@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initCourseFilter();
     initCurriculumTabs();
     initShareCourse();
+    initShareBarPosition();
     initCounterAnimation();
     initTestimonialsSlider();
     initChatWidget();
@@ -20,6 +21,66 @@ document.addEventListener('DOMContentLoaded', function () {
     initPrivacyProtection();
     initDynamicContent();
 });
+
+/* ============================================
+   SHARE BAR RESPONSIVE POSITIONING
+   ============================================ */
+function initShareBarPosition() {
+    const shareBar = document.querySelector('.share-course');
+    const relatedSection = document.querySelector('.related-courses');
+    const courseOverview = document.querySelector('.course-highlights');
+
+    if (!shareBar || !relatedSection) return;
+
+    // Store original parent for desktop restoration
+    const originalParent = shareBar.parentElement;
+    const originalNextSibling = shareBar.nextElementSibling;
+
+    function repositionShareBar() {
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+            // Mobile: Move before related courses section
+            if (shareBar.parentElement !== relatedSection.parentElement) {
+                relatedSection.parentElement.insertBefore(shareBar, relatedSection);
+                shareBar.style.margin = '2rem auto';
+                shareBar.style.maxWidth = '90%';
+                shareBar.style.padding = '1rem';
+                shareBar.style.background = 'rgba(40, 150, 205, 0.05)';
+                shareBar.style.borderRadius = '12px';
+                shareBar.style.border = '1px solid rgba(40, 150, 205, 0.1)';
+                shareBar.style.justifyContent = 'center';
+            }
+        } else {
+            // Desktop: Move after course overview/highlights
+            if (courseOverview && shareBar.parentElement !== originalParent) {
+                if (originalNextSibling) {
+                    originalParent.insertBefore(shareBar, originalNextSibling);
+                } else {
+                    originalParent.appendChild(shareBar);
+                }
+                // Reset mobile styles
+                shareBar.style.margin = '';
+                shareBar.style.maxWidth = '';
+                shareBar.style.padding = '';
+                shareBar.style.background = '';
+                shareBar.style.borderRadius = '';
+                shareBar.style.border = '';
+                shareBar.style.justifyContent = '';
+            }
+        }
+    }
+
+    // Initial position
+    repositionShareBar();
+
+    // Reposition on resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(repositionShareBar, 100);
+    });
+}
 
 /* ============================================
    NAVBAR
