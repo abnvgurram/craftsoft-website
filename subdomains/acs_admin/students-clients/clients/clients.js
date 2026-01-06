@@ -638,16 +638,24 @@ async function confirmDelete() {
     if (!deleteTargetId) return;
     const { Toast } = window.AdminUtils;
     try {
+        // Cascade delete child records manually
+        // 1. Delete associated receipts
+        await window.supabaseClient.from('receipts').delete().eq('client_id', deleteTargetId);
+
+        // 2. Delete associated payments
+        await window.supabaseClient.from('payments').delete().eq('client_id', deleteTargetId);
+
+        // 3. Delete the client
         const { error } = await window.supabaseClient.from('clients').delete().eq('id', deleteTargetId);
         if (error) throw error;
 
         selectedClientIds.delete(deleteTargetId);
         hideDeleteConfirm();
         await loadClients();
-        Toast.success('Deleted', 'Client removed');
+        Toast.success('Deleted', 'Client and history removed');
     } catch (e) {
         console.error(e);
-        Toast.error('Error', 'Failed to delete');
+        Toast.error('Error', 'Failed to delete client history');
     }
 }
 
@@ -663,6 +671,11 @@ async function bulkDeleteClients() {
 
     try {
         const ids = Array.from(selectedClientIds);
+
+        // Cascade delete
+        await window.supabaseClient.from('receipts').delete().in('client_id', ids);
+        await window.supabaseClient.from('payments').delete().in('client_id', ids);
+
         const { error } = await window.supabaseClient.from('clients').delete().in('id', ids);
         if (error) throw error;
 

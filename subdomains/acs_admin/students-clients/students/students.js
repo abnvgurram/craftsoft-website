@@ -345,7 +345,13 @@ function bindBulkActions() {
                 async () => {
                     try {
                         const ids = Array.from(selectedStudents);
-                        await window.supabaseClient.from('students').delete().in('id', ids);
+
+                        // Cascade delete child records
+                        await window.supabaseClient.from('receipts').delete().in('student_id', ids);
+                        await window.supabaseClient.from('payments').delete().in('student_id', ids);
+
+                        const { error } = await window.supabaseClient.from('students').delete().in('id', ids);
+                        if (error) throw error;
 
                         window.AdminUtils.Toast.success('Deleted', `${ids.length} students removed`);
                         selectedStudents.clear();
@@ -794,12 +800,23 @@ async function confirmDelete() {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
     try {
-        await window.supabaseClient.from('students').delete().eq('id', deleteTargetId);
-        Toast.success('Deleted', 'Student deleted successfully');
+        // Cascade delete child records manually
+        // 1. Delete associated receipts
+        await window.supabaseClient.from('receipts').delete().eq('student_id', deleteTargetId);
+
+        // 2. Delete associated payments
+        await window.supabaseClient.from('payments').delete().eq('student_id', deleteTargetId);
+
+        // 3. Delete student
+        const { error } = await window.supabaseClient.from('students').delete().eq('id', deleteTargetId);
+        if (error) throw error;
+
+        Toast.success('Deleted', 'Student and financial history removed');
         hideDeleteConfirm();
         await loadStudents();
     } catch (e) {
-        Toast.error('Error', e.message);
+        console.error(e);
+        Toast.error('Error', 'Failed to delete student history');
     } finally {
         btn.disabled = false;
         btn.innerHTML = 'Delete';
