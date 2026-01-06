@@ -123,6 +123,7 @@
 .premium-card .card-info-item {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 0.5rem;
     font-size: 0.875rem;
     color: var(--admin-text-secondary);

@@ -937,13 +937,6 @@ function renderProfileContent(student, payments, totalPaid, balanceDue) {
                     <span class="profile-info-label">Student ID</span>
                     <span class="profile-info-value">${student.student_id}</span>
                 </div>
-                <div class="profile-info-item">
-                    <span class="profile-info-label">Status</span>
-                    <span class="profile-info-value">
-                        <i class="fa-solid fa-circle ${student.status === 'ACTIVE' ? 'status-active' : 'status-inactive'}"></i>
-                        ${student.status || 'ACTIVE'}
-                    </span>
-                </div>
                 <div class="profile-info-item full-width">
                     <span class="profile-info-label">Full Name</span>
                     <span class="profile-info-value">${student.first_name} ${student.last_name}</span>
