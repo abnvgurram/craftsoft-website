@@ -143,16 +143,26 @@ const InquirySync = {
         const successDiv = document.createElement('div');
         successDiv.className = 'form-success-message';
         successDiv.innerHTML = `
-            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 2rem 1.5rem; border-radius: 1rem; text-align: center; margin-top: 1rem;">
-                <i class="fas fa-check-circle" style="font-size: 2.5rem; margin-bottom: 0.75rem; display: block;"></i>
-                <p style="margin: 0; font-weight: 600; font-size: 1.1rem;">${message}</p>
-                <div style="margin: 1rem 0; padding: 0.75rem 1rem; background: rgba(0,0,0,0.15); border-radius: 0.5rem; font-family: 'Courier New', monospace; font-size: 1.2rem; letter-spacing: 2px; font-weight: 700;">
-                    ID: ${inquiryId}
+            <div style="background: linear-gradient(135deg, #2896cd, #6C5CE7); color: white; padding: 2.5rem 1.5rem; border-radius: 1.25rem; text-align: center; margin-top: 1rem; box-shadow: 0 10px 25px -5px rgba(108, 92, 231, 0.3); border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;">
+                <!-- Decorative Circle -->
+                <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                
+                <div style="background: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; color: #2896cd; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <i class="fas fa-check" style="font-size: 1.5rem;"></i>
                 </div>
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Please keep this ID for your reference.</p>
+                
+                <h3 style="margin: 0 0 0.5rem; font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 700;">Submission Received</h3>
+                <p style="margin: 0; font-weight: 400; font-size: 0.95rem; opacity: 0.9; line-height: 1.5;">${message}</p>
+                
+                <div style="margin: 1.5rem 0 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.1);">
+                    <span style="display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.25rem; opacity: 0.8;">Reference ID</span>
+                    <span style="font-family: 'Outfit', monospace; font-size: 1.4rem; letter-spacing: 2px; font-weight: 800; display: block;">${inquiryId}</span>
+                </div>
+                
+                <p style="margin: 0; font-size: 0.8rem; opacity: 0.7;">We'll get back to you within 24 hours.</p>
             </div>
-            <button type="button" class="submit-another-btn" style="margin-top: 1rem; background: linear-gradient(135deg, #0d9488, #0f766e); border: none; color: white; padding: 0.875rem 1.5rem; border-radius: 0.625rem; cursor: pointer; font-size: 1rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.625rem; transition: all 0.25s ease; width: 100%; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);">
-                <i class="fa-solid fa-dice" style="font-size: 1.1rem;"></i> Submit Another Response
+            <button type="button" class="submit-another-btn" style="margin-top: 1.25rem; background: white; border: 2px solid #e5e7eb; color: #4b5563; padding: 0.875rem 1.5rem; border-radius: 0.75rem; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.625rem; transition: all 0.3s ease; width: 100%;">
+                <i class="fa-solid fa-rotate-left" style="font-size: 1rem; opacity: 0.7;"></i> Submit Another Response
             </button>
         `;
         form.innerHTML = '';
@@ -162,14 +172,16 @@ const InquirySync = {
         const submitAnotherBtn = successDiv.querySelector('.submit-another-btn');
         if (submitAnotherBtn) {
             submitAnotherBtn.addEventListener('mouseenter', () => {
-                submitAnotherBtn.style.transform = 'translateY(-2px) scale(1.02)';
-                submitAnotherBtn.style.filter = 'brightness(1.1)';
-                submitAnotherBtn.style.boxShadow = '0 6px 16px rgba(13, 148, 136, 0.4)';
+                submitAnotherBtn.style.borderColor = '#2896cd';
+                submitAnotherBtn.style.color = '#2896cd';
+                submitAnotherBtn.style.background = 'rgba(40, 150, 205, 0.05)';
+                submitAnotherBtn.style.transform = 'translateY(-1px)';
             });
             submitAnotherBtn.addEventListener('mouseleave', () => {
-                submitAnotherBtn.style.transform = 'translateY(0) scale(1)';
-                submitAnotherBtn.style.filter = 'brightness(1)';
-                submitAnotherBtn.style.boxShadow = '0 4px 12px rgba(13, 148, 136, 0.3)';
+                submitAnotherBtn.style.borderColor = '#e5e7eb';
+                submitAnotherBtn.style.color = '#4b5563';
+                submitAnotherBtn.style.background = 'white';
+                submitAnotherBtn.style.transform = 'translateY(0)';
             });
             submitAnotherBtn.addEventListener('click', () => {
                 form.innerHTML = form.dataset.originalHtml;
