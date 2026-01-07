@@ -348,7 +348,7 @@ async function viewReceipt(receiptId) {
 }
 
 // =====================
-// Download Receipt as PDF - Professional Layout
+// Download Receipt as PDF - Professional Layout from EXECUTIVE_RECEIPT_DEMO
 // =====================
 async function downloadReceipt(receiptId) {
     const receipt = receipts.find(r => r.receipt_id === receiptId);
@@ -368,9 +368,10 @@ async function downloadReceipt(receiptId) {
         // Get payment history
         const { data: history } = await window.supabaseClient
             .from('receipts')
-            .select('amount_paid')
+            .select('amount_paid, payment_date, reference_id, payment_mode')
             .eq(idCol, entity?.id)
-            .eq(itemIdCol, item?.id);
+            .eq(itemIdCol, item?.id)
+            .order('payment_date', { ascending: true });
 
         // Get fee info
         const { data: record } = await window.supabaseClient
@@ -396,116 +397,164 @@ async function downloadReceipt(receiptId) {
         const entityId = entity?.student_id || entity?.client_id || '-';
         const itemName = item?.name || item?.course_name || 'Unknown Item';
 
-        // Generate PDF using jsPDF
+        // Status
+        let statusText = 'Due';
+        let statusClass = 'status-due';
+        if (pendingForItem <= 0) {
+            statusText = 'Fully Paid';
+            statusClass = 'status-paid';
+        } else if (totalPaidForItem > 0) {
+            const pct = Math.round((totalPaidForItem / totalItemFee) * 100);
+            statusText = `Partial (${pct}%)`;
+            statusClass = 'status-partial';
+        }
+
+        // Build history rows
+        const historyRows = (history || []).map((h, idx) => {
+            const isLatest = idx === history.length - 1;
+            return `<tr class="${isLatest ? 'latest' : ''}">
+                <td>${formatDate(h.payment_date)}</td>
+                <td>${h.payment_mode === 'CASH' ? 'Cash' : 'UPI'} - ${h.reference_id || '-'}</td>
+                <td style="text-align:right">₹ ${h.amount_paid.toLocaleString('en-IN')}</td>
+            </tr>`;
+        }).join('');
+
+        // Create hidden container with professional design
+        const pdfContainer = document.createElement('div');
+        pdfContainer.id = 'pdf-receipt-container';
+        pdfContainer.style.cssText = 'position: absolute; left: -9999px; top: 0; width: 800px; background: white;';
+        pdfContainer.innerHTML = `
+            <style>
+                #pdf-receipt-container * { font-family: 'Tahoma', Arial, sans-serif; box-sizing: border-box; }
+                .pdf-wrap { padding: 50px; background: white; }
+                .pdf-headline { font-size: 22px; font-weight: bold; color: #2896cd; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1.5px solid #f1f5f9; }
+                .pdf-brand { position: relative; padding-left: 20px; margin-bottom: 50px; }
+                .pdf-accent { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: #e0f2fe; border-left: 3px solid #2896cd; }
+                .pdf-header { display: flex; justify-content: space-between; }
+                .pdf-brand h1 { font-size: 26px; margin: 0; color: #0f172a; }
+                .pdf-brand p { font-size: 11px; margin: 6px 0; color: #64748b; }
+                .pdf-contact { font-size: 11px; font-weight: bold; color: #2896cd; margin-top: 10px; }
+                .pdf-meta { text-align: right; font-size: 13px; }
+                .pdf-meta p { margin: 8px 0; }
+                .pdf-meta strong { color: #0f172a; }
+                .pdf-customer { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid #f1f5f9; }
+                .pdf-issue span { font-size: 10px; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 2px; }
+                .pdf-issue h3 { margin: 0; font-size: 20px; color: #0f172a; }
+                .pdf-idbox { text-align: right; padding: 10px 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; }
+                .pdf-idbox span { font-size: 9px; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 2px; }
+                .pdf-idbox strong { font-size: 14px; color: #2896cd; }
+                .pdf-section { font-size: 11px; font-weight: bold; color: #64748b; margin-bottom: 15px; text-transform: uppercase; }
+                .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                .pdf-table th { text-align: left; padding: 12px; font-size: 11px; color: #64748b; border-bottom: 2px solid #eee; text-transform: uppercase; }
+                .pdf-table td { padding: 15px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+                .status-paid { color: #16a34a; font-weight: bold; font-size: 10px; text-transform: uppercase; }
+                .status-partial { color: #2896cd; font-weight: bold; font-size: 10px; text-transform: uppercase; }
+                .status-due { color: #ef4444; font-weight: bold; font-size: 10px; text-transform: uppercase; }
+                .pdf-history td { padding: 10px 12px; font-size: 12px; border-bottom: 1px solid #f9f9f9; }
+                .pdf-history .latest { background: #fcfdfe; font-weight: bold; }
+                .pdf-summary { margin-top: 30px; margin-left: auto; width: 320px; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 25px; }
+                .pdf-sum-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+                .pdf-sum-row .label { color: #0f172a; font-weight: bold; }
+                .pdf-sum-row .val { color: #0f172a; font-weight: bold; }
+                .pdf-sum-row.accented .label, .pdf-sum-row.accented .val { color: #2896cd; }
+                .pdf-divider { height: 1px; background: #eee; margin: 15px 0; }
+                .pdf-sum-row.due .label { font-size: 16px; }
+                .pdf-sum-row.due .val { font-size: 18px; color: #2896cd; }
+                .pdf-footer { margin-top: 50px; text-align: center; padding-top: 25px; border-top: 1px dashed #ddd; }
+                .pdf-footer p { font-size: 10px; color: #64748b; margin: 3px 0; }
+            </style>
+            <div class="pdf-wrap">
+                <div class="pdf-headline">Payment receipt</div>
+                <div class="pdf-brand">
+                    <div class="pdf-accent"></div>
+                    <div class="pdf-header">
+                        <div>
+                            <h1>Abhi's Craftsoft</h1>
+                            <p>Plot no. 163, Vijayasree Colony,<br>Vanasthalipuram, Hyderabad 500070</p>
+                            <div class="pdf-contact">+91-7842239090 | https://www.craftsoft.co.in</div>
+                        </div>
+                        <div class="pdf-meta">
+                            <p>Date: <strong>${formatDate(receipt.payment_date || receipt.created_at)}</strong></p>
+                            <p>Receipt No: <strong>${receipt.receipt_id}</strong></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="pdf-customer">
+                    <div class="pdf-issue">
+                        <span>Issued To</span>
+                        <h3>${entityName}</h3>
+                    </div>
+                    <div class="pdf-idbox">
+                        <span>${isSrv ? 'Client ID' : 'Student ID'}</span>
+                        <strong>${entityId}</strong>
+                    </div>
+                </div>
+                <div class="pdf-section">Account & Payment Overview</div>
+                <table class="pdf-table">
+                    <thead>
+                        <tr>
+                            <th width="50%">Item Description</th>
+                            <th>Total Fee</th>
+                            <th>Paid</th>
+                            <th style="text-align:right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${itemName}</td>
+                            <td>₹ ${totalItemFee.toLocaleString('en-IN')}</td>
+                            <td>${totalPaidForItem > 0 ? '₹ ' + totalPaidForItem.toLocaleString('en-IN') : '--'}</td>
+                            <td style="text-align:right"><span class="${statusClass}">${statusText}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="pdf-section">Payment History</div>
+                <table class="pdf-table pdf-history">
+                    <tbody>
+                        ${historyRows || '<tr><td colspan="3">No history</td></tr>'}
+                    </tbody>
+                </table>
+                <div class="pdf-summary">
+                    <div class="pdf-sum-row">
+                        <span class="label">Total Fee</span>
+                        <span class="val">₹ ${totalItemFee.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div class="pdf-sum-row accented">
+                        <span class="label">Amount Paid</span>
+                        <span class="val">₹ ${totalPaidForItem.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div class="pdf-divider"></div>
+                    <div class="pdf-sum-row due">
+                        <span class="label">Balance Due</span>
+                        <span class="val">₹ ${pendingForItem.toLocaleString('en-IN')}</span>
+                    </div>
+                </div>
+                <div class="pdf-footer">
+                    <p>This is a system-generated secure receipt and does not require a physical signature.</p>
+                    <p>Abhi's Craftsoft © ${new Date().getFullYear()} | https://www.craftsoft.co.in</p>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(pdfContainer);
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        const canvas = await html2canvas(pdfContainer, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff'
+        });
+
+        document.body.removeChild(pdfContainer);
+
+        const imgData = canvas.toDataURL('image/png');
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
 
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        let y = 20;
+        const imgWidth = 190;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-        // Header with brand color
-        pdf.setFillColor(40, 150, 205);
-        pdf.rect(0, 0, pageWidth, 35, 'F');
-
-        pdf.setTextColor(255, 255, 255);
-        pdf.setFontSize(20);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text("ABHI'S CRAFTSOFT", pageWidth / 2, 18, { align: 'center' });
-
-        pdf.setFontSize(10);
-        pdf.setFont('helvetica', 'normal');
-        pdf.text('Plot no. 163, Vijayasree Colony, Vanasthalipuram, Hyderabad 500070', pageWidth / 2, 27, { align: 'center' });
-        pdf.text('+91-7842239090 | www.craftsoft.co.in', pageWidth / 2, 32, { align: 'center' });
-
-        y = 50;
-        pdf.setTextColor(0, 0, 0);
-
-        // Receipt Info
-        pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text('PAYMENT RECEIPT', 15, y);
-        pdf.setFont('helvetica', 'normal');
-        pdf.text(`Receipt: ${receipt.receipt_id}`, pageWidth - 15, y, { align: 'right' });
-
-        y += 8;
-        pdf.text(`Date: ${formatDate(receipt.payment_date || receipt.created_at)}`, pageWidth - 15, y, { align: 'right' });
-
-        // Divider
-        y += 10;
-        pdf.setDrawColor(200, 200, 200);
-        pdf.line(15, y, pageWidth - 15, y);
-
-        // Customer Info
-        y += 12;
-        pdf.setFontSize(11);
-        pdf.text(`${isSrv ? 'Client' : 'Student'}:`, 15, y);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(`${entityName} (${entityId})`, 50, y);
-
-        y += 8;
-        pdf.setFont('helvetica', 'normal');
-        pdf.text(`${isSrv ? 'Service' : 'Course'}:`, 15, y);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(itemName, 50, y);
-
-        // Divider
-        y += 12;
-        pdf.setDrawColor(200, 200, 200);
-        pdf.line(15, y, pageWidth - 15, y);
-
-        // Payment Details
-        y += 12;
-        pdf.setFontSize(11);
-        pdf.setFont('helvetica', 'normal');
-
-        pdf.text('Total Fee:', 15, y);
-        pdf.text(`₹ ${totalItemFee.toLocaleString('en-IN')}`, pageWidth - 15, y, { align: 'right' });
-
-        y += 8;
-        pdf.setTextColor(40, 150, 205);
-        pdf.text('Amount Paid:', 15, y);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(`₹ ${totalPaidForItem.toLocaleString('en-IN')}`, pageWidth - 15, y, { align: 'right' });
-
-        y += 8;
-        pdf.setTextColor(pendingForItem > 0 ? 239 : 22, pendingForItem > 0 ? 68 : 163, pendingForItem > 0 ? 68 : 74);
-        pdf.text('Balance Due:', 15, y);
-        pdf.text(`₹ ${pendingForItem.toLocaleString('en-IN')}`, pageWidth - 15, y, { align: 'right' });
-
-        // Divider
-        y += 12;
-        pdf.setDrawColor(200, 200, 200);
-        pdf.setTextColor(0, 0, 0);
-        pdf.line(15, y, pageWidth - 15, y);
-
-        // Payment Mode
-        y += 12;
-        pdf.setFont('helvetica', 'normal');
-        pdf.text('Payment Mode:', 15, y);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(receipt.payment_mode === 'CASH' ? 'CASH' : 'UPI', pageWidth - 15, y, { align: 'right' });
-
-        y += 8;
-        pdf.setFont('helvetica', 'normal');
-        pdf.text('Reference ID:', 15, y);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(receipt.reference_id || '-', pageWidth - 15, y, { align: 'right' });
-
-        // Footer
-        y += 25;
-        pdf.setDrawColor(200, 200, 200);
-        pdf.setLineDashPattern([2, 2], 0);
-        pdf.line(15, y, pageWidth - 15, y);
-
-        y += 10;
-        pdf.setFontSize(9);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(100, 100, 100);
-        pdf.text('-- System Generated Receipt --', pageWidth / 2, y, { align: 'center' });
-
-        y += 6;
-        pdf.text("Abhi's Craftsoft © " + new Date().getFullYear() + ' | www.craftsoft.co.in', pageWidth / 2, y, { align: 'center' });
-
+        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
         pdf.save(`Receipt-${receiptId}.pdf`);
 
         Toast.success('Downloaded', 'Receipt PDF saved');
