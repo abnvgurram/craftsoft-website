@@ -231,7 +231,7 @@ function renderReceipts() {
 }
 
 // =====================
-// View Receipt - Professional Design
+// View Receipt - Simple Skeleton Design
 // =====================
 async function viewReceipt(receiptId) {
     currentReceipt = receipts.find(r => r.receipt_id === receiptId);
@@ -251,14 +251,11 @@ async function viewReceipt(receiptId) {
 
     try {
         // Get payment history for this item
-        const { data: history, error: hErr } = await window.supabaseClient
+        const { data: history } = await window.supabaseClient
             .from('receipts')
-            .select('amount_paid, payment_date, reference_id, payment_mode')
+            .select('amount_paid')
             .eq(idCol, entity?.id)
-            .eq(itemIdCol, item?.id)
-            .order('payment_date', { ascending: true });
-
-        if (hErr) throw hErr;
+            .eq(itemIdCol, item?.id);
 
         // Get fee info
         const { data: record } = await window.supabaseClient
@@ -277,123 +274,69 @@ async function viewReceipt(receiptId) {
             totalItemFee = (courseData?.fee || 0) - discount;
         }
 
-        const totalPaidForItem = history.reduce((sum, r) => sum + (r.amount_paid || 0), 0);
+        const totalPaidForItem = (history || []).reduce((sum, r) => sum + (r.amount_paid || 0), 0);
         const pendingForItem = Math.max(0, totalItemFee - totalPaidForItem);
-
-        // Status calculation
-        let statusText = 'Due';
-        let statusClass = 'status-due';
-        if (pendingForItem <= 0) {
-            statusText = 'Fully Paid';
-            statusClass = 'status-paid';
-        } else if (totalPaidForItem > 0) {
-            const pct = Math.round((totalPaidForItem / totalItemFee) * 100);
-            statusText = `Partial (${pct}%)`;
-            statusClass = 'status-partial';
-        }
-
-        // Global summary
-        const { data: allReceipts } = await window.supabaseClient
-            .from('receipts')
-            .select('amount_paid')
-            .eq(idCol, entity?.id);
-        const globalPaid = (allReceipts || []).reduce((sum, r) => sum + (r.amount_paid || 0), 0);
-        const globalTotal = isSrv ? (record?.total_fee || 0) : (record?.final_fee || 0);
-        const globalPending = Math.max(0, globalTotal - globalPaid);
 
         const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}` : 'Unknown';
         const entityId = entity?.student_id || entity?.client_id || '-';
         const itemName = item?.name || item?.course_name || 'Unknown Item';
 
-        // Build history rows
-        const historyRows = history.map((h, idx) => {
-            const isLatest = idx === history.length - 1;
-            return `<tr class="${isLatest ? 'latest' : ''}">
-                <td>${formatDate(h.payment_date)}</td>
-                <td>${h.payment_mode === 'CASH' ? 'Cash' : 'UPI'} - ${h.reference_id || '-'}</td>
-                <td style="text-align:right">₹ ${h.amount_paid.toLocaleString('en-IN')}</td>
-            </tr>`;
-        }).join('');
-
         content.innerHTML = `
-            <div class="receipt-view" id="receipt-printable">
-                <div class="receipt-watermark"></div>
-                <div class="receipt-content">
-                    <div class="receipt-headline">Payment receipt</div>
+            <div class="receipt-simple" id="receipt-printable">
+                <div class="receipt-header-bar">
+                    <h2>ABHI'S CRAFTSOFT</h2>
+                </div>
 
-                    <div class="receipt-brand-container">
-                        <div class="receipt-accent-bar"></div>
-                        <div class="receipt-header-main">
-                            <div class="receipt-brand-info">
-                                <h1>Abhi's Craftsoft</h1>
-                                <p>Plot no. 163, Vijayasree Colony,<br>Vanasthalipuram, Hyderabad 500070</p>
-                                <div class="receipt-contact-row">+91-7842239090 | https://www.craftsoft.co.in</div>
-                            </div>
-                            <div class="receipt-meta-info">
-                                <p>Date: <strong>${formatDate(currentReceipt.payment_date || currentReceipt.created_at)}</strong></p>
-                                <p>Receipt No: <strong>${currentReceipt.receipt_id}</strong></p>
-                            </div>
-                        </div>
+                <div class="receipt-body">
+                    <div class="receipt-row">
+                        <span>Receipt</span>
+                        <strong>${currentReceipt.receipt_id}</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Date</span>
+                        <strong>${formatDate(currentReceipt.payment_date || currentReceipt.created_at)}</strong>
                     </div>
 
-                    <div class="receipt-customer-section">
-                        <div class="receipt-issue-to">
-                            <span>Issued To</span>
-                            <h3>${entityName}</h3>
-                        </div>
-                        <div class="receipt-id-box">
-                            <span>${isSrv ? 'Client ID' : 'Student ID'}</span>
-                            <strong>${entityId}</strong>
-                        </div>
+                    <div class="receipt-divider"></div>
+
+                    <div class="receipt-row">
+                        <span>${isSrv ? 'Client' : 'Student'}</span>
+                        <strong>${entityName} (${entityId})</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span>${isSrv ? 'Service' : 'Course'}</span>
+                        <strong>${itemName}</strong>
                     </div>
 
-                    <div class="receipt-section-header">Account & Payment Overview</div>
-                    <table class="receipt-main-table">
-                        <thead>
-                            <tr>
-                                <th width="50%">Item Description</th>
-                                <th>Total Fee</th>
-                                <th>Paid</th>
-                                <th style="text-align:right">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>${itemName}</td>
-                                <td>₹ ${totalItemFee.toLocaleString('en-IN')}</td>
-                                <td>${totalPaidForItem > 0 ? '₹ ' + totalPaidForItem.toLocaleString('en-IN') : '--'}</td>
-                                <td style="text-align:right"><span class="${statusClass}">${statusText}</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="receipt-divider"></div>
 
-                    <div class="receipt-section-header">Payment History</div>
-                    <table class="receipt-history-table">
-                        <tbody>
-                            ${historyRows || '<tr><td colspan="3">No history available</td></tr>'}
-                        </tbody>
-                    </table>
-
-                    <div class="receipt-summary-box">
-                        <div class="summary-row">
-                            <span class="label">Item Total</span>
-                            <span class="val">₹ ${totalItemFee.toLocaleString('en-IN')}</span>
-                        </div>
-                        <div class="summary-row accented">
-                            <span class="label">Amount Paid</span>
-                            <span class="val">₹ ${totalPaidForItem.toLocaleString('en-IN')}</span>
-                        </div>
-                        <div class="summary-divider"></div>
-                        <div class="summary-row total-due">
-                            <span class="label">Balance Due</span>
-                            <span class="val">₹ ${pendingForItem.toLocaleString('en-IN')}</span>
-                        </div>
+                    <div class="receipt-row">
+                        <span>Total</span>
+                        <strong>₹ ${totalItemFee.toLocaleString('en-IN')}</strong>
+                    </div>
+                    <div class="receipt-row highlight">
+                        <span>Paid</span>
+                        <strong>₹ ${totalPaidForItem.toLocaleString('en-IN')}</strong>
+                    </div>
+                    <div class="receipt-row ${pendingForItem > 0 ? 'due' : 'paid'}">
+                        <span>Balance</span>
+                        <strong>₹ ${pendingForItem.toLocaleString('en-IN')}</strong>
                     </div>
 
-                    <div class="receipt-footer">
-                        <p class="receipt-footer-note">This is a system-generated secure receipt and does not require a physical signature.</p>
-                        <p class="receipt-footer-note">Abhi's Craftsoft © ${new Date().getFullYear()} | https://www.craftsoft.co.in</p>
+                    <div class="receipt-divider"></div>
+
+                    <div class="receipt-row">
+                        <span>Mode</span>
+                        <strong>${currentReceipt.payment_mode === 'CASH' ? 'CASH' : 'UPI'}</strong>
                     </div>
+                    <div class="receipt-row">
+                        <span>Ref ID</span>
+                        <strong style="font-family: monospace; font-size: 0.85em;">${currentReceipt.reference_id || '-'}</strong>
+                    </div>
+                </div>
+
+                <div class="receipt-footer-bar">
+                    <p>-- System Generated --</p>
                 </div>
             </div>
         `;
@@ -405,7 +348,7 @@ async function viewReceipt(receiptId) {
 }
 
 // =====================
-// Download Receipt as PDF
+// Download Receipt as PDF - Fixed
 // =====================
 async function downloadReceipt(receiptId) {
     const receipt = receipts.find(r => r.receipt_id === receiptId);
@@ -415,31 +358,33 @@ async function downloadReceipt(receiptId) {
     Toast.info('Generating', 'Creating PDF...');
 
     try {
-        viewReceipt(receiptId);
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // Ensure receipt is rendered
+        if (!currentReceipt || currentReceipt.receipt_id !== receiptId) {
+            await viewReceipt(receiptId);
+        }
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         const element = document.getElementById('receipt-printable');
-        const canvas = await html2canvas(element, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#ffffff'
-        });
+        if (!element) {
+            throw new Error('Receipt element not found');
+        }
 
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
+        // Use html2pdf for reliable PDF generation
+        const opt = {
+            margin: 10,
+            filename: `Receipt-${receiptId}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
 
-        const imgWidth = 190;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-        pdf.save(`Receipt-${receiptId}.pdf`);
+        await html2pdf().set(opt).from(element).save();
 
         Toast.success('Downloaded', 'Receipt PDF saved');
         closeReceiptModal();
     } catch (err) {
         console.error('PDF generation error:', err);
-        Toast.error('Error', 'Failed to generate PDF');
+        Toast.error('Error', 'Failed to generate PDF: ' + err.message);
     }
 }
 
