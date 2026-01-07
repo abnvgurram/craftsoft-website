@@ -690,11 +690,19 @@ function bindEvents() {
     });
 }
 
-// Show download confirmation modal
+// Show download confirmation modal (mobile only to prevent mistouches)
 function showDownloadConfirm(receiptId) {
-    document.getElementById('download-receipt-id').textContent = receiptId;
-    document.getElementById('download-receipt-id').dataset.receiptId = receiptId;
-    document.getElementById('download-confirm-modal').classList.add('active');
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+        // Show confirmation modal on mobile
+        document.getElementById('download-receipt-id').textContent = receiptId;
+        document.getElementById('download-receipt-id').dataset.receiptId = receiptId;
+        document.getElementById('download-confirm-modal').classList.add('active');
+    } else {
+        // Direct download on desktop/tablet
+        downloadReceipt(receiptId);
+    }
 }
 
 // Close download confirmation modal
