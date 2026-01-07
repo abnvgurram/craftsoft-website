@@ -348,7 +348,7 @@ async function viewReceipt(receiptId) {
 }
 
 // =====================
-// Download Receipt as PDF - Fixed
+// Download Receipt as PDF
 // =====================
 async function downloadReceipt(receiptId) {
     const receipt = receipts.find(r => r.receipt_id === receiptId);
@@ -369,16 +369,22 @@ async function downloadReceipt(receiptId) {
             throw new Error('Receipt element not found');
         }
 
-        // Use html2pdf for reliable PDF generation
-        const opt = {
-            margin: 10,
-            filename: `Receipt-${receiptId}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
+        // Use html2canvas + jsPDF
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff'
+        });
 
-        await html2pdf().set(opt).from(element).save();
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+
+        const imgWidth = 190;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+        pdf.save(`Receipt-${receiptId}.pdf`);
 
         Toast.success('Downloaded', 'Receipt PDF saved');
         closeReceiptModal();
