@@ -426,7 +426,9 @@ async function downloadReceipt(receiptId) {
         pdfContainer.innerHTML = `
             <style>
                 #pdf-receipt-container * { font-family: 'Tahoma', Arial, sans-serif; box-sizing: border-box; }
-                .pdf-wrap { padding: 50px; padding-bottom: 100px; background: white; min-height: 1100px; position: relative; }
+                .pdf-wrap { padding: 50px; padding-bottom: 100px; background: white; min-height: 1100px; position: relative; overflow: hidden; }
+                .pdf-watermark { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 1; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg width='200' height='120' viewBox='0 0 200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' fill='%2364748b' font-family='monospace' font-size='10' text-anchor='middle' transform='rotate(-25 100 60)'%3ECRAFTSOFT SECURE CRAFTSOFT%3C/text%3E%3C/svg%3E"); background-repeat: repeat; }
+                .pdf-content { position: relative; z-index: 2; }
                 .pdf-headline { font-size: 22px; font-weight: bold; color: #2896cd; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1.5px solid #f1f5f9; }
                 .pdf-brand { position: relative; padding-left: 20px; margin-bottom: 50px; }
                 .pdf-accent { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: #e0f2fe; border-left: 3px solid #2896cd; }
@@ -460,10 +462,12 @@ async function downloadReceipt(receiptId) {
                 .pdf-divider { height: 1px; background: #eee; margin: 15px 0; }
                 .pdf-sum-row.due .label { font-size: 16px; }
                 .pdf-sum-row.due .val { font-size: 18px; color: #2896cd; }
-                .pdf-footer { position: absolute; bottom: 30px; left: 50px; right: 50px; text-align: center; padding-top: 20px; border-top: 1px dashed #ddd; }
+                .pdf-footer { position: absolute; bottom: 30px; left: 50px; right: 50px; text-align: center; padding-top: 20px; border-top: 1px dashed #ddd; z-index: 2; }
                 .pdf-footer p { font-size: 10px; color: #64748b; margin: 3px 0; }
             </style>
             <div class="pdf-wrap">
+                <div class="pdf-watermark"></div>
+                <div class="pdf-content">
                 <div class="pdf-headline">Payment receipt</div>
                 <div class="pdf-brand">
                     <div class="pdf-accent"></div>
@@ -528,7 +532,9 @@ async function downloadReceipt(receiptId) {
                         <span class="label">Balance Due</span>
                         <span class="val">₹ ${pendingForItem.toLocaleString('en-IN')}</span>
                     </div>
+                    </div>
                 </div>
+            </div>
             </div>
             <div class="pdf-footer">
                 <p>This is a system-generated secure receipt and does not require a physical signature.</p>
