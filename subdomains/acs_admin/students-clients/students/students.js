@@ -761,14 +761,28 @@ async function saveStudent() {
             if (error) throw error;
             Toast.success('Updated', 'Student updated successfully');
         } else {
-            // Generate new ID
-            const { data: maxData } = await window.supabaseClient.from('students').select('student_id').order('student_id', { ascending: false }).limit(1);
+            // Generate new ID - Find first available gap in sequence
+            const { data: allStudents } = await window.supabaseClient
+                .from('students')
+                .select('student_id')
+                .order('student_id', { ascending: true });
+
+            // Extract all existing numbers
+            const usedNumbers = new Set();
+            if (allStudents?.length > 0) {
+                allStudents.forEach(s => {
+                    const m = s.student_id.match(/St-ACS-(\d+)/);
+                    if (m) usedNumbers.add(parseInt(m[1]));
+                });
+            }
+
+            // Find first available number (gap or next)
             let nextNum = 1;
-            if (maxData?.length > 0) {
-                const m = maxData[0].student_id.match(/St-ACS-(\d+)/);
-                if (m) nextNum = parseInt(m[1]) + 1;
+            while (usedNumbers.has(nextNum)) {
+                nextNum++;
             }
             const newId = `St-ACS-${String(nextNum).padStart(3, '0')}`;
+
 
             const { error } = await window.supabaseClient.from('students').insert({
                 ...studentData,

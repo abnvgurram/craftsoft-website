@@ -624,19 +624,28 @@ async function saveClient() {
             if (error) throw error;
             Toast.success('Updated', 'Client updated successfully');
         } else {
-            // Generate new client ID
-            const { data: maxData } = await window.supabaseClient
+            // Generate new client ID - Find first available gap in sequence
+            const { data: allClients } = await window.supabaseClient
                 .from('clients')
                 .select('client_id')
-                .order('client_id', { ascending: false })
-                .limit(1);
+                .order('client_id', { ascending: true });
 
+            // Extract all existing numbers
+            const usedNumbers = new Set();
+            if (allClients?.length > 0) {
+                allClients.forEach(c => {
+                    const m = c.client_id?.match(/CL-ACS-(\d+)/);
+                    if (m) usedNumbers.add(parseInt(m[1]));
+                });
+            }
+
+            // Find first available number (gap or next)
             let nextNum = 1;
-            if (maxData?.length > 0 && maxData[0].client_id) {
-                const m = maxData[0].client_id.match(/CL-ACS-(\d+)/);
-                if (m) nextNum = parseInt(m[1]) + 1;
+            while (usedNumbers.has(nextNum)) {
+                nextNum++;
             }
             const newId = `CL-ACS-${String(nextNum).padStart(3, '0')}`;
+
 
             const { error } = await window.supabaseClient.from('clients').insert({
                 ...clientData,
