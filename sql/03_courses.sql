@@ -36,8 +36,21 @@ CREATE POLICY "Active admins can update courses" ON courses
         EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
+-- Public read for website (active courses only)
+DROP POLICY IF EXISTS "Allow anyone to read active courses" ON courses;
+CREATE POLICY "Allow anyone to read active courses" ON courses
+    FOR SELECT TO public
+    USING (status = 'ACTIVE');
+
+-- Public read for verification portal (anon - all courses)
+DROP POLICY IF EXISTS "Public can read courses" ON courses;
+CREATE POLICY "Public can read courses" ON courses
+    FOR SELECT TO anon
+    USING (true);
+
 CREATE INDEX IF NOT EXISTS idx_courses_code ON courses(course_code);
 CREATE INDEX IF NOT EXISTS idx_courses_status ON courses(status);
+
 
 -- Trigger: Auto-update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_courses_updated_at()

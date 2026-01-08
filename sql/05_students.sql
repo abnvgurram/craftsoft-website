@@ -61,8 +61,21 @@ CREATE POLICY "Public can lookup students by id" ON students
     FOR SELECT TO anon
     USING (true);
 
+-- Verification Portal Policy (public role)
+DROP POLICY IF EXISTS "Public can read students for verification" ON students;
+CREATE POLICY "Public can read students for verification" ON students
+    FOR SELECT TO public
+    USING (true);
+
+-- Admins can view all students (authenticated)
+DROP POLICY IF EXISTS "Admins can view all students" ON students;
+CREATE POLICY "Admins can view all students" ON students
+    FOR SELECT TO authenticated
+    USING (true);
+
 CREATE INDEX IF NOT EXISTS idx_students_status ON students(status);
 CREATE INDEX IF NOT EXISTS idx_students_demo_date ON students(demo_date);
+
 
 -- Trigger: Auto-update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_students_updated_at()

@@ -6,8 +6,9 @@
 CREATE TABLE IF NOT EXISTS receipts (
     receipt_id TEXT PRIMARY KEY,
     payment_id UUID NOT NULL REFERENCES payments(id) ON DELETE CASCADE,
-    student_id UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
-    course_id UUID REFERENCES courses(id) ON DELETE CASCADE, -- Nullable to support Services
+    student_id UUID REFERENCES students(id) ON DELETE CASCADE,  -- Nullable to support clients
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,    -- For service clients
+    course_id UUID REFERENCES courses(id) ON DELETE CASCADE,    -- Nullable to support Services
     service_id BIGINT REFERENCES services(id) ON DELETE SET NULL,
     amount_paid DECIMAL(10,2) NOT NULL,
     payment_mode TEXT NOT NULL,
@@ -19,15 +20,30 @@ CREATE TABLE IF NOT EXISTS receipts (
 
 ALTER TABLE receipts ENABLE ROW LEVEL SECURITY;
 
+-- Admin full access
 DROP POLICY IF EXISTS "Allow all for authenticated users" ON receipts;
 CREATE POLICY "Allow all for authenticated users" ON receipts
     FOR ALL USING ((select auth.role()) = 'authenticated');
 
+-- Verification Portal (anon)
+DROP POLICY IF EXISTS "Public can lookup receipts" ON receipts;
+CREATE POLICY "Public can lookup receipts" ON receipts
+    FOR SELECT TO anon
+    USING (true);
+
+-- Verification Portal (public role)
+DROP POLICY IF EXISTS "Public can read receipts for verification" ON receipts;
+CREATE POLICY "Public can read receipts for verification" ON receipts
+    FOR SELECT TO public
+    USING (true);
+
 CREATE INDEX IF NOT EXISTS idx_receipts_student ON receipts(student_id);
+CREATE INDEX IF NOT EXISTS idx_receipts_client ON receipts(client_id);
 CREATE INDEX IF NOT EXISTS idx_receipts_course ON receipts(course_id);
 CREATE INDEX IF NOT EXISTS idx_receipts_service ON receipts(service_id);
 CREATE INDEX IF NOT EXISTS idx_receipts_date ON receipts(payment_date DESC);
 CREATE INDEX IF NOT EXISTS idx_receipts_created ON receipts(created_at DESC);
+
 
 -- Function: Generate Receipt ID
 -- Format: 001-ACS-JD-GRA (sequence-institute-initials-course)

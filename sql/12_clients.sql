@@ -1,0 +1,57 @@
+-- ================================================================================
+-- 12. CLIENTS - Service Clients
+-- Description: Client records for service inquiries converted to active clients.
+-- ================================================================================
+
+CREATE TABLE IF NOT EXISTS clients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    client_id TEXT UNIQUE NOT NULL,           -- e.g. CL-ACS-001
+    first_name TEXT NOT NULL,
+    last_name TEXT,
+    phone TEXT NOT NULL,
+    email TEXT,
+    services TEXT[],                          -- Array of service IDs
+    service_fees JSONB DEFAULT '{}',          -- Fees per service
+    notes TEXT,
+    status TEXT DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE')),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
+
+-- Admin full access
+DROP POLICY IF EXISTS "Allow authenticated access" ON clients;
+CREATE POLICY "Allow authenticated access" ON clients
+    FOR ALL TO authenticated
+    USING (true)
+    WITH CHECK (true);
+
+-- Public read for verification portal (anon)
+DROP POLICY IF EXISTS "Public can lookup clients by id" ON clients;
+CREATE POLICY "Public can lookup clients by id" ON clients
+    FOR SELECT TO anon
+    USING (true);
+
+-- Public read for verification portal (public role)
+DROP POLICY IF EXISTS "Public can read clients for verification" ON clients;
+CREATE POLICY "Public can read clients for verification" ON clients
+    FOR SELECT TO public
+    USING (true);
+
+CREATE INDEX IF NOT EXISTS idx_clients_status ON clients(status);
+CREATE INDEX IF NOT EXISTS idx_clients_phone ON clients(phone);
+
+-- Trigger: Auto-update updated_at timestamp
+CREATE OR REPLACE FUNCTION update_clients_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS clients_updated_at ON clients;
+CREATE TRIGGER clients_updated_at
+    BEFORE UPDATE ON clients
+    FOR EACH ROW EXECUTE FUNCTION update_clients_updated_at();

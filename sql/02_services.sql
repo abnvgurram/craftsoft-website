@@ -25,3 +25,10 @@ DROP POLICY IF EXISTS "Allow admin all services" ON services;
 CREATE POLICY "Allow admin all services" ON services
     FOR ALL TO authenticated
     USING (true);
+
+-- Public read for verification portal
+DROP POLICY IF EXISTS "Public can read services" ON services;
+CREATE POLICY "Public can read services" ON services
+    FOR SELECT TO public
+    USING (true);
+
