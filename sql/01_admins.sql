@@ -31,3 +31,12 @@ CREATE POLICY "Admins can update own record" ON admins
     FOR UPDATE TO authenticated
     USING (id = (select auth.uid()))
     WITH CHECK (id = (select auth.uid()));
+
+-- INSERT: Only active admins can create new admin accounts
+DROP POLICY IF EXISTS "admins_insert_policy" ON admins;
+CREATE POLICY "Active admins can insert admins" ON admins
+    FOR INSERT TO authenticated
+    WITH CHECK (
+        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+    );
+

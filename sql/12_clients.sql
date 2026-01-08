@@ -20,12 +20,18 @@ CREATE TABLE IF NOT EXISTS clients (
 
 ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
 
--- Admin full access
+-- Admin management (only active admins)
 DROP POLICY IF EXISTS "Allow authenticated access" ON clients;
-CREATE POLICY "Allow authenticated access" ON clients
+DROP POLICY IF EXISTS "Active admins can manage clients" ON clients;
+CREATE POLICY "Active admins can manage clients" ON clients
     FOR ALL TO authenticated
-    USING (true)
-    WITH CHECK (true);
+    USING (
+        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+    )
+    WITH CHECK (
+        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+    );
+
 
 -- Public read for verification portal (anon)
 DROP POLICY IF EXISTS "Public can lookup clients by id" ON clients;

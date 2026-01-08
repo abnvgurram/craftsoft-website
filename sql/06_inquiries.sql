@@ -47,13 +47,28 @@ CREATE POLICY "Active admins can delete inquiries" ON inquiries
         EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
--- Website Submission Policy (allows public form submissions)
+-- Website Submission Policy (allows public form submissions - INSERT only)
 DROP POLICY IF EXISTS "Allow public inquiry submission" ON inquiries;
-CREATE POLICY "Allow public inquiry submission" ON inquiries
+DROP POLICY IF EXISTS "Website Lead Submission" ON inquiries;
+CREATE POLICY "Website can submit inquiries" ON inquiries
     FOR INSERT TO anon
     WITH CHECK (true);
 
 CREATE INDEX IF NOT EXISTS idx_inquiries_status ON inquiries(status);
+
+-- Function: Generate Inquiry ID (with secure search_path)
+CREATE OR REPLACE FUNCTION generate_inquiry_id()
+RETURNS TEXT AS $$
+DECLARE
+    v_seq INT;
+BEGIN
+    SELECT COALESCE(MAX(CAST(SUBSTRING(inquiry_id FROM 5) AS INT)), 0) + 1
+    INTO v_seq
+    FROM inquiries;
+    RETURN 'INQ-' || LPAD(v_seq::TEXT, 4, '0');
+END;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
 -- Trigger: Auto-update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_inquiries_updated_at()
@@ -62,9 +77,11 @@ BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
 DROP TRIGGER IF EXISTS inquiries_updated_at ON inquiries;
 CREATE TRIGGER inquiries_updated_at
     BEFORE UPDATE ON inquiries
     FOR EACH ROW EXECUTE FUNCTION update_inquiries_updated_at();
+

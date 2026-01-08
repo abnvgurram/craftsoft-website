@@ -22,11 +22,18 @@ CREATE POLICY "Allow public read services" ON services
     USING (true);
 
 DROP POLICY IF EXISTS "Allow admin all services" ON services;
-CREATE POLICY "Allow admin all services" ON services
+DROP POLICY IF EXISTS "Active admins can manage services" ON services;
+CREATE POLICY "Active admins can manage services" ON services
     FOR ALL TO authenticated
-    USING (true);
+    USING (
+        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+    )
+    WITH CHECK (
+        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+    );
 
 -- Public read for verification portal
+
 DROP POLICY IF EXISTS "Public can read services" ON services;
 CREATE POLICY "Public can read services" ON services
     FOR SELECT TO public
