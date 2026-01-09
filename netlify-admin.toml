@@ -310,7 +310,7 @@
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/*"
-  to = "/subdomains/acs_admin/404/index.html"
+  to = "/subdomains/acs_admin/404.html"
   status = 404
   force = true
 
@@ -406,7 +406,7 @@
 [[redirects]]
   host = "signup.craftsoft.co.in"
   from = "/*"
-  to = "/subdomains/acs_admin/signup/404/"
+  to = "/subdomains/acs_admin/signup/404.html"
   status = 404
 
 # Global 404 catch-all (main site only)

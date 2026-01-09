@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Admin Page Not Found | Craft Soft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2896cd;
+            --primary-dark: #1e709a;
+            --gray-100: #f3f4f6;
+            --gray-600: #4b5563;
+            --gray-900: #111827;
+            --radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 480px;
+            width: 100%;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            background: var(--gray-100);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            color: var(--primary);
+            font-size: 32px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: var(--gray-900);
+        }
+
+        p {
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 28px;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(40, 150, 205, 0.2);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(40, 150, 205, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="icon-box">
+            <i class="fas fa-shield-halved"></i>
+        </div>
+        <h1>Admin Page Not Found</h1>
+        <p>This administrative resource is missing or moved. Please return to the dashboard or login to continue.</p>
+
+        <a href="https://admin.craftsoft.co.in/login" class="btn" id="primary-btn">
+            <i class="fas fa-sign-in-alt"></i> Back to Login
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const primaryBtn = document.getElementById('primary-btn');
+
+            // Try different storage keys (localStorage and sessionStorage)
+            const checkAuth = () => {
+                const storage = [localStorage, sessionStorage];
+                for (let s of storage) {
+                    const supabaseKey = Object.keys(s).find(key =>
+                        key.startsWith('sb-') && key.endsWith('-auth-token')
+                    );
+                    if (supabaseKey && s.getItem(supabaseKey)) return true;
+                }
+                return false;
+            };
+
+            if (checkAuth()) {
+                primaryBtn.innerHTML = '<i class="fas fa-th-large"></i> Back to Dashboard';
+                primaryBtn.href = '/dashboard/';
+            }
+        });
+    </script>
+</body>
+
+</html>
