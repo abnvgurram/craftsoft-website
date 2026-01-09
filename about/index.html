@@ -322,7 +322,15 @@
 
     <!-- Festival Effects System -->
     <script src="../assets/js/main.js?v=1.1"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
 </body>
 
 </html>
-

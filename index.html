@@ -850,7 +850,17 @@
     <script src="assets/js/quiz.min.js?v=1.0"></script>
     <!-- Snowflakes Effect (Dec 25 - Jan 1) -->
     <script src="assets/js/snowflakes.js?v=1.0"></script>
+
+    <!-- Service Worker Registration for Offline Mode -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('[SW] Registered successfully'))
+                    .catch(err => console.log('[SW] Registration failed:', err));
+            });
+        }
+    </script>
 </body>
 
 </html>
-
