@@ -146,27 +146,23 @@
 
     .unified-card {
         padding: var(--spacing-xl);
+        text-align: center;
     }
 
     .unified-card-icon {
         width: 60px;
         height: 60px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
-    .unified-card-icon i {
-        font-size: 1.5rem;
-    }
-
-    .unified-card h3 {
-        font-size: 1.15rem;
-    }
-
+    .unified-card h3,
     .unified-card>p {
-        font-size: 0.9rem;
+        text-align: center;
     }
 
     .unified-card-features li {
-        font-size: 0.85rem;
+        text-align: left;
     }
 }
 

@@ -167,5 +167,30 @@
     .about-grid {
         grid-template-columns: 1fr;
         gap: var(--spacing-xl);
+        text-align: center;
+    }
+
+    .about-image {
+        order: -1;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .about-text-content .section-title {
+        text-align: center;
+    }
+
+    .mv-item h4 {
+        justify-content: center;
+    }
+
+    .mv-item p {
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .about-image {
+        max-width: 280px;
     }
 }
