@@ -13,20 +13,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/master.css?v=2.0">
     <link rel="stylesheet" href="../assets/css/utilities/skeleton.css?v=1.0">
     <style>
         .legal-page {
             padding: var(--spacing-4xl) 0;
-            background: var(--white);
+            background: var(--page-bg);
         }
 
         .legal-content {
             max-width: 800px;
             margin: 0 auto;
+            background: var(--white);
+            padding: var(--spacing-3xl);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--card-border);
         }
 
         .legal-content h1 {
@@ -95,7 +100,61 @@
             font-style: italic;
         }
 
+        /* Simple Footer Styles */
+        .footer-simple {
+            background: #050a14;
+            padding: var(--spacing-2xl) 0;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.95rem;
+        }
+
+        .footer-simple-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-lg);
+        }
+
+        .footer-simple a {
+            color: rgba(255, 255, 255, 0.6);
+            transition: var(--transition-base);
+            text-decoration: none;
+        }
+
+        .footer-simple a:hover {
+            color: var(--primary-400);
+        }
+
+        .footer-simple-links {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .footer-simple-divider {
+            color: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 992px) {
+            .legal-page {
+                padding: var(--spacing-2xl) 0;
+            }
+
+            .legal-content {
+                padding: var(--spacing-xl);
+                box-shadow: none;
+                border-radius: 0;
+                border: none;
+            }
+        }
+
         @media (max-width: 768px) {
+            .footer-simple-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
             .legal-content h1 {
                 font-size: 1.75rem;
             }
@@ -144,7 +203,7 @@
                 <li><a href="../courses/" class="nav-link">Courses</a></li>
                 <li><a href="../acs_services/" class="nav-link">Services</a></li>
                 <li><a href="../portfolio/" class="nav-link">Portfolio</a></li>
-                <li><a href="../#contact" class="nav-link">Contact</a></li>
+                <li><a href="../contact/" class="nav-link">Contact</a></li>
 
             </ul>
             <button class="hamburger" id="hamburger" aria-label="Toggle menu">
@@ -360,57 +419,19 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
+    <!-- Simple Footer -->
+    <footer class="footer-simple">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <a href="../" class="logo"><span class="logo-text"><span class="logo-signature">Abhi's</span> <span
-                                class="highlight">Craft Soft</span></span>
-                    </a>
-                    <p>Empowering careers through quality education and professional IT services. Your journey to
-                        excellence starts here.</p>
-                </div>
-                <div class="footer-links">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="../courses/">Courses</a></li>
-                        <li><a href="../acs_services/">Services</a></li>
-                        <li><a href="../portfolio/">Portfolio</a></li>
-                        <li><a href="../verify/">Verify Receipt</a></li>
-                    </ul>
-                </div>
-                <div class="footer-links">
-                    <h4>Courses</h4>
-                    <ul id="footer-trending-courses"></ul>
-                </div>
-                <div class="footer-links">
-                    <h4>Services</h4>
-                    <ul id="footer-services"></ul>
-                </div>
-                <div class="footer-contact">
-                    <h4>Contact Us</h4>
-                    <ul>
-                        <li><i class="fas fa-map-marker-alt"></i><a href="https://maps.app.goo.gl/uiTwuixvPKM8oJ9b8"
-                                target="_blank">Plot No. 163, Vijayasree Colony,<br>Vanasthalipuram, Hyderabad
-                                500070</a></li>
-                        <li><i class="fas fa-phone"></i><a href="tel:+917842239090">+91 7842239090</a></li>
-                        <li><i class="fas fa-envelope"></i><a
-                                href="mailto:team.craftsoft@gmail.com">team.craftsoft@gmail.com</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p> 2026 Abhi's Craft Soft. All Rights Reserved.</p>
-                <div class="footer-legal-links">
+            <div class="footer-simple-container">
+                <p>© 2026 Abhi's Craft Soft. All Rights Reserved.</p>
+                <div class="footer-simple-links">
                     <a href="../about/">About Us</a>
-                    <span>|</span>
+                    <span class="footer-simple-divider">|</span>
                     <a href="../terms-of-service/">Terms Of Service</a>
-                    <span>|</span>
+                    <span class="footer-simple-divider">|</span>
                     <a href="../privacy-policy/">Privacy Policy</a>
                 </div>
             </div>
-        </div>
         </div>
     </footer>
 
@@ -419,4 +440,3 @@
 </body>
 
 </html>
-
