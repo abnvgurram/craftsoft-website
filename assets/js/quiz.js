@@ -42,14 +42,14 @@ const quizData = [
 ];
 
 const courseRecommendations = {
-    design: { title: "Graphic design", icon: "fas fa-paint-brush", url: "/courses/graphic-design/", desc: "Unleash your creativity and master branding with our graphic design excellence program." },
-    uiux: { title: "UI/UX design", icon: "fas fa-object-group", url: "/courses/ui-ux/", desc: "Design interfaces that people love using Figma and modern design principles." },
-    fullstack: { title: "Full stack development", icon: "fas fa-code", url: "/courses/full-stack/", desc: "Become a complete developer by mastering frontend, backend, and databases." },
-    devops: { title: "DevOps engineering", icon: "fas fa-infinity", url: "/courses/devops/", desc: "Bridge the gap between development and operations with automation and CI/CD." },
-    aws: { title: "AWS cloud excellence", icon: "fab fa-aws", url: "/courses/aws/", desc: "Master the world's leading cloud platform and build scalable infrastructure." },
-    softskills: { title: "Spoken English mastery", icon: "fas fa-comments", url: "/courses/spoken-english/", desc: "Transform your personality and communication to excel in your professional career." },
-    python: { title: "Python programming", icon: "fab fa-python", url: "/courses/python/", desc: "Learn the most versatile programming language and build powerful applications." },
-    interview: { title: "Resume & interview prep", icon: "fas fa-file-alt", url: "/courses/resume-interview/", desc: "Master resume building, mock interviews, and land your dream job." }
+    design: { title: "Graphic Design", icon: "fas fa-paint-brush", url: "/courses/graphic-design/", desc: "Unleash your creativity and master branding with our graphic design excellence program." },
+    uiux: { title: "UI/UX Design", icon: "fas fa-object-group", url: "/courses/ui-ux/", desc: "Design interfaces that people love using Figma and modern design principles." },
+    fullstack: { title: "Full Stack Development", icon: "fas fa-code", url: "/courses/full-stack/", desc: "Become a complete developer by mastering frontend, backend, and databases." },
+    devops: { title: "DevOps Engineering", icon: "fas fa-infinity", url: "/courses/devops/", desc: "Bridge the gap between development and operations with automation and CI/CD." },
+    aws: { title: "AWS Cloud Excellence", icon: "fab fa-aws", url: "/courses/aws/", desc: "Master the world's leading cloud platform and build scalable infrastructure." },
+    softskills: { title: "Spoken English Mastery", icon: "fas fa-comments", url: "/courses/spoken-english/", desc: "Transform your personality and communication to excel in your professional career." },
+    python: { title: "Python Programming", icon: "fab fa-python", url: "/courses/python/", desc: "Learn the most versatile programming language and build powerful applications." },
+    interview: { title: "Resume & Interview Prep", icon: "fas fa-file-alt", url: "/courses/resume-interview/", desc: "Master resume building, mock interviews, and land your dream job." }
 };
 
 let currentQuizStep = 0;
