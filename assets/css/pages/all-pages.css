@@ -631,6 +631,9 @@
     border-radius: var(--radius-2xl);
     padding: var(--spacing-2xl);
     margin-bottom: 2rem;
+    max-width: 750px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .course-curriculum h2 {
