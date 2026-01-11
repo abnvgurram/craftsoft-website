@@ -74,4 +74,16 @@ CREATE POLICY "Active admins can manage receipts" ON receipts
     USING (EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE'))
     WITH CHECK (EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE'));
 
+-- Inquiries Table
+DROP POLICY IF EXISTS "Active admins can manage inquiries" ON inquiries;
+CREATE POLICY "Active admins can manage inquiries" ON inquiries
+    FOR ALL TO authenticated
+    USING (EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE'))
+    WITH CHECK (EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE'));
+
+DROP POLICY IF EXISTS "Website can submit inquiries" ON inquiries;
+CREATE POLICY "Website can submit inquiries" ON inquiries
+    FOR INSERT TO anon
+    WITH CHECK (true);
+
 RAISE NOTICE 'Security hardening completed successfully.';
