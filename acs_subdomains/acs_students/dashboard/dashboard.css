@@ -244,10 +244,12 @@ body.modal-open {
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-radius: 16px;
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     min-width: 280px;
     opacity: 0;
     visibility: hidden;
@@ -262,6 +264,28 @@ body.modal-open {
     visibility: visible;
     transform: translateY(0) scale(1);
 }
+
+/* Backdrop overlay when dropdown is open */
+.account-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 299;
+}
+
+.account-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+}
+
 
 .account-dropdown-header {
     padding: 1rem 1.25rem;

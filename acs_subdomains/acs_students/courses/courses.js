@@ -181,21 +181,35 @@
         `;
     }
 
-    // Account Dropdown Toggle
+    // Account Dropdown Toggle with Backdrop
+    const accountBackdrop = document.getElementById('account-backdrop');
+
     if (accountTrigger && accountDropdown) {
         accountTrigger.addEventListener('click', () => {
-            accountDropdown.classList.toggle('open');
+            const isOpen = accountDropdown.classList.toggle('open');
             accountTrigger.classList.toggle('open');
+            if (accountBackdrop) accountBackdrop.classList.toggle('open', isOpen);
         });
+
+        // Close on backdrop click
+        if (accountBackdrop) {
+            accountBackdrop.addEventListener('click', () => {
+                accountDropdown.classList.remove('open');
+                accountTrigger.classList.remove('open');
+                accountBackdrop.classList.remove('open');
+            });
+        }
 
         // Close on outside click
         document.addEventListener('click', (e) => {
             if (!accountTrigger.contains(e.target) && !accountDropdown.contains(e.target)) {
                 accountDropdown.classList.remove('open');
                 accountTrigger.classList.remove('open');
+                if (accountBackdrop) accountBackdrop.classList.remove('open');
             }
         });
     }
+
 
     // Mobile Nav Toggle
     function openMobileNav() {

@@ -733,6 +733,9 @@ const AccountManager = {
         const currentAccount = this.getCurrentAccount();
 
         container.innerHTML = `
+            <!-- Account Backdrop -->
+            <div id="account-backdrop" class="account-backdrop"></div>
+
             <div class="account-panel">
                 <button class="account-trigger" id="account-trigger">
                     <div class="account-avatar">
@@ -820,6 +823,7 @@ const AccountManager = {
     initPanelEvents() {
         const trigger = document.getElementById('account-trigger');
         const dropdown = document.getElementById('account-dropdown');
+        const backdrop = document.getElementById('account-backdrop');
         const viewList = document.getElementById('account-view-list');
         const viewAdd = document.getElementById('account-view-add');
 
@@ -834,8 +838,9 @@ const AccountManager = {
                 window.AdminSidebar.closeMobileNav();
             }
 
-            dropdown.classList.toggle('open');
+            const isOpen = dropdown.classList.toggle('open');
             trigger.classList.toggle('open');
+            if (backdrop) backdrop.classList.toggle('open', isOpen);
 
             // Reset to list view when opening
             viewList.style.display = 'block';
@@ -847,7 +852,15 @@ const AccountManager = {
             if (!e.target.closest('.account-panel')) {
                 dropdown.classList.remove('open');
                 trigger.classList.remove('open');
+                if (backdrop) backdrop.classList.remove('open');
             }
+        });
+
+        // Close on backdrop click
+        backdrop?.addEventListener('click', () => {
+            dropdown.classList.remove('open');
+            trigger.classList.remove('open');
+            backdrop.classList.remove('open');
         });
 
         // Toggle Views: Show Add Form (INLINE)
