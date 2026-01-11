@@ -21,6 +21,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    flex-shrink: 0;
 }
 
 .mobile-menu-btn {
@@ -59,6 +60,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    flex-shrink: 0;
 }
 
 .admin-header-right {
