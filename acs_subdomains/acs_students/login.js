@@ -91,7 +91,7 @@
         const { data, error } = await window.supabaseClient
             .from('students')
             .select('*')
-            .or(`student_id.ilike."${val}",email.ilike."${val}",phone_number.ilike."${val}"`)
+            .or(`student_id.ilike."${val}",email.ilike."${val}",phone.ilike."${val}"`)
             .single();
 
         if (error) {
@@ -101,7 +101,7 @@
             const { data: retryData, error: retryError } = await window.supabaseClient
                 .from('students')
                 .select('*')
-                .or(`student_id.eq."${val}",email.eq."${val}",phone_number.eq."${val}"`)
+                .or(`student_id.eq."${val}",email.eq."${val}",phone.eq."${val}"`)
                 .single();
 
             if (retryError) {
