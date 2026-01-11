@@ -394,19 +394,19 @@
 [[redirects]]
   host = "signup.craftsoft.co.in"
   from = "/"
-  to = "/subdomains/acs_admin/signup/index.html"
+  to = "/subdomains/acs_signup/index.html"
   status = 200
 
 [[redirects]]
   host = "signup.craftsoft.co.in"
   from = "/*"
-  to = "/subdomains/acs_admin/signup/:splat"
+  to = "/subdomains/acs_signup/:splat"
   status = 200
 
 [[redirects]]
   host = "signup.craftsoft.co.in"
   from = "/*"
-  to = "/subdomains/acs_admin/signup/404/"
+  to = "/subdomains/acs_signup/404/"
   status = 404
 
 # Global 404 catch-all (main site only)

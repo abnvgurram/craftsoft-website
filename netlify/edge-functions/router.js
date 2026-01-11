@@ -11,14 +11,14 @@ export default async (request, context) => {
     // 1. Signup Subdomain
     if (hostname.includes("signup.craftsoft")) {
         if (pathname === "/") {
-            return context.rewrite("/subdomains/acs_admin/signup/index.html");
+            return context.rewrite("/subdomains/acs_signup/index.html");
         }
 
         if (!pathname.includes(".") && !pathname.endsWith("/")) {
             return Response.redirect(`${request.url}/`, 301);
         }
 
-        return context.rewrite(`/subdomains/acs_admin/signup${pathname}`);
+        return context.rewrite(`/subdomains/acs_signup${pathname}`);
     }
 
     // 2. Admin Subdomain
