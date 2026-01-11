@@ -207,66 +207,118 @@
     color: var(--admin-text-secondary);
 }
 
-.hero-status-badge {
+/* ============================================
+   Supabase Status Panel
+   ============================================ */
+.supabase-status-panel {
     position: absolute;
     bottom: 40px;
     right: 40px;
-    background: white;
-    padding: 12px 20px;
-    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 0;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(40, 150, 205, 0.12);
+    border: 1px solid rgba(40, 150, 205, 0.1);
+    overflow: hidden;
+    min-width: 220px;
+    z-index: 10;
+}
+
+.status-panel-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    box-shadow: 0 10px 25px rgba(40, 150, 205, 0.1);
-    border: 1px solid rgba(40, 150, 205, 0.1);
-}
-
-.status-indicator {
-    width: 10px;
-    height: 10px;
-    background: #22c55e;
-    border-radius: 50%;
-    position: relative;
-}
-
-.status-indicator::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: inherit;
-    border-radius: inherit;
-    animation: pulseStatus 2s ease-out infinite;
-}
-
-@keyframes pulseStatus {
-    0% {
-        transform: scale(1);
-        opacity: 0.8;
-    }
-
-    100% {
-        transform: scale(3);
-        opacity: 0;
-    }
-}
-
-.status-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.status-text strong {
+    gap: 10px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(40, 150, 205, 0.08) 0%, rgba(108, 92, 231, 0.05) 100%);
+    border-bottom: 1px solid rgba(40, 150, 205, 0.1);
     font-size: 13px;
+    font-weight: 700;
     color: var(--admin-text-primary);
 }
 
-.status-text span {
-    font-size: 11px;
-    color: var(--admin-text-secondary);
+.status-panel-header i {
+    color: var(--admin-primary);
+    font-size: 14px;
 }
+
+.status-panel-items {
+    padding: 12px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.status-dot.online {
+    background: #22c55e;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}
+
+.status-dot.offline {
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+.status-dot.degraded {
+    background: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.status-dot.checking {
+    background: #94a3b8;
+    animation: pulse-check 1.5s ease-in-out infinite;
+}
+
+.status-dot.neutral {
+    background: #64748b;
+}
+
+@keyframes pulse-check {
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.status-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.status-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--admin-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.status-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+}
+
 
 /* Admin Responsive Fixes */
 @media (max-width: 1024px) {
