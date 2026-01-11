@@ -269,9 +269,31 @@ const Spotlight = {
     // Get base path based on current location
     getBasePath() {
         const path = window.location.pathname;
-        // Count depth from acs_admin
+        const hostname = window.location.hostname;
+
+        // Check if we're on subdomain (admin.craftsoft.co.in or localhost with acs_admin)
+        if (hostname.startsWith('admin.') || hostname === 'admin.local') {
+            // Subdomain: root is /
+            return '/';
+        }
+
+        // Check for acs_admin in path (subdomain folder structure)
+        if (path.includes('/acs_admin/') || path.includes('/subdomains/acs_admin/')) {
+            // Find where acs_admin starts and build path from there
+            const acsMatch = path.match(/.*?(\/(?:subdomains\/)?acs_admin\/)/);
+            if (acsMatch) {
+                return acsMatch[1];
+            }
+        }
+
+        // Check for /admin/ path on main domain
+        if (path.includes('/admin/')) {
+            return '/admin/';
+        }
+
+        // Fallback: calculate relative path
         const parts = path.split('/').filter(Boolean);
-        const adminIndex = parts.indexOf('acs_admin');
+        const adminIndex = parts.findIndex(p => p === 'acs_admin' || p === 'admin');
         if (adminIndex === -1) return '../';
 
         const depth = parts.length - adminIndex - 1;
