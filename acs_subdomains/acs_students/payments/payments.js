@@ -164,7 +164,7 @@
                     <div class="pay-meta">
                         <h4>FEE PAYMENT</h4>
                         <div class="date">${new Date(p.payment_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
-                        <span class="receipt-id">TXN: ${p.id.slice(0, 8).toUpperCase()}</span>
+                        <span class="receipt-id">Ref: ${p.reference_id || '—'}</span>
                     </div>
                 </div>
                 <div class="pay-amount">
