@@ -110,10 +110,17 @@
                 </div>
 
                 <div class="section-actions">
-
                     <button class="btn btn-primary" id="add-client-btn">
                         <i class="fa-solid fa-plus"></i> Add Client
                     </button>
+                    <div class="status-filter-wrapper">
+                        <i class="fa-solid fa-filter filter-icon"></i>
+                        <select id="status-filter" class="styled-select">
+                            <option value="ACTIVE">Active Clients</option>
+                            <option value="INACTIVE">Inactive Clients</option>
+                            <option value="ALL">All Clients</option>
+                        </select>
+                    </div>
                     <div class="search-box">
                         <i class="fa-solid fa-search"></i>
                         <input type="text" id="client-search" placeholder="Search clients...">
@@ -222,6 +229,59 @@
                 <div class="pagination-container" id="pagination-container"></div>
             </div>
         </main>
+    </div>
+
+    <!-- Deactivate Confirmation Modal -->
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal-container modal-sm animate-scale">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-slash"></i> Deactivate Client</h3>
+                <button class="modal-close" id="close-delete-modal">
+                    <i class="fa-solid fa-xmark"></i> </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="delete-warning-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <p>Are you sure you want to deactivate <strong id="delete-client-name"></strong>?</p>
+                <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem;">
+                    They will move to the Inactive list. You can reactivate them later.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-delete-btn">Cancel</button>
+                <button class="btn btn-danger" id="confirm-delete-btn">Deactivate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permanent Delete Modal -->
+    <div class="modal-overlay" id="perm-delete-modal">
+        <div class="modal-container modal-sm animate-scale">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-trash-can"></i> Delete Forever</h3>
+                <button class="modal-close" id="close-perm-delete-modal">
+                    <i class="fa-solid fa-xmark"></i> </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="delete-warning-icon danger">
+                    <i class="fa-solid fa-skull-crossbones"></i>
+                </div>
+                <p>Permanently delete <strong id="perm-delete-name"></strong>?</p>
+                <p class="text-danger" style="font-size: 0.85rem; font-weight: 600; margin-top: 0.5rem;">
+                    This action is IRREVERSIBLE. All payments and receipts will be lost!
+                </p>
+                <div class="form-group" style="margin-top: 1.5rem; text-align: left;">
+                    <label>Type <span style="color: #ef4444; font-weight: 700;">CONFIRM</span> to proceed</label>
+                    <input type="text" id="perm-delete-confirm-input" placeholder="Type CONFIRM"
+                        style="text-align: center; letter-spacing: 2px;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-perm-delete-btn">Cancel</button>
+                <button class="btn btn-danger" id="confirm-perm-delete-btn" disabled>Delete Forever</button>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->

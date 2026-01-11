@@ -53,7 +53,7 @@ async function initializeStats() {
         // Parallel fetch for speed
         const [todayPayments, studentsCount, allPayments] = await Promise.all([
             window.supabaseClient.from('payments').select('amount_paid').eq('status', 'SUCCESS').gte('payment_date', today),
-            window.supabaseClient.from('students').select('id', { count: 'exact', head: true }),
+            window.supabaseClient.from('students').select('id', { count: 'exact', head: true }).eq('status', 'ACTIVE'),
             window.supabaseClient.from('payments').select('amount_paid').eq('status', 'SUCCESS')
         ]);
 
@@ -134,7 +134,11 @@ async function loadEntities() {
     select.innerHTML = `<option value="">Loading ${label.toLowerCase()}s...</option>`;
 
     try {
-        const { data, error } = await window.supabaseClient.from(table).select('id, first_name, last_name, phone').order('first_name');
+        const { data, error } = await window.supabaseClient
+            .from(table)
+            .select('id, first_name, last_name, phone')
+            .eq('status', 'ACTIVE')
+            .order('first_name');
         if (error) throw error;
         students = data || []; // Reusing 'students' array for simplicity
         select.innerHTML = `<option value="">Select a ${label.toLowerCase()}</option>` +

@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS clients (
     service_fees JSONB DEFAULT '{}',          -- Fees per service
     notes TEXT,
     status TEXT DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE')),
+    deleted_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

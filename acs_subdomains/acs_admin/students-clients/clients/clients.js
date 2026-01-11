@@ -3,6 +3,8 @@ let allClients = [];
 let allServicesForClients = [];
 let serviceFees = {}; // Store per-service fees { serviceCode: fee }
 let selectedClientIds = new Set();
+let statusFilter = 'ACTIVE';
+let deleteTargetId = null;
 
 // Pagination State
 let currentPage = 1;
@@ -38,6 +40,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('add-client-btn')?.addEventListener('click', () => openForm());
     document.getElementById('client-search')?.addEventListener('input', (e) => filterClients(e.target.value));
+    document.getElementById('status-filter')?.addEventListener('change', (e) => {
+        statusFilter = e.target.value;
+        currentPage = 1;
+        loadClients();
+    });
     document.getElementById('bulk-delete-btn')?.addEventListener('click', bulkDeleteClients);
 
 
@@ -96,10 +103,15 @@ async function loadClients() {
     showSkeletons();
 
     try {
-        const { data, error } = await window.supabaseClient
+        let query = window.supabaseClient
             .from('clients')
-            .select('*')
-            .order('created_at', { ascending: false });
+            .select('*');
+
+        if (statusFilter !== 'ALL') {
+            query = query.eq('status', statusFilter);
+        }
+
+        const { data, error } = await query.order('created_at', { ascending: false });
 
         if (error) throw error;
         allClients = data || [];
@@ -262,9 +274,18 @@ function renderClients(clients) {
                         <a href="https://wa.me/91${c.phone.replace(/\D/g, '')}" target="_blank" class="action-btn whatsapp" title="WhatsApp">
                             <i class="fa-brands fa-whatsapp"></i>
                         </a>
-                        <button class="action-btn delete" data-id="${c.id}" data-name="${fullName}" title="Delete">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
+                        ${c.status === 'INACTIVE' ? `
+                            <button class="action-btn success reactivate-btn" data-id="${c.id}" data-name="${fullName}" title="Reactivate">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                            <button class="action-btn delete perm-delete-btn" data-id="${c.id}" data-name="${fullName}" title="Permanent Delete">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        ` : `
+                            <button class="action-btn delete deactivate-btn" data-id="${c.id}" data-name="${fullName}" title="Deactivate">
+                                <i class="fa-solid fa-user-slash"></i>
+                            </button>
+                        `}
                     </div>
                 </td>
             </tr>
@@ -321,9 +342,18 @@ function renderClients(clients) {
                     <a href="https://wa.me/91${c.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
                         <i class="fa-brands fa-whatsapp"></i> <span>Chat</span>
                     </a>
-                    <button class="card-action-btn delete" data-id="${c.id}" data-name="${fullName}">
-                        <i class="fa-solid fa-trash"></i> <span>Delete</span>
-                    </button>
+                    ${c.status === 'INACTIVE' ? `
+                        <button class="card-action-btn success reactivate-btn" data-id="${c.id}" data-name="${fullName}">
+                            <i class="fa-solid fa-rotate-left"></i> <span>Restore</span>
+                        </button>
+                        <button class="card-action-btn delete perm-delete-btn" data-id="${c.id}" data-name="${fullName}">
+                            <i class="fa-solid fa-trash-can"></i> <span>Forever</span>
+                        </button>
+                    ` : `
+                        <button class="card-action-btn delete deactivate-btn" data-id="${c.id}" data-name="${fullName}">
+                            <i class="fa-solid fa-user-slash"></i> <span>Deactivate</span>
+                        </button>
+                    `}
                 </div>
             </div>
         `;
@@ -391,11 +421,9 @@ function renderPagination(totalPages) {
 
 function bindTableActions() {
     document.querySelectorAll('.edit-btn').forEach(b => b.onclick = () => openForm(b.dataset.id));
-    document.querySelectorAll('.whatsapp').forEach(b => b.onclick = () => {
-        const p = b.dataset.phone.replace(/\D/g, '');
-        window.open(`https://wa.me/91${p}`, '_blank');
-    });
-    document.querySelectorAll('.delete').forEach(b => b.onclick = () => showDeleteConfirm(b.dataset.id, b.dataset.name));
+    document.querySelectorAll('.reactivate-btn').forEach(b => b.onclick = () => reactivateClient(b.dataset.id, b.dataset.name));
+    document.querySelectorAll('.deactivate-btn').forEach(b => b.onclick = () => showDeleteConfirm(b.dataset.id, b.dataset.name));
+    document.querySelectorAll('.perm-delete-btn').forEach(b => b.onclick = () => showPermDeleteConfirm(b.dataset.id, b.dataset.name));
 
     // Checkbox logic
     document.getElementById('select-all-clients')?.addEventListener('change', (e) => {
@@ -722,34 +750,126 @@ function checkPrefill() {
 }
 
 // =====================
-// Delete Logic
+// Soft Delete & Recovery Logic
 // =====================
 function bindDeleteEvents() {
-    // No longer needed - using Modal.confirm() from AdminUtils
+    document.getElementById('close-delete-modal')?.addEventListener('click', hideDeleteConfirm);
+    document.getElementById('cancel-delete-btn')?.addEventListener('click', hideDeleteConfirm);
+    document.getElementById('confirm-delete-btn')?.addEventListener('click', confirmDelete);
+
+    // Permanent Delete events
+    document.getElementById('close-perm-delete-modal')?.addEventListener('click', hidePermDeleteConfirm);
+    document.getElementById('cancel-perm-delete-btn')?.addEventListener('click', hidePermDeleteConfirm);
+    document.getElementById('confirm-perm-delete-btn')?.addEventListener('click', confirmPermDelete);
+    document.getElementById('perm-delete-confirm-input')?.addEventListener('input', (e) => {
+        const btn = document.getElementById('confirm-perm-delete-btn');
+        btn.disabled = e.target.value !== 'CONFIRM';
+    });
 }
 
 function showDeleteConfirm(id, name) {
+    deleteTargetId = id;
+    document.getElementById('delete-client-name').textContent = name;
+    document.getElementById('delete-modal').classList.add('show');
+}
+
+function hideDeleteConfirm() {
+    document.getElementById('delete-modal').classList.remove('show');
+    deleteTargetId = null;
+}
+
+async function confirmDelete() {
+    if (!deleteTargetId) return;
+    const { Toast } = window.AdminUtils;
+    const btn = document.getElementById('confirm-delete-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+
+    try {
+        const { error } = await window.supabaseClient
+            .from('clients')
+            .update({
+                status: 'INACTIVE'
+            })
+            .eq('id', deleteTargetId);
+
+        if (error) throw error;
+
+        Toast.success('Deactivated', 'Client moved to inactive list');
+        hideDeleteConfirm();
+        await loadClients();
+    } catch (e) {
+        console.error('Deactivation failed:', e);
+        Toast.error('Error', 'Failed to deactivate client');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Deactivate';
+    }
+}
+
+function showPermDeleteConfirm(id, name) {
+    deleteTargetId = id;
+    document.getElementById('perm-delete-name').textContent = name;
+    document.getElementById('perm-delete-confirm-input').value = '';
+    document.getElementById('confirm-perm-delete-btn').disabled = true;
+    document.getElementById('perm-delete-modal').classList.add('show');
+}
+
+function hidePermDeleteConfirm() {
+    document.getElementById('perm-delete-modal').classList.remove('show');
+    deleteTargetId = null;
+}
+
+async function confirmPermDelete() {
+    if (!deleteTargetId) return;
+    const { Toast } = window.AdminUtils;
+    const btn = document.getElementById('confirm-perm-delete-btn');
+    const name = document.getElementById('perm-delete-name').textContent;
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cleaning Up...';
+
+    try {
+        // Cascade delete child records manually
+        await window.supabaseClient.from('receipts').delete().eq('client_id', deleteTargetId);
+        await window.supabaseClient.from('payments').delete().eq('client_id', deleteTargetId);
+
+        const { error } = await window.supabaseClient.from('clients').delete().eq('id', deleteTargetId);
+        if (error) throw error;
+
+        Toast.success('Forever Deleted', `${name} and all associated records removed.`);
+        hidePermDeleteConfirm();
+        await loadClients();
+    } catch (e) {
+        console.error('Permanent delete failed:', e);
+        Toast.error('Error', 'Failed to permanently delete client');
+        btn.disabled = false;
+        btn.innerHTML = 'Delete Forever';
+    }
+}
+
+async function reactivateClient(id, name) {
     const { Modal, Toast } = window.AdminUtils;
 
     Modal.confirm(
-        'Delete Client',
-        `Are you sure you want to delete ${name}? This will also remove all associated payments and receipts.`,
+        'Restore Client',
+        `Are you sure you want to reactivate ${name}? they will appear in the active clients list again.`,
         async () => {
-            // On Confirm
             try {
-                // Cascade delete child records manually
-                await window.supabaseClient.from('receipts').delete().eq('client_id', id);
-                await window.supabaseClient.from('payments').delete().eq('client_id', id);
+                const { error } = await window.supabaseClient
+                    .from('clients')
+                    .update({
+                        status: 'ACTIVE'
+                    })
+                    .eq('id', id);
 
-                const { error } = await window.supabaseClient.from('clients').delete().eq('id', id);
                 if (error) throw error;
 
-                selectedClientIds.delete(id);
+                Toast.success('Restored', `${name} is now active again.`);
                 await loadClients();
-                Toast.success('Deleted', 'Client and history removed');
             } catch (e) {
-                console.error(e);
-                Toast.error('Error', 'Failed to delete client history');
+                console.error('Reactivation failed:', e);
+                Toast.error('Error', 'Failed to reactivate client');
             }
         }
     );
@@ -762,26 +882,24 @@ async function bulkDeleteClients() {
     const count = selectedClientIds.size;
 
     Modal.confirm(
-        'Delete Clients',
-        `Are you sure you want to delete ${count} clients? This will also remove all associated payments and receipts.`,
+        'Deactivate Clients',
+        `Are you sure you want to deactivate ${count} selected clients? They will be moved to the inactive list.`,
         async () => {
-            // On Confirm
             try {
                 const ids = Array.from(selectedClientIds);
+                const { error } = await window.supabaseClient
+                    .from('clients')
+                    .update({ status: 'INACTIVE' })
+                    .in('id', ids);
 
-                // Cascade delete
-                await window.supabaseClient.from('receipts').delete().in('client_id', ids);
-                await window.supabaseClient.from('payments').delete().in('client_id', ids);
-
-                const { error } = await window.supabaseClient.from('clients').delete().in('id', ids);
                 if (error) throw error;
 
                 selectedClientIds.clear();
-                Toast.success('Deleted', 'Selected clients removed');
+                Toast.success('Deactivated', `${count} clients moved to inactive list.`);
                 await loadClients();
             } catch (e) {
                 console.error(e);
-                Toast.error('Error', 'Bulk delete failed');
+                Toast.error('Error', 'Bulk deactivation failed');
             }
         }
     );
