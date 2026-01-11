@@ -47,10 +47,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const { data: gstSetting } = await window.supabaseClient
             .from('settings')
             .select('setting_value')
-            .eq('setting_key', 'default_gst_rate')
+            .eq('setting_key', 'course_gst_rate')
             .single();
         if (gstSetting) defaultGstRate = parseFloat(gstSetting.setting_value) || 18;
-    } catch (e) { console.warn('Using default GST 18%'); }
+    } catch (e) {
+        console.warn('Using default course GST 18%');
+    }
 
     await loadCourses();
 

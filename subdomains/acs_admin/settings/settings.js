@@ -378,17 +378,26 @@ function renderBankTab() {
             </div>
             <div class="settings-section-body">
                 <div class="settings-display">
-                    ${renderFieldRow('GST Rate (%)', settingsData.default_gst_rate ? `${settingsData.default_gst_rate}%` : '18%')}
+                    ${renderFieldRow('Course GST Rate', settingsData.course_gst_rate ? `${settingsData.course_gst_rate}%` : '18%')}
+                    ${renderFieldRow('Service GST Rate', settingsData.service_gst_rate ? `${settingsData.service_gst_rate}%` : '18%')}
+                    <div class="section-divider" style="margin: 1.5rem 0; opacity: 0.3;"></div>
                     ${renderFieldRow('Account Number', maskValue(settingsData.bank_account_number, 4))}
                     ${renderFieldRow('IFSC Code', settingsData.bank_ifsc_code)}
                     ${renderFieldRow('Branch', settingsData.bank_branch_name)}
                     ${renderFieldRow('UPI ID', maskValue(settingsData.upi_id, 4, '@'))}
                 </div>
                 <div class="settings-edit-form">
-                    <div class="settings-form-group">
-                        <label>GST Rate (%)</label>
-                        <input type="number" id="edit-default_gst_rate" value="${settingsData.default_gst_rate || '18'}" placeholder="e.g. 18" step="0.01">
-                        <span class="input-hint">Standard GST percentage for all fees</span>
+                    <div class="form-row">
+                        <div class="settings-form-group">
+                            <label>Course GST Rate (%)</label>
+                            <input type="number" id="edit-course_gst_rate" value="${settingsData.course_gst_rate || '18'}" placeholder="e.g. 18" step="0.01">
+                            <span class="input-hint">Tax rate for academic courses</span>
+                        </div>
+                        <div class="settings-form-group">
+                            <label>Service GST Rate (%)</label>
+                            <input type="number" id="edit-service_gst_rate" value="${settingsData.service_gst_rate || '18'}" placeholder="e.g. 18" step="0.01">
+                            <span class="input-hint">Tax rate for consulting/services</span>
+                        </div>
                     </div>
                     <div class="settings-form-group">
                         <label>Account Number</label>
@@ -409,7 +418,7 @@ function renderBankTab() {
                     <div class="settings-form-actions">
                         <button class="btn btn-outline cancel-edit-btn" data-section="bank">Cancel</button>
                         <button class="btn btn-primary save-edit-btn" data-section="bank">
-                            <i class="fa-solid fa-check"></i> Save
+                            <i class="fa-solid fa-check"></i> Save Details
                         </button>
                     </div>
                 </div>
@@ -617,7 +626,12 @@ function bindEvents() {
                 document.getElementById('timeout-edit-form').style.display = 'block';
                 btn.style.display = 'none';
             } else {
-                document.getElementById(`section-${section}`).classList.add('editing');
+                // Refresh data before editing to avoid "showing 0" UX issue
+                loadSettings().then(() => {
+                    renderSettings();
+                    document.getElementById(`section-${section}`).classList.add('editing');
+                    bindEvents();
+                });
             }
         });
     });
@@ -706,7 +720,7 @@ async function saveSection(section) {
         } else if (section === 'contact') {
             keysToSave = ['primary_phone', 'secondary_phone', 'contact_email'];
         } else if (section === 'bank') {
-            keysToSave = ['default_gst_rate', 'bank_account_number', 'bank_ifsc_code', 'bank_branch_name', 'upi_id'];
+            keysToSave = ['course_gst_rate', 'service_gst_rate', 'bank_account_number', 'bank_ifsc_code', 'bank_branch_name', 'upi_id'];
             // Get branch name from lookup
             const branchText = document.getElementById('ifsc-branch-text')?.textContent || '';
             if (branchText && !branchText.includes('Invalid')) {

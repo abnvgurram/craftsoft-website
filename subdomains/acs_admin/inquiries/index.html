@@ -172,23 +172,38 @@
 
                         <!-- Course Specific Fields (Hide for Service) -->
                         <div id="course-only-fields">
-                            <!-- Source Section -->
-                            <div class="form-section source-section">
-                                <div class="form-section-header">
-                                    <label>Lead Source</label>
-                                </div>
-                                <div class="form-group" style="margin-top: 0.75rem;">
-                                    <div class="input-with-icon">
-                                        <i class="fa-solid fa-location-dot input-icon"></i> <select id="inquiry-source">
-                                            <option value="Walk-in">Walk-in</option>
-                                            <option value="Website">Website (General)</option>
-                                            <option value="Website - Home">Website - Home</option>
-                                            <option value="Website - Courses">Website - Courses</option>
-                                            <option value="Website - Services">Website - Services</option>
-                                            <option value="Call">Call</option>
-                                            <option value="WhatsApp">WhatsApp</option>
-                                            <option value="Instagram">Instagram</option>
-                                        </select>
+                            <!-- Source & Status Section -->
+                            <div class="form-section lead-meta-section">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Lead Source</label>
+                                        <div class="input-with-icon">
+                                            <i class="fa-solid fa-location-dot input-icon"></i>
+                                            <select id="inquiry-source">
+                                                <option value="Walk-in">Walk-in</option>
+                                                <option value="Website (General)">Website (General)</option>
+                                                <option value="Website - Home">Website - Home</option>
+                                                <option value="Website - Courses">Website - Courses</option>
+                                                <option value="Website - Services">Website - Services</option>
+                                                <option value="Call">Call</option>
+                                                <option value="WhatsApp">WhatsApp</option>
+                                                <option value="Instagram">Instagram</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Current Status</label>
+                                        <div class="input-with-icon">
+                                            <i class="fa-solid fa-signal input-icon"></i>
+                                            <select id="inquiry-status">
+                                                <option value="New">New</option>
+                                                <option value="Contacted">Contacted</option>
+                                                <option value="Demo Scheduled">Demo Scheduled</option>
+                                                <option value="Gud">Gud (Hot Lead)</option>
+                                                <option value="Converted">Converted</option>
+                                                <option value="Closed">Closed</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -228,33 +243,34 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Notes -->
-                        <div class="form-group">
-                            <label>Notes</label>
-                            <div class="input-with-icon textarea-icon">
-                                <i class="fa-solid fa-sticky-note input-icon"></i> <textarea id="inquiry-notes" rows="2"
-                                    placeholder="Any additional notes..."></textarea>
-                            </div>
+                    <!-- Notes -->
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <div class="input-with-icon textarea-icon">
+                            <i class="fa-solid fa-sticky-note input-icon"></i> <textarea id="inquiry-notes" rows="2"
+                                placeholder="Any additional notes..."></textarea>
                         </div>
                     </div>
-                    <div class="inline-form-footer">
-                        <button type="button" class="btn btn-outline" id="cancel-form-btn">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="save-inquiry-btn">
-                            <i class="fa-solid fa-check"></i> Save Inquiry
-                        </button>
-                    </div>
                 </div>
-
-                <div class="section-divider"></div>
-                <div id="inquiries-content">
-                    <div class="loading-spinner">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...
-                    </div>
+                <div class="inline-form-footer">
+                    <button type="button" class="btn btn-outline" id="cancel-form-btn">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-inquiry-btn">
+                        <i class="fa-solid fa-check"></i> Save Inquiry
+                    </button>
                 </div>
-                <div class="pagination-container" id="pagination-container"></div>
             </div>
-        </main>
+
+            <div class="section-divider"></div>
+            <div id="inquiries-content">
+                <div class="loading-spinner">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Loading inquiries...
+                </div>
+            </div>
+            <div class="pagination-container" id="pagination-container"></div>
+    </div>
+    </main>
     </div>
 
     <!-- Delete Confirmation -->
@@ -280,4 +296,3 @@
 </body>
 
 </html>
-
