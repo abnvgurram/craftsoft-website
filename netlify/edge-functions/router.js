@@ -18,6 +18,11 @@ export default async (request, context) => {
             return Response.redirect(`${request.url}/`, 301);
         }
 
+        // Try to serve the file, fallback to 404
+        const response = await context.next();
+        if (response.status === 404) {
+            return context.rewrite("/acs_subdomains/acs_signup/404/index.html");
+        }
         return context.rewrite(`/acs_subdomains/acs_signup${pathname}`);
     }
 
@@ -31,7 +36,13 @@ export default async (request, context) => {
             return Response.redirect(`${request.url}/`, 301);
         }
 
-        return context.rewrite(`/acs_subdomains/acs_students${pathname}`);
+        // Rewrite and handle 404
+        const targetPath = `/acs_subdomains/acs_students${pathname}`;
+        const response = await context.rewrite(targetPath);
+        if (response.status === 404) {
+            return context.rewrite("/acs_subdomains/acs_students/404/index.html");
+        }
+        return response;
     }
 
     // 3. Admin Subdomain
@@ -74,10 +85,15 @@ export default async (request, context) => {
             finalPath += "index.html";
         }
 
-        return context.rewrite(finalPath);
+        // Try rewrite, handle 404
+        const response = await context.rewrite(finalPath);
+        if (response.status === 404) {
+            return context.rewrite("/acs_subdomains/acs_admin/404/index.html");
+        }
+        return response;
     }
 
-    // 3. Main Website
+    // 4. Main Website
     return;
 };
 
