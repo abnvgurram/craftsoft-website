@@ -9,26 +9,29 @@
     // Dom Elements
     const userName = document.getElementById('user-name');
     const firstName = document.getElementById('first-name');
+    const userInitials = document.getElementById('user-initials');
     const userId = document.getElementById('user-id');
     const totalPaidEl = document.getElementById('total-paid');
     const totalPendingEl = document.getElementById('total-pending');
+    const nextDueEl = document.getElementById('next-due');
     const coursesList = document.getElementById('courses-list');
     const recentPayments = document.getElementById('recent-payments');
     const btnLogout = document.getElementById('btn-logout');
+
+    // Menu Controls
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
 
     let studentData = null;
 
     // Toast Utility
     const Toast = {
         show(msg, type = 'info') {
-            let toast = document.getElementById('toast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'toast';
-                toast.className = 'toast';
-                document.body.appendChild(toast);
-            }
-            toast.textContent = msg;
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-info-circle';
+            toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
             toast.className = `toast show ${type}`;
             setTimeout(() => toast.classList.remove('show'), 3000);
         },
@@ -36,7 +39,70 @@
         error(msg) { this.show(msg, 'error'); }
     };
 
-    // Check Authentication
+    // Modal Utility
+    const Modal = {
+        element: document.getElementById('modal-overlay'),
+        title: document.getElementById('modal-title'),
+        message: document.getElementById('modal-message'),
+        icon: document.getElementById('modal-icon'),
+        btnConfirm: document.getElementById('modal-confirm'),
+        btnCancel: document.getElementById('modal-cancel'),
+
+        show({ title, message, type = 'warning', confirmText = 'Confirm', onConfirm }) {
+            this.title.textContent = title;
+            this.message.textContent = message;
+            this.icon.className = `modal-icon ${type}`;
+
+            let iconCode = 'fa-exclamation-triangle';
+            if (type === 'danger') iconCode = 'fa-trash-alt';
+            if (type === 'success') iconCode = 'fa-check-circle';
+            this.icon.innerHTML = `<i class="fas ${iconCode}"></i>`;
+
+            this.btnConfirm.textContent = confirmText;
+            this.btnConfirm.className = `btn btn-${type === 'warning' ? 'primary' : type}`;
+
+            this.element.style.display = 'flex';
+            document.body.classList.add('modal-open');
+
+            const close = () => {
+                this.element.style.display = 'none';
+                document.body.classList.remove('modal-open');
+                this.btnConfirm.onclick = null;
+                this.btnCancel.onclick = null;
+            };
+
+            this.btnCancel.onclick = close;
+            this.btnConfirm.onclick = () => {
+                if (onConfirm) onConfirm();
+                close();
+            };
+        }
+    };
+
+    // Value Animation
+    function animateValue(obj, start, end, duration, isCurrency = true) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            let current = Math.floor(progress * (end - start) + start);
+
+            if (isCurrency) {
+                obj.textContent = new Intl.NumberFormat('en-IN', {
+                    style: 'currency', currency: 'INR', maximumFractionDigits: 0
+                }).format(current);
+            } else {
+                obj.textContent = current;
+            }
+
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    // Auth logic
     async function checkAuth() {
         const session = localStorage.getItem('acs_student_session');
         if (!session) {
@@ -48,7 +114,6 @@
         const loginTime = new Date(data.loginTime);
         const now = new Date();
 
-        // Session valid for 24 hours
         if ((now - loginTime) > 24 * 60 * 60 * 1000) {
             localStorage.removeItem('acs_student_session');
             window.location.href = '../';
@@ -59,21 +124,35 @@
         initDashboard();
     }
 
-    // Initialize Dashboard
     async function initDashboard() {
-        // Set basic profile info from session
         userName.textContent = studentData.name;
         firstName.textContent = studentData.name.split(' ')[0];
-        userId.textContent = studentData.student_id;
+        userId.textContent = `ID: ${studentData.student_id}`;
+
+        const names = studentData.name.split(' ');
+        userInitials.textContent = names.length > 1 ? (names[0][0] + names[1][0]).toUpperCase() : names[0][0].toUpperCase();
 
         const profile = await fetchCompleteProfile();
         if (profile) {
             await fetchPayments(profile);
             await fetchEnrolledCourses(profile);
+
+            // Next Due: JOIN_DATE + 30 Days
+            const joinDate = profile.date_of_joining || profile.joining_date || profile.created_at;
+            calculateNextDue(joinDate);
         }
     }
 
-    // Fetch full data from DB
+    function calculateNextDue(dateStr) {
+        if (!dateStr) {
+            nextDueEl.textContent = "Not Set";
+            return;
+        }
+        const date = new Date(dateStr);
+        const nd = new Date(date.setDate(date.getDate() + 30));
+        nextDueEl.textContent = nd.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
     async function fetchCompleteProfile() {
         try {
             const { data, error } = await window.supabaseClient
@@ -82,11 +161,7 @@
                 .eq('id', studentData.id)
                 .single();
 
-            if (error) {
-                // If student record not found, suggest contacting admin
-                Toast.error("Profile not found. Please contact admin.");
-                throw error;
-            }
+            if (error) throw error;
             return data;
         } catch (err) {
             console.error('Profile fetch error:', err);
@@ -94,7 +169,6 @@
         }
     }
 
-    // Fetch Payments & Totals
     async function fetchPayments(profile) {
         try {
             const { data: payments, error } = await window.supabaseClient
@@ -108,77 +182,55 @@
             let totalPaid = 0;
             payments.forEach(p => totalPaid += (p.amount_paid || 0));
 
-            // Update Total Paid
-            totalPaidEl.textContent = new Intl.NumberFormat('en-IN', {
-                style: 'currency', currency: 'INR', maximumFractionDigits: 0
-            }).format(totalPaid);
+            animateValue(totalPaidEl, 0, totalPaid, 1000);
 
-            // Render Recent list
-            renderRecentPayments(payments.slice(0, 3));
-
-            // Calculate Balance Due (Pending)
             const finalFee = profile.final_fee || 0;
             const pending = finalFee - totalPaid;
+            animateValue(totalPendingEl, 0, pending > 0 ? pending : 0, 1000);
 
-            totalPendingEl.textContent = new Intl.NumberFormat('en-IN', {
-                style: 'currency', currency: 'INR', maximumFractionDigits: 0
-            }).format(pending > 0 ? pending : 0);
-
-            if (pending > 500) { // Show alert only if significant amount is pending
+            if (pending > 500) {
                 document.getElementById('pending-alert').style.display = 'block';
             }
 
+            renderRecentPayments(payments.slice(0, 3));
         } catch (err) {
             console.error('Payment fetch error:', err);
         }
     }
 
-    // Fetch Enrolled Courses
     async function fetchEnrolledCourses(profile) {
         try {
-            const enrolledCodes = profile.courses || [];
-            if (enrolledCodes.length === 0) {
+            const codes = profile.courses || [];
+            if (codes.length === 0) {
                 renderCourses([]);
                 return;
             }
-
-            // Fetch course names from courses table
             const { data, error } = await window.supabaseClient
                 .from('courses')
                 .select('course_code, course_name')
-                .in('course_code', enrolledCodes);
+                .in('course_code', codes);
 
             if (error) throw error;
-
-            // Map and format for display
-            const formattedCourses = data.map(c => ({
-                name: c.course_name,
-                code: c.course_code,
-                status: 'In Progress' // Active student implies in progress
-            }));
-
-            renderCourses(formattedCourses);
+            renderCourses(data);
         } catch (err) {
             console.error('Courses fetch error:', err);
         }
     }
 
-    // UI Rendering
     function renderCourses(courses) {
         coursesList.innerHTML = '';
         if (courses.length === 0) {
-            coursesList.innerHTML = '<p class="loading-state">No courses enrolled yet.</p>';
+            coursesList.innerHTML = '<p class="loading-state">No active enrollments.</p>';
             return;
         }
-
         courses.forEach(c => {
             const div = document.createElement('div');
             div.className = 'course-card';
             div.innerHTML = `
-                <div class="course-icon"><i class="fas fa-book"></i></div>
+                <div class="course-icon"><i class="fas fa-graduation-cap"></i></div>
                 <div class="course-info">
-                    <h4>${c.name}</h4>
-                    <span class="status active">${c.status}</span>
+                    <h4>${c.course_name}</h4>
+                    <span class="status">ACTIVE</span>
                 </div>
             `;
             coursesList.appendChild(div);
@@ -188,31 +240,44 @@
     function renderRecentPayments(payments) {
         recentPayments.innerHTML = '';
         if (payments.length === 0) {
-            recentPayments.innerHTML = '<p class="loading-state">No payments found.</p>';
+            recentPayments.innerHTML = '<p class="loading-state">No records.</p>';
             return;
         }
-
         payments.forEach(p => {
             const div = document.createElement('div');
             div.className = 'payment-item';
             div.innerHTML = `
                 <div>
-                    <strong>${p.payment_mode || 'Payment'}</strong>
-                    <div class="date">${new Date(p.payment_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</div>
+                    <strong>${p.payment_mode || 'Online'}</strong>
+                    <div class="date">${new Date(p.payment_date).toLocaleDateString('en-IN')}</div>
                 </div>
-                <div class="amt">₹${(p.amount_paid || 0).toLocaleString()}</div>
+                <div class="amt">+ ₹${(p.amount_paid || 0).toLocaleString()}</div>
             `;
             recentPayments.appendChild(div);
         });
     }
 
-    // Logout Functionality
+    function toggleMenu() {
+        sidebar.classList.toggle('active');
+        sidebarOverlay.classList.toggle('active');
+    }
+
+    menuToggle.addEventListener('click', toggleMenu);
+    sidebarOverlay.addEventListener('click', toggleMenu);
+
     btnLogout.addEventListener('click', () => {
-        localStorage.removeItem('acs_student_session');
-        window.location.href = '../';
+        Modal.show({
+            title: "Logout?",
+            message: "Are you sure you want to exit your student portal?",
+            type: "warning",
+            confirmText: "Yes, Logout",
+            onConfirm: () => {
+                localStorage.removeItem('acs_student_session');
+                window.location.href = '../';
+            }
+        });
     });
 
-    // Start
     checkAuth();
 
 })();

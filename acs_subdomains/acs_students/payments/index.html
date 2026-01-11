@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Payments | Abhi's Craft Soft</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="https://craftsoft.co.in/favicon.svg">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../dashboard/dashboard.css?v=5.0">
+    <link rel="stylesheet" href="payments.css?v=1.0">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Overlay -->
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Craft Soft</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="../dashboard/" class="nav-item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="./" class="nav-item active">
+                    <i class="fas fa-receipt"></i>
+                    <span>Payments</span>
+                </a>
+                <a href="#" class="nav-item disabled" title="Coming Soon">
+                    <i class="fas fa-book-open"></i>
+                    <span>My Courses</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="logout-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout Account</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button id="menu-toggle" class="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="page-title">
+                        <h1>Payment History</h1>
+                    </div>
+                </div>
+
+                <div class="user-account-panel">
+                    <div class="user-details">
+                        <span id="user-name" class="user-name">Loading...</span>
+                        <span id="user-id" class="user-role">ID: Loading...</span>
+                    </div>
+                    <div id="user-initials" class="user-avatar">?</div>
+                </div>
+            </header>
+
+            <!-- Summary Cards -->
+            <div class="payment-summary">
+                <div class="summary-card">
+                    <span class="label">Total Paid</span>
+                    <h3 id="total-paid">₹0</h3>
+                </div>
+                <div class="summary-card">
+                    <span class="label">Balance Due</span>
+                    <h3 id="total-pending" class="danger">₹0</h3>
+                </div>
+                <div class="summary-card">
+                    <span class="label">Total Course Fee</span>
+                    <h3 id="total-fee">₹0</h3>
+                </div>
+            </div>
+
+            <!-- Payments List -->
+            <section class="payments-container">
+                <div class="list-header">
+                    <h3>Recent Transactions</h3>
+                </div>
+                <div id="payments-list" class="payments-list">
+                    <!-- Loaded dynamically -->
+                    <div class="loading-state">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>Loading your history...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal System -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div id="modal-content" class="modal-content">
+            <div id="modal-icon" class="modal-icon warning">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 id="modal-title">Confirm</h3>
+            <p id="modal-message">Are you sure?</p>
+            <div class="modal-actions">
+                <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
+                <button id="modal-confirm" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- SDKs -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/assets/admin/js/supabase-config.js?v=5.0"></script>
+    <script src="payments.js?v=1.0"></script>
+</body>
+
+</html>

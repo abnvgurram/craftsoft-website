@@ -10,21 +10,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="dashboard.css?v=2.0">
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="https://craftsoft.co.in/favicon.svg">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="dashboard.css?v=5.0">
 </head>
 
-<body class="loading">
+<body>
     <div class="app-container">
+        <!-- Sidebar Overlay -->
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside id="sidebar" class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <i class="fas fa-graduation-cap"></i>
@@ -48,7 +53,7 @@
             <div class="sidebar-footer">
                 <button id="btn-logout" class="logout-link">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
+                    <span>Logout Account</span>
                 </button>
             </div>
         </aside>
@@ -57,14 +62,22 @@
         <main class="main-content">
             <!-- Header -->
             <header class="top-bar">
-                <div class="page-title">
-                    <h1>Dashboard</h1>
-                </div>
-                <div class="user-profile">
-                    <div class="profile-info">
-                        <span id="user-name" class="name">Student Name</span>
-                        <span id="user-id" class="id">ACS-STU-0000</span>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button id="menu-toggle" class="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="page-title">
+                        <h1>Dashboard</h1>
                     </div>
+                </div>
+
+                <!-- Premium User Card -->
+                <div class="user-account-panel">
+                    <div class="user-details">
+                        <span id="user-name" class="user-name">Loading...</span>
+                        <span id="user-id" class="user-role">ID: Loading...</span>
+                    </div>
+                    <div id="user-initials" class="user-avatar">?</div>
                 </div>
             </header>
 
@@ -73,7 +86,7 @@
                 <section class="welcome-box">
                     <div class="welcome-text">
                         <h2>Hello, <span id="first-name">Student</span>! 👋</h2>
-                        <p>Welcome to your learning portal. Here's a quick summary of your profile.</p>
+                        <p>Track your courses, view payments, and manage your learning journey effortlessly.</p>
                     </div>
                     <div class="welcome-img">
                         <i class="fas fa-user-graduate"></i>
@@ -84,7 +97,7 @@
                 <section class="stats-container">
                     <div class="stat-card">
                         <div class="stat-icon blue">
-                            <i class="fas fa-check-circle"></i>
+                            <i class="fas fa-check-double"></i>
                         </div>
                         <div class="stat-info">
                             <span class="label">Total Paid</span>
@@ -93,23 +106,23 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon red">
-                            <i class="fas fa-clock"></i>
+                            <i class="fas fa-wallet"></i>
                         </div>
                         <div class="stat-info">
-                            <span class="label">Total Pending</span>
+                            <span class="label">Balance Due</span>
                             <span id="total-pending" class="value">₹0</span>
                         </div>
                         <div id="pending-alert" class="alert-icon" style="display:none;">
-                            <i class="fas fa-exclamation-triangle"></i>
+                            <i class="fas fa-exclamation-circle"></i>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon green">
-                            <i class="fas fa-calendar-alt"></i>
+                            <i class="fas fa-calendar-check"></i>
                         </div>
                         <div class="stat-info">
-                            <span class="label">Next Due</span>
-                            <span id="next-due" class="value">None</span>
+                            <span class="label">Next Fee Due</span>
+                            <span id="next-due" class="value">Loading...</span>
                         </div>
                     </div>
                 </section>
@@ -120,10 +133,9 @@
                         <h3>Enrolled Courses</h3>
                     </div>
                     <div id="courses-list" class="courses-grid">
-                        <!-- Courses will be loaded here -->
                         <div class="loading-state">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Loading your courses...</p>
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                            <p>Fetching your enrollments...</p>
                         </div>
                     </div>
                 </section>
@@ -131,24 +143,41 @@
                 <!-- Recent Payments Preview -->
                 <section class="quick-payments">
                     <div class="section-header">
-                        <h3>Quick Payment View</h3>
-                        <a href="../payments/" class="view-all">View All</a>
+                        <h3>Quick History</h3>
+                        <a href="../payments/" class="view-all">See Full History</a>
                     </div>
                     <div class="recent-list" id="recent-payments">
-                        <!-- Payments loaded here -->
+                        <div class="loading-state">
+                            <i class="fas fa-sync fa-spin"></i>
+                        </div>
                     </div>
                 </section>
             </div>
         </main>
     </div>
 
-    <!-- Notifications -->
+    <!-- Modal System -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div id="modal-content" class="modal-content">
+            <div id="modal-icon" class="modal-icon warning">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 id="modal-title">Confirm Action</h3>
+            <p id="modal-message">Are you sure you want to proceed?</p>
+            <div id="modal-actions" class="modal-actions">
+                <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
+                <button id="modal-confirm" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
     <div id="toast" class="toast"></div>
 
     <!-- SDKs -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/assets/admin/js/supabase-config.js?v=2.0"></script>
-    <script src="dashboard.js?v=4.0"></script>
+    <script src="/assets/admin/js/supabase-config.js?v=5.0"></script>
+    <script src="dashboard.js?v=5.0"></script>
 </body>
 
 </html>

@@ -4,24 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Login | Abhi's Craft Soft</title>
+    <title>Student Portal Login | Abhi's Craft Soft</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="https://craftsoft.co.in/favicon.svg">
+
     <!-- Styles -->
     <link rel="stylesheet" href="login.css?v=5.0">
-    <link rel="icon" type="image/svg+xml" href="https://craftsoft.co.in/favicon.svg">
 </head>
 
 <body>
+
     <div class="login-container">
         <div class="login-card">
             <!-- Brand -->
@@ -29,11 +32,11 @@
                 <div class="logo-box">
                     <i class="fas fa-graduation-cap"></i>
                 </div>
-                <h1>Abhi's <span class="highlight">Craft Soft</span></h1>
-                <p class="tagline">Student Portal</p>
+                <h1>CRAFT SOFT <span class="highlight">PORTAL</span></h1>
+                <p class="tagline">Student Access Environment</p>
             </div>
 
-            <!-- Login Form Section -->
+            <!-- Step 1: Identifier -->
             <div id="login-step-1" class="login-step">
                 <div class="header">
                     <h2>Welcome Back!</h2>
@@ -44,44 +47,41 @@
                     <div class="input-group">
                         <label for="identifier">Student ID, Email or Phone</label>
                         <div class="input-wrapper">
-                            <i class="fas fa-user-tag"></i>
-                            <input type="text" id="identifier" placeholder="e.g. ACS-STU-001 or name@email.com"
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" id="identifier" placeholder="e.g. ACS-2024-001" autocomplete="username"
                                 required>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-primary" id="btn-send-otp">
+                    <button type="submit" id="btn-send-otp" class="btn-primary">
                         <span class="btn-text">Send OTP</span>
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </form>
 
-                <div class="info-footer">
-                    <p><i class="fas fa-info-circle"></i> OTP will be sent to your registered email</p>
+                <div class="support-footer">
+                    <p>Having trouble? <a href="mailto:team.craftsoft@gmail.com">Contact Support</a></p>
                 </div>
             </div>
 
-            <!-- OTP Verification Section (Hidden by default) -->
+            <!-- Step 2: OTP Verification -->
             <div id="login-step-2" class="login-step" style="display: none;">
                 <div class="header">
-                    <h2>Verify Your Account</h2>
-                    <p>Check your email for a 6-digit code</p>
-                    <div class="sent-to-badge">
-                        <i class="fas fa-envelope"></i>
-                        <span id="display-email">ra***@gmail.com</span>
-                    </div>
+                    <h2>Verify Your Identity</h2>
+                    <p>We've sent a 6-digit code to</p>
+                    <div id="display-email" class="sent-to-badge">k****@gmail.com</div>
                 </div>
 
                 <div class="otp-input-wrapper">
-                    <input type="text" maxlength="1" class="otp-box" pattern="\d*">
-                    <input type="text" maxlength="1" class="otp-box" pattern="\d*">
-                    <input type="text" maxlength="1" class="otp-box" pattern="\d*">
-                    <input type="text" maxlength="1" class="otp-box" pattern="\d*">
-                    <input type="text" maxlength="1" class="otp-box" pattern="\d*">
-                    <input type="text" maxlength="1" class="otp-box" pattern="\d*">
+                    <input type="text" maxlength="1" class="otp-box">
+                    <input type="text" maxlength="1" class="otp-box">
+                    <input type="text" maxlength="1" class="otp-box">
+                    <input type="text" maxlength="1" class="otp-box">
+                    <input type="text" maxlength="1" class="otp-box">
+                    <input type="text" maxlength="1" class="otp-box">
                 </div>
 
-                <button class="btn-primary" id="btn-verify-otp">
+                <button id="btn-verify-otp" class="btn-primary">
                     <span class="btn-text">Verify & Login</span>
                     <i class="fas fa-check-circle"></i>
                 </button>
@@ -90,16 +90,24 @@
                     Didn't receive code? <button id="btn-resend" disabled>Resend in <span id="timer">30</span>s</button>
                 </div>
 
-                <button class="btn-back" id="btn-change-identity">
-                    <i class="fas fa-arrow-left"></i> Change ID / Email
+                <button id="btn-change-identity" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Use a different account
                 </button>
             </div>
+        </div>
+    </div>
 
-            <div class="support-footer">
-                <p>New Student? Contact your Admin</p>
-                <div class="social-links">
-                    <a href="https://wa.me/917842239090" target="_blank"><i class="fab fa-whatsapp"></i> Chat Now</a>
-                </div>
+    <!-- Modal System -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <div id="modal-icon" class="modal-icon warning">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 id="modal-title">Attention</h3>
+            <p id="modal-message">Something went wrong.</p>
+            <div class="modal-actions">
+                <button id="modal-cancel" class="btn btn-secondary" style="display:none;">Cancel</button>
+                <button id="modal-confirm" class="btn btn-confirm">Okay</button>
             </div>
         </div>
     </div>

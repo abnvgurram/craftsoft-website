@@ -30,6 +30,44 @@
     let resendTimer = null;
     let timeLeft = 30;
 
+    // Modal Utility (Matching Dashboard)
+    const Modal = {
+        element: document.getElementById('modal-overlay'),
+        title: document.getElementById('modal-title'),
+        message: document.getElementById('modal-message'),
+        icon: document.getElementById('modal-icon'),
+        btnConfirm: document.getElementById('modal-confirm'),
+        btnCancel: document.getElementById('modal-cancel'),
+
+        show({ title, message, type = 'warning', confirmText = 'Okay', onConfirm, hideCancel = true }) {
+            this.title.textContent = title;
+            this.message.textContent = message;
+            this.icon.className = `modal-icon ${type}`;
+
+            let iconCode = 'fa-exclamation-triangle';
+            if (type === 'danger') iconCode = 'fa-user-slash';
+            if (type === 'success') iconCode = 'fa-check-circle';
+            this.icon.innerHTML = `<i class="fas ${iconCode}"></i>`;
+
+            this.btnConfirm.textContent = confirmText;
+            this.btnCancel.style.display = hideCancel ? 'none' : 'block';
+
+            this.element.style.display = 'flex';
+            document.body.classList.add('modal-open');
+
+            const close = () => {
+                this.element.style.display = 'none';
+                document.body.classList.remove('modal-open');
+                this.btnConfirm.onclick = null;
+            };
+
+            this.btnConfirm.onclick = () => {
+                if (onConfirm) onConfirm();
+                close();
+            };
+        }
+    };
+
     // Handle Login Submit (Step 1)
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -40,24 +78,31 @@
         showLoading(true, btnSendOtp);
 
         try {
-            // 1. Lookup student
             const student = await lookupStudent(identifier);
 
             if (!student) {
-                showToast("No student found with these details. Please contact admin.", "error");
+                Modal.show({
+                    title: "Student Not Found",
+                    message: "We couldn't find a student matching that ID or email. Please double-check or contact the office.",
+                    type: "danger"
+                });
                 showLoading(false, btnSendOtp);
                 return;
             }
 
             if (!student.email) {
-                showToast("No email associated with this student. Please contact admin.", "error");
+                Modal.show({
+                    title: "Email Missing",
+                    message: "No registered email found for this ID. Please update your profile at the office to use OTP login.",
+                    type: "warning"
+                });
                 showLoading(false, btnSendOtp);
                 return;
             }
 
             currentStudent = student;
 
-            // 2. Generate and store OTP
+            // Generate OTP
             const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
             const { error: otpError } = await window.supabaseClient
                 .from('student_otps')
@@ -69,16 +114,19 @@
 
             if (otpError) throw otpError;
 
-            // 3. Send via EmailJS
+            // Send via EmailJS
             await sendOtpEmail(student.email, student.first_name || 'Student', otpCode);
 
-            // 4. Switch to Step 2
             showStep2(student.email);
-            showToast("OTP sent successfully!", "success");
+            showToast("Success! OTP has been sent.", "success");
 
         } catch (error) {
             console.error('Login error:', error);
-            showToast("Something went wrong. Please try again.", "error");
+            Modal.show({
+                title: "Login Error",
+                message: "A network issue occurred. Please check your connection and try again.",
+                type: "warning"
+            });
         } finally {
             showLoading(false, btnSendOtp);
         }
@@ -86,8 +134,6 @@
 
     // Lookup Student from DB
     async function lookupStudent(val) {
-        // Search by student_id, email or phone (Case-Insensitive)
-        // Wrappings in double quotes "val" is essential for PostgREST when dashes are present
         const { data, error } = await window.supabaseClient
             .from('students')
             .select('*')
@@ -95,8 +141,6 @@
             .single();
 
         if (error) {
-            // Backup check: some IDs might be exact matches without quotes in some environments
-            // But usually ilike."val" is the most stable
             console.warn('Primary lookup failed, trying exact search...');
             const { data: retryData, error: retryError } = await window.supabaseClient
                 .from('students')
@@ -104,10 +148,7 @@
                 .or(`student_id.eq."${val}",email.eq."${val}",phone.eq."${val}"`)
                 .single();
 
-            if (retryError) {
-                console.error('Lookup error:', retryError.message);
-                return null;
-            }
+            if (retryError) return null;
             return retryData;
         }
         return data;
@@ -115,16 +156,12 @@
 
     // Send Email via EmailJS
     async function sendOtpEmail(email, name, otp) {
-        console.log(`Sending OTP to: ${email}`); // Debugging
-
-        const templateParams = {
+        return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
             to_email: email,
             to_name: name || 'Student',
             otp_code: otp,
             reply_to: "team.craftsoft@gmail.com"
-        };
-
-        return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+        });
     }
 
     // UI Navigation
@@ -144,11 +181,14 @@
 
     // OTP Box Handling
     otpBoxes.forEach((box, index) => {
-        box.addEventListener('keyup', (e) => {
-            if (e.key >= 0 && e.key <= 9) {
-                if (index < otpBoxes.length - 1) otpBoxes[index + 1].focus();
-            } else if (e.key === 'Backspace') {
-                if (index > 0) otpBoxes[index - 1].focus();
+        box.addEventListener('input', (e) => {
+            if (e.target.value.length === 1 && index < otpBoxes.length - 1) {
+                otpBoxes[index + 1].focus();
+            }
+        });
+        box.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                otpBoxes[index - 1].focus();
             }
         });
     });
@@ -158,14 +198,13 @@
         const otp = Array.from(otpBoxes).map(box => box.value).join('');
 
         if (otp.length < 6) {
-            showToast("Please enter the full 6-digit code", "error");
+            showToast("Please enter the 6-digit code", "error");
             return;
         }
 
         showLoading(true, btnVerifyOtp);
 
         try {
-            // Verify from DB
             const { data, error } = await window.supabaseClient
                 .from('student_otps')
                 .select('*')
@@ -178,7 +217,11 @@
                 .single();
 
             if (error || !data) {
-                showToast("Invalid or expired OTP code.", "error");
+                Modal.show({
+                    title: "Invalid Code",
+                    message: "The code you entered is incorrect or expired. Please check your email and try again.",
+                    type: "warning"
+                });
                 showLoading(false, btnVerifyOtp);
                 return;
             }
@@ -198,16 +241,15 @@
                 loginTime: new Date().toISOString()
             }));
 
-            showToast("Success! Redirecting...", "success");
+            showToast("Authentication Successful!", "success");
 
-            // Redirect to dashboard
             setTimeout(() => {
                 window.location.href = './dashboard/';
             }, 1000);
 
         } catch (error) {
             console.error('Verification error:', error);
-            showToast("Verification failed. Please try again.", "error");
+            showToast("Something went wrong.", "error");
         } finally {
             showLoading(false, btnVerifyOtp);
         }
@@ -216,9 +258,8 @@
     // Resend Logic
     btnResend.addEventListener('click', async () => {
         if (timeLeft > 0) return;
-
         showLoading(true, btnResend);
-        // ... (Repeat the OTP gen and email send logic)
+
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
         await window.supabaseClient.from('student_otps').insert([{
             student_id: currentStudent.id,
@@ -228,7 +269,7 @@
         await sendOtpEmail(currentStudent.email, currentStudent.first_name, otpCode);
 
         showLoading(false, btnResend);
-        showToast("New OTP sent!", "success");
+        showToast("New code sent to your email!", "success");
         startResendTimer();
     });
 
@@ -243,14 +284,14 @@
             if (timeLeft <= 0) {
                 clearInterval(resendTimer);
                 btnResend.disabled = false;
-                btnResend.textContent = "Resend OTP";
+                btnResend.innerHTML = "Resend OTP";
             }
         }, 1000);
     }
 
     function maskEmail(email) {
         const parts = email.split('@');
-        return parts[0].substring(0, 2) + "****@" + parts[1];
+        return parts[0].substring(0, 3) + "****@" + parts[1];
     }
 
     function showToast(msg, type = "") {
