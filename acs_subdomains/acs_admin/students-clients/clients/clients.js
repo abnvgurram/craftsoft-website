@@ -765,16 +765,21 @@ function bindDeleteEvents() {
         const btn = document.getElementById('confirm-perm-delete-btn');
         btn.disabled = e.target.value !== 'CONFIRM';
     });
+
+    // Restore events
+    document.getElementById('close-restore-modal')?.addEventListener('click', hideRestoreConfirm);
+    document.getElementById('cancel-restore-btn')?.addEventListener('click', hideRestoreConfirm);
+    document.getElementById('confirm-restore-btn')?.addEventListener('click', confirmRestore);
 }
 
 function showDeleteConfirm(id, name) {
     deleteTargetId = id;
     document.getElementById('delete-client-name').textContent = name;
-    document.getElementById('delete-modal').classList.add('show');
+    document.getElementById('delete-modal').classList.add('active');
 }
 
 function hideDeleteConfirm() {
-    document.getElementById('delete-modal').classList.remove('show');
+    document.getElementById('delete-modal').classList.remove('active');
     deleteTargetId = null;
 }
 
@@ -812,11 +817,11 @@ function showPermDeleteConfirm(id, name) {
     document.getElementById('perm-delete-name').textContent = name;
     document.getElementById('perm-delete-confirm-input').value = '';
     document.getElementById('confirm-perm-delete-btn').disabled = true;
-    document.getElementById('perm-delete-modal').classList.add('show');
+    document.getElementById('perm-delete-modal').classList.add('active');
 }
 
 function hidePermDeleteConfirm() {
-    document.getElementById('perm-delete-modal').classList.remove('show');
+    document.getElementById('perm-delete-modal').classList.remove('active');
     deleteTargetId = null;
 }
 
@@ -848,31 +853,48 @@ async function confirmPermDelete() {
     }
 }
 
+function showRestoreConfirm(id, name) {
+    deleteTargetId = id;
+    document.getElementById('restore-client-name').textContent = name;
+    document.getElementById('restore-modal').classList.add('active');
+}
+
+function hideRestoreConfirm() {
+    document.getElementById('restore-modal').classList.remove('active');
+    deleteTargetId = null;
+}
+
+async function confirmRestore() {
+    if (!deleteTargetId) return;
+    const { Toast } = window.AdminUtils;
+    const btn = document.getElementById('confirm-restore-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Restoring...';
+
+    try {
+        const { error } = await window.supabaseClient
+            .from('clients')
+            .update({
+                status: 'ACTIVE'
+            })
+            .eq('id', deleteTargetId);
+
+        if (error) throw error;
+
+        Toast.success('Restored', 'Client is now active again.');
+        hideRestoreConfirm();
+        await loadClients();
+    } catch (e) {
+        console.error('Reactivation failed:', e);
+        Toast.error('Error', 'Failed to reactivate client');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Restore Client';
+    }
+}
+
 async function reactivateClient(id, name) {
-    const { Modal, Toast } = window.AdminUtils;
-
-    Modal.confirm(
-        'Restore Client',
-        `Are you sure you want to reactivate ${name}? they will appear in the active clients list again.`,
-        async () => {
-            try {
-                const { error } = await window.supabaseClient
-                    .from('clients')
-                    .update({
-                        status: 'ACTIVE'
-                    })
-                    .eq('id', id);
-
-                if (error) throw error;
-
-                Toast.success('Restored', `${name} is now active again.`);
-                await loadClients();
-            } catch (e) {
-                console.error('Reactivation failed:', e);
-                Toast.error('Error', 'Failed to reactivate client');
-            }
-        }
-    );
+    showRestoreConfirm(id, name);
 }
 
 async function bulkDeleteClients() {

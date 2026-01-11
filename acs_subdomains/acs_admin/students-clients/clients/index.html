@@ -113,13 +113,15 @@
                     <button class="btn btn-primary" id="add-client-btn">
                         <i class="fa-solid fa-plus"></i> Add Client
                     </button>
-                    <div class="status-filter-wrapper">
-                        <i class="fa-solid fa-filter filter-icon"></i>
-                        <select id="status-filter" class="styled-select">
-                            <option value="ACTIVE">Active Clients</option>
-                            <option value="INACTIVE">Inactive Clients</option>
-                            <option value="ALL">All Clients</option>
-                        </select>
+                    <div class="filter-group">
+                        <div class="search-box" style="max-width: 200px;">
+                            <i class="fa-solid fa-filter"></i>
+                            <select id="status-filter" class="form-select" style="padding-left: 2.5rem; height: 42px;">
+                                <option value="ACTIVE" selected>Active Clients</option>
+                                <option value="INACTIVE">Inactive Clients</option>
+                                <option value="ALL">All Clients</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="search-box">
                         <i class="fa-solid fa-search"></i>
@@ -280,6 +282,30 @@
             <div class="modal-footer">
                 <button class="btn btn-outline" id="cancel-perm-delete-btn">Cancel</button>
                 <button class="btn btn-danger" id="confirm-perm-delete-btn" disabled>Delete Forever</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restore Client Modal -->
+    <div class="modal-overlay" id="restore-modal">
+        <div class="modal-container modal-sm animate-scale">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-rotate-left"></i> Restore Client</h3>
+                <button class="modal-close" id="close-restore-modal">
+                    <i class="fa-solid fa-xmark"></i> </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="delete-warning-icon success">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+                <p>Restore <strong id="restore-client-name"></strong> to active list?</p>
+                <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem;">
+                    They will be visible in the Active Clients list again.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-restore-btn">Cancel</button>
+                <button class="btn btn-success" id="confirm-restore-btn">Restore Client</button>
             </div>
         </div>
     </div>

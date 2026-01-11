@@ -33,7 +33,8 @@
 .inline-form-body input[type="tel"],
 .inline-form-body input[type="number"],
 .inline-form-body textarea,
-.inline-form-body select {
+.inline-form-body select,
+.form-select {
     width: 100%;
     padding: 0.875rem 1rem;
     font-size: 0.95rem;
@@ -44,6 +45,19 @@
     color: var(--admin-text-primary, #0f172a);
     transition: all 0.2s ease;
     outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.inline-form-body select,
+.form-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%232896cd' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.25rem;
+    padding-right: 2.5rem;
+    cursor: pointer;
 }
 
 .inline-form-body input:focus,
@@ -432,6 +446,16 @@
     .search-box {
         width: 100%;
         margin-top: 1rem;
+    }
+
+    .filter-group {
+        margin-top: 1rem;
+        width: 100%;
+    }
+
+    .filter-group .search-box {
+        max-width: none !important;
+        margin-top: 0;
     }
 }
 
