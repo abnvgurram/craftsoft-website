@@ -24,78 +24,122 @@
 </head>
 
 <body>
+    <!-- Background Blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
 
-    <div class="login-container">
-        <div class="login-card">
-            <!-- Brand -->
-            <div class="brand">
-                <div class="logo-box">
+
+    <div class="login-page-wrapper">
+        <!-- Left Side: Hero Section -->
+        <div class="login-hero">
+            <div class="hero-content">
+                <div class="hero-logo">
                     <i class="fas fa-graduation-cap"></i>
                 </div>
-                <h1>CRAFT SOFT <span class="highlight">PORTAL</span></h1>
-                <p class="tagline">Student Access Environment</p>
+                <h1>Empowering Your <span class="text-accent">Learning Journey</span></h1>
+                <p>Welcome to Craft Soft Student Portal. Access your courses, track payments, and manage your academic
+                    profile with ease. One platform, infinite possibilities.</p>
+
+                <div class="hero-features">
+                    <div class="hero-feature-item">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Unified Dashboard</span>
+                    </div>
+                    <div class="hero-feature-item">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                        <span>Instant Payments</span>
+                    </div>
+                    <div class="hero-feature-item">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                        <span>Course Material</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- Step 1: Identifier -->
-            <div id="login-step-1" class="login-step">
-                <div class="header">
-                    <h2>Welcome Back!</h2>
-                    <p>Enter your details to receive an OTP</p>
+            <div class="hero-footer">
+                <p>Craft Soft &copy; 2026</p>
+            </div>
+        </div>
+
+        <!-- Right Side: Login Section -->
+        <div class="login-container">
+            <div class="login-card">
+                <!-- Brand (Shows only on mobile) -->
+                <div class="brand mobile-only">
+                    <div class="logo-box">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h1>CRAFT SOFT <span class="highlight">PORTAL</span></h1>
                 </div>
 
-                <form id="loginForm">
-                    <div class="input-group">
-                        <label for="identifier">Student ID, Email or Phone</label>
-                        <div class="input-wrapper">
-                            <i class="fas fa-id-card"></i>
-                            <input type="text" id="identifier" placeholder="e.g. ACS-2024-001" autocomplete="username"
-                                required>
-                        </div>
+                <!-- Step 1: Identifier -->
+                <div id="login-step-1" class="login-step">
+                    <div class="header">
+                        <h2>Welcome Back!</h2>
+                        <p>Enter your details to receive an OTP</p>
                     </div>
 
-                    <button type="submit" id="btn-send-otp" class="btn-primary">
-                        <span class="btn-text">Send OTP</span>
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </form>
+                    <form id="loginForm">
+                        <div class="input-group">
+                            <label for="identifier">Student ID, Email or Phone</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-id-card"></i>
+                                <input type="text" id="identifier" placeholder="e.g. ACS-2024-001"
+                                    autocomplete="username" required>
+                            </div>
+                        </div>
 
-                <div class="support-footer">
-                    <p>Having trouble? <a href="mailto:team.craftsoft@gmail.com">Contact Support</a></p>
+                        <button type="submit" id="btn-send-otp" class="btn-primary">
+                            <span class="btn-text">Send OTP</span>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+
+                    <div class="support-footer">
+                        <p>Having trouble? <a href="mailto:team.craftsoft@gmail.com">Contact Support</a></p>
+                    </div>
+                </div>
+
+                <!-- Step 2: OTP Verification -->
+                <div id="login-step-2" class="login-step" style="display: none;">
+                    <div class="header">
+                        <h2>Verify Your Identity</h2>
+                        <p>We've sent a 6-digit code to</p>
+                        <div id="display-email" class="sent-to-badge">k****@gmail.com</div>
+                    </div>
+
+                    <div class="otp-input-wrapper">
+                        <input type="text" maxlength="1" class="otp-box">
+                        <input type="text" maxlength="1" class="otp-box">
+                        <input type="text" maxlength="1" class="otp-box">
+                        <input type="text" maxlength="1" class="otp-box">
+                        <input type="text" maxlength="1" class="otp-box">
+                        <input type="text" maxlength="1" class="otp-box">
+                    </div>
+
+                    <button id="btn-verify-otp" class="btn-primary">
+                        <span class="btn-text">Verify & Login</span>
+                        <i class="fas fa-check-circle"></i>
+                    </button>
+
+                    <div class="resend-timer">
+                        Didn't receive code? <button id="btn-resend" disabled>Resend in <span
+                                id="timer">30</span>s</button>
+                    </div>
+
+                    <button id="btn-change-identity" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Use a different account
+                    </button>
                 </div>
             </div>
-
-            <!-- Step 2: OTP Verification -->
-            <div id="login-step-2" class="login-step" style="display: none;">
-                <div class="header">
-                    <h2>Verify Your Identity</h2>
-                    <p>We've sent a 6-digit code to</p>
-                    <div id="display-email" class="sent-to-badge">k****@gmail.com</div>
-                </div>
-
-                <div class="otp-input-wrapper">
-                    <input type="text" maxlength="1" class="otp-box">
-                    <input type="text" maxlength="1" class="otp-box">
-                    <input type="text" maxlength="1" class="otp-box">
-                    <input type="text" maxlength="1" class="otp-box">
-                    <input type="text" maxlength="1" class="otp-box">
-                    <input type="text" maxlength="1" class="otp-box">
-                </div>
-
-                <button id="btn-verify-otp" class="btn-primary">
-                    <span class="btn-text">Verify & Login</span>
-                    <i class="fas fa-check-circle"></i>
-                </button>
-
-                <div class="resend-timer">
-                    Didn't receive code? <button id="btn-resend" disabled>Resend in <span id="timer">30</span>s</button>
-                </div>
-
-                <button id="btn-change-identity" class="btn-back">
-                    <i class="fas fa-arrow-left"></i> Use a different account
-                </button>
+            <!-- Mobile Footer -->
+            <div class="mobile-footer footer-left" style="text-align: center; margin-top: 2rem; display: none;">
+                Abhi's CraftSoft &copy; 2026
             </div>
         </div>
     </div>
+
 
     <!-- Modal System -->
     <div id="modal-overlay" class="modal-overlay">

@@ -73,59 +73,88 @@
 </head>
 
 <body>
-    <div class="auth-container">
-        <!-- Logo -->
-        <div class="auth-logo">
-            <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
-                    Soft</span></span>
+    <div class="auth-page-wrapper">
+        <!-- Left Side: Professional Hero -->
+        <div class="auth-hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-badge">Administrator Portal</div>
+                <h1>Managing the <span class="highlight-glow">Modern Workforce</span></h1>
+                <p>Abhi's Craft Soft Administration System. Securely manage students, track financial records, and
+                    oversee operational efficiency from a single unified workspace.</p>
+
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">Admin</span>
+                        <span class="stat-label">Secure Access</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">v2.0</span>
+                        <span class="stat-label">Platform Version</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-footer">
+                Craft Soft Admin Hub &copy; 2026
+            </div>
         </div>
 
-        <!-- Login Card -->
-        <div class="auth-card">
-            <div class="auth-header">
-                <h1>Admin Login</h1>
-                <p>Access your admin dashboard</p>
+        <!-- Right Side: Login Content -->
+        <div class="auth-container">
+            <!-- Logo -->
+            <div class="auth-logo">
+                <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
+                        Soft</span></span>
             </div>
 
-            <form id="login-form" class="auth-form" novalidate>
-                <!-- Admin ID or Email -->
-                <div class="form-group">
-                    <label class="form-label" for="identifier">Email, Admin ID or Phone <span
-                            class="required">*</span></label>
-                    <div class="form-input-wrapper">
-                        <input type="text" id="identifier" name="identifier" class="form-input secure-input"
-                            placeholder="Enter Email, Admin ID or Phone" autocomplete="off" autocorrect="off"
-                            autocapitalize="off" spellcheck="false" required>
-                    </div>
-                    <div id="identifier-error" class="form-error"></div>
+            <!-- Login Card -->
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1>Admin Login</h1>
+                    <p>Access your admin dashboard</p>
                 </div>
 
-                <!-- Password -->
-                <div class="form-group">
-                    <label class="form-label" for="password">Password <span class="required">*</span></label>
-                    <div class="form-input-wrapper">
-                        <input type="password" id="password" name="password" class="form-input has-icon secure-input"
-                            placeholder="Enter your password" autocomplete="off" autocorrect="off" autocapitalize="off"
-                            spellcheck="false" required>
-                        <button type="button" class="password-toggle" aria-label="Toggle password visibility">
-                            <i class="fa-solid fa-eye"></i> </button>
+                <form id="login-form" class="auth-form" novalidate>
+                    <!-- Admin ID or Email -->
+                    <div class="form-group">
+                        <label class="form-label" for="identifier">Email, Admin ID or Phone <span
+                                class="required">*</span></label>
+                        <div class="form-input-wrapper">
+                            <input type="text" id="identifier" name="identifier" class="form-input secure-input"
+                                placeholder="Enter Email, Admin ID or Phone" autocomplete="off" autocorrect="off"
+                                autocapitalize="off" spellcheck="false" required>
+                        </div>
+                        <div id="identifier-error" class="form-error"></div>
                     </div>
-                    <div id="password-error" class="form-error"></div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password <span class="required">*</span></label>
+                        <div class="form-input-wrapper">
+                            <input type="password" id="password" name="password"
+                                class="form-input has-icon secure-input" placeholder="Enter your password"
+                                autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required>
+                            <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                                <i class="fa-solid fa-eye"></i> </button>
+                        </div>
+                        <div id="password-error" class="form-error"></div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="login-btn" class="btn btn-primary btn-full">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login
+                    </button>
+                </form>
+
+                <div class="auth-card-footer">
+                    <a href="https://craftsoft.co.in" class="back-link">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Website
+                    </a>
                 </div>
-
-                <!-- Submit Button -->
-                <button type="submit" id="login-btn" class="btn btn-primary btn-full">
-                    <i class="fa-solid fa-right-to-bracket"></i> Login
-                </button>
-            </form>
-
-            <div class="auth-card-footer">
-                <a href="https://craftsoft.co.in" class="back-link">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Website
-                </a>
             </div>
         </div>
     </div>
+
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -250,7 +279,3 @@
 </body>
 
 </html>
-
-
-
-
